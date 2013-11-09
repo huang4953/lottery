@@ -1,0 +1,28 @@
+com/success/admin/user/applicationContext-dataSource.xml = 1
+com/success/admin/user/applicationContext-sqlmap.xml = 1
+com/success/admin/user/applicationContext-adminuser.xml = 1
+
+com/success/lottery/account/applicationContext-sqlmap.xml = 1
+com/success/lottery/account/applicationContext-account.xml = 1
+
+com/success/lottery/business/applicationContext-business.xml=1
+com/success/lottery/business/applicationContext-sqlmap.xml=1
+
+com/success/lottery/order/applicationContext-order.xml=1
+com/success/lottery/order/applicationContext-sqlmap.xml=1
+
+com/success/lottery/term/applicationContext-term.xml=1
+com/success/lottery/term/applicationContext-sqlmap.xml=1
+
+com/success/lottery/ticket/applicationContext-ticket.xml=1
+com/success/lottery/ticket/applicationContext-splitter.xml=1
+com/success/lottery/ticket/applicationContext-sqlmap.xml=1
+
+com/success/lottery/sms/push/applicationContext-push.xml = 1
+com/success/lottery/sms/push/applicationContext-sqlmap.xml = 1
+
+com/success/lottery/report/applicationContext-report.xml=1
+com/success/lottery/report/applicationContext-sqlmap.xml=1
+
+com/success/lottery/operatorlog/applicationContext-sqlmap.xml = 1
+com/success/lottery/operatorlog/applicationContext-operationlog.xml = 1

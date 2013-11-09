@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="reportPrize">
+
+	<typeAlias alias="reportTerm" type="com.success.lottery.report.domain.ReportTermDomain"/>
+	
+	<typeAlias alias="reportPrize" type="com.success.lottery.report.domain.ReportPrizeDomain"/>
+	
+	<typeAlias alias="reportSaleCount" type="com.success.lottery.report.domain.ReportSaleCount"/>
+	
+	<!-- 根据彩种获取最近兑奖的彩期信息 -->
+	<!--  
+	<select id="getHaveCashTerm" parameterClass="java.lang.Integer" resultClass="reportTerm">
+		SELECT lotteryid AS lotteryId,termno AS termNo,starttime AS startTime,deadline AS deadLine,lotteryresult AS lotteryResult
+		FROM  lotteryterm
+		WHERE lotteryid = #lotteryId:NUMERIC# AND winstatus <![CDATA[ >= ]]> 3
+		AND termno = (select max(termno) as termno from lotteryterm where LotteryId = #lotteryId:NUMERIC# AND winstatus <![CDATA[ >= ]]> 3)
+	</select>
+	-->
+	<select id="getHaveCashTerm" parameterClass="java.util.Map" resultClass="reportTerm">
+		SELECT lotteryid AS lotteryId,termno AS termNo,starttime AS startTime,deadline AS deadLine,lotteryresult AS lotteryResult
+		FROM  lotteryterm
+		WHERE lotteryid = #lotteryId:NUMERIC# AND winstatus <![CDATA[ >= ]]> 3
+		ORDER BY termno desc
+		limit #limitNumber#
+	</select>
+	
+	<!-- 生成中奖统计数据 -->
+	<insert id="insert_report_prize" parameterClass="reportPrize">
+		INSERT INTO $tableName$ (termno,starttime,endtime,wincode,salevolume,totalprizeamount,volume1,volume2,volume3,webvolume,smsvolume,wapvolume,
+		clientvolume,smallamount,bigamount,failticketcount,createtime,reportstatus,reportmark,reverse1,reverse2,
+		afttaxprize,taxprize,tichengprize,commprize)
+		VALUES (#termNo#,#startTime#,#deadLine#,#lotteryResult#,#saleVolume#,#totalPrizeAmount#,#volume1#,#volume2#,#volume3#,#webVolume#,#smsVolume#,#wapVolume#,
+		#clientVoulme#,#smallAmount#,#bigAmount#,#failTicketCount#,now(),#reportStatus#,#reportMark#,#reverse1#,#reverse2#,
+		#aftTaxPrize#,#taxPrize#,#tiChengPrize#,#commPrize#)
+	</insert>
+	
+	<!-- 检查彩期是否生成过中奖统计数据 -->
+	<select id="getPrizeIsCreated" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(1) AS totalNum
+		FROM $tableName$
+		WHERE termno = #termNo#
+	</select>
+	
+	<!-- 按照销售渠道统计销量 -->
+	<select id="getSaleVolumnByLottery" parameterClass="java.util.Map" resultClass="reportSaleCount">
+		SELECT lotteryid AS lotteryId,plansource AS planSource,SUM(betamount) AS betAmount
+		FROM betorder
+		WHERE betterm = #termNo# AND (orderstatus in (8,10))
+		<isNotEmpty property="lotteryIdList" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="lotteryIdList">
+					lotteryid = #lotteryIdList[]#
+				</iterate>
+		</isNotEmpty>
+		GROUP BY lotteryid,plansource
+	</select>
+	
+	<!-- 按照投注方式统计销量 -->
+	<select id="getSaleVolumnByBetType" parameterClass="java.util.Map" resultClass="reportSaleCount">
+		SELECT bettype AS betType,SUM(betamount) AS betAmount
+		FROM betorder
+		WHERE betterm = #termNo# AND (orderstatus in (8,10))
+		<isNotEmpty property="lotteryIdList" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="lotteryIdList">
+					lotteryid = #lotteryIdList[]#
+				</iterate>
+		</isNotEmpty>
+		GROUP BY bettype
+	</select>
+	
+	<!-- 按照玩法方式统计销量 -->
+	<select id="getSaleVolumnByPlayType" parameterClass="java.util.Map" resultClass="reportSaleCount">
+		SELECT playtype AS betType,SUM(betamount) AS betAmount
+		FROM betorder
+		WHERE betterm = #termNo# AND (orderstatus in (8,10))
+		<isNotEmpty property="lotteryIdList" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="lotteryIdList">
+					lotteryid = #lotteryIdList[]#
+				</iterate>
+		</isNotEmpty>
+		GROUP BY playtype
+	</select>
+	
+	<!-- 统计大奖小奖数据 -->
+	<select id="getSmallBigPrize" parameterClass="java.util.Map" resultClass="reportSaleCount">
+		SELECT COALESCE(sum(pretaxprize),0) AS pretaxprize,COALESCE(sum(afttaxprize),0) AS aftTaxPrize,
+		COALESCE(sum(taxprize),0) AS taxPrize,COALESCE(sum(deductprize),0) AS tiChengPrize,
+		COALESCE(sum(commissionprize),0) AS commPrize,
+		COALESCE(SUM(CASE winstatus WHEN 2 THEN pretaxprize WHEN 299 THEN pretaxprize ELSE 0 END),0) AS smallPrize,
+		COALESCE(SUM(CASE winstatus WHEN 3 THEN pretaxprize WHEN 399 THEN pretaxprize ELSE 0 END),0) AS bigPrize
+		FROM betorder
+		WHERE betterm = #termNo# AND winstatus in (2,3,299,399)
+		<isNotEmpty property="lotteryIdList" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="lotteryIdList">
+					lotteryid = #lotteryIdList[]#
+				</iterate>
+		</isNotEmpty>
+	</select>
+	
+	<!-- 统计失败彩票的数量 -->
+	<select id="getFailTicketNum" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(1) AS failTicketNum
+		FROM betticket
+		WHERE betterm = #termNo# AND ticketstatus = 7
+		<isNotEmpty property="lotteryIdList" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="lotteryIdList">
+					lotteryid = #lotteryIdList[]#
+				</iterate>
+		</isNotEmpty>
+	</select>
+	
+	<!-- 查询已经生成的彩期 -->
+	<select id="getReportPrizeTerms" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT termno
+		FROM $tableName$
+		ORDER BY termno DESC
+	</select>
+	
+	<!--  查询中奖统计报表 -->
+	<select id="getPrizeReports" parameterClass="java.util.Map" resultClass="reportPrize">
+		SELECT reportId,termNo,startTime,endtime AS deadLine,wincode AS lotteryResult,saleVolume,totalPrizeAmount,volume1 as volume1,
+		volume2,volume3,webVolume,smsVolume,wapVolume,clientVolume,smallAmount,bigAmount,failTicketCount,
+		afttaxprize AS aftTaxPrize,taxprize AS taxPrize,tichengprize AS tiChengPrize,commprize AS commPrize 
+		FROM $tableName$
+		WHERE 1=1
+		<isNotEmpty property="beginTermNo">
+			<isNotEqual property="beginTermNo" prepend="AND" compareValue="0">
+				termNo <![CDATA[ >= ]]> #beginTermNo#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="endTermNo">
+			<isNotEqual property="endTermNo" prepend="AND" compareValue="0">
+				termNo <![CDATA[ <= ]]> #endTermNo#
+			</isNotEqual>
+		</isNotEmpty>
+		ORDER BY termNo DESC
+		LIMIT #startPageNumber#, #endPageNumber#
+	</select>
+	<!-- 查询中奖统计的分页查询总条数 -->
+	<select id="getPrizeReportsCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(*) AS totalNum
+		FROM $tableName$
+		WHERE 1=1
+		<isNotEmpty property="beginTermNo">
+			<isNotEqual property="beginTermNo" prepend="AND" compareValue="0">
+				termNo <![CDATA[ >= ]]> #beginTermNo#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="endTermNo">
+			<isNotEqual property="endTermNo" prepend="AND" compareValue="0">
+				termNo <![CDATA[ <= ]]> #endTermNo#
+			</isNotEqual>
+		</isNotEmpty>
+	</select>
+	<!-- 查询中奖统计的详细数据 -->
+	<select id="getPrizeReportInfo" parameterClass="java.util.Map" resultClass="reportPrize">
+		SELECT reportId,termNo,startTime,endtime AS deadLine,wincode AS lotteryResult,saleVolume,totalPrizeAmount,volume1,volume2,volume3,webVolume,smsVolume,wapVolume,
+		clientVolume,smallAmount,bigAmount,failTicketCount,afttaxprize AS aftTaxPrize,taxprize AS taxPrize,tichengprize AS tiChengPrize,commprize AS commPrize 
+		FROM $tableName$
+		WHERE reportId = #reportId#
+	</select>
+</sqlMap>

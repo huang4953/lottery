@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+  
+<!DOCTYPE sqlMap         
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"         
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="UserAccount">
+	<typeAlias alias="useraccount" type="com.success.lottery.account.model.UserAccountModel"/> 
+	<typeAlias alias="userPointsModel" type="com.success.lottery.account.model.UserPointTrans"/>  
+  
+    <resultMap class="useraccount" id="UserAccountModelResult">  
+        <result property="userId" column="UserId"/>    
+        <result property="loginName" column="LoginName"/>    
+        <result property="mobilePhone" column="MobilePhone"/>  
+        <result property="bindMobileFlag" column="BindMobileFlag"/> 
+        <result property="areaCode" column="AreaCode"/>    
+        <result property="userLevel" column="UserLevel"/>    
+        <result property="nickName" column="NickName"/>    
+        <result property="password" column="Password"/>    
+        <result property="phone" column="Phone"/>    
+        <result property="email" column="Email"/>  
+        <result property="bindEmailFlag" column="BindEmailFlag"/>   
+        <result property="relationSales" column="RelationSales"/>    
+        <result property="relationUser" column="RelationUser"/>    
+        <result property="fundsAccount" column="FundsAccount"/>    
+        <result property="prizeAccount" column="PrizeAccount"/>    
+        <result property="frozenAccount" column="FrozenAccount"/>    
+        <result property="commisionAccount" column="CommisionAccount"/>    
+        <result property="advanceAccount" column="AdvanceAccount"/>    
+        <result property="awardAccount" column="AwardAccount"/>    
+        <result property="otherAccount1" column="OtherAccount1"/>    
+        <result property="otherAccount2" column="OtherAccount2"/>    
+        <result property="realName" column="RealName"/>    
+        <result property="idCard" column="IdCard"/>    
+        <result property="bankName" column="BankName"/>    
+        <result property="bankCardId" column="BankCardId"/>    
+        <result property="address" column="Address"/>    
+        <result property="postcode" column="Postcode"/>    
+        <result property="qq" column="qq"/>    
+        <result property="msn" column="msn"/>    
+        <result property="sex" column="sex"/>    
+        <result property="birthday" column="birthday"/>    
+        <result property="lastLoginTime" column="lastLoginTime"/>    
+        <result property="lastLoginIP" column="lastLoginIP"/>
+        <result property="createTime" column="createTime"/>
+        <result property="reserve" column="Reserve"/>   
+        <result property="status" column="status"/>     
+    </resultMap>  
+       
+    <!-- query all account -->  
+    <select id="selectAllUser" resultMap="UserAccountModelResult">  
+        select UserId,LoginName,MobilePhone,BindMobileFlag,AreaCode,UserLevel,NickName,Password,Phone,Email,BindEmailFlag,RelationSales,RelationUser,FundsAccount,
+        PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,OtherAccount1,OtherAccount2,RealName,IdCard,BankName,BankCardId,Address,
+        Postcode,qq,msn,sex,birthday,lastLoginTime,lastLoginIP,Reserve,Status from useraccount where Status=1
+    </select> 
+    <select id="selectAlluserByUserpage" resultMap="UserAccountModelResult">
+       <![CDATA[ 	select   UserId,LoginName,MobilePhone,BindMobileFlag,AreaCode,UserLevel,NickName,Password,Phone,Email,BindEmailFlag,RelationSales,RelationUser,FundsAccount,
+        PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,OtherAccount1,OtherAccount2,RealName,IdCard,BankName,BankCardId,Address,
+        Postcode,qq,msn,sex,birthday,lastLoginTime,lastLoginIP,Reserve,Status   from useraccount where Status=1 order by UserId desc
+        ]]>
+        <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic> 
+    </select>
+    <select id="selectAlluserByUserpageCount" resultClass="int">
+        	select   count(UserId)   from useraccount where Status=1
+    </select>
+    <!--登录验证-->
+    <select id="selectUserByNamepsw" resultClass="useraccount">
+    select UserId,LoginName,MobilePhone,BindMobileFlag,AreaCode,UserLevel,NickName,Password,Phone,Email,BindEmailFlag,RelationSales,RelationUser,FundsAccount,
+        PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,OtherAccount1,OtherAccount2,RealName,IdCard,BankName,BankCardId,Address,
+        Postcode,qq,msn,sex,birthday,lastLoginTime,lastLoginIP,Reserve,Status from 
+    useraccount where LoginName=#name# and Password=#password# and Status=1
+    </select>
+    <!-- 检查 登录名 手机号  email 是否是唯一 -->
+    <select id="selectCountByIdentifier2" resultClass="int"  parameterClass="string">
+    	select count(UserId) from useraccount where LoginName=#id# or MobilePhone=#id# or  email=#id#
+    </select>
+    
+    <!--用户是否存在-->
+    <select id="selectUserByName" resultClass="int">
+   		select count(UserId) from useraccount where LoginName=#name#
+    </select>
+    <!--手机是否存在-->
+    <select id="selectUserByMobile" resultClass="int">
+   		select count(MobilePhone) from useraccount where MobilePhone=#mobile#
+    </select>
+    <!--身份证是否存在-->
+    <select id="selectIdCard" resultClass="int" parameterClass="string">
+    	select count(IdCard) from useraccount where IdCard=#IdCard#
+    </select>
+    <!--根据用户ID查出信息-->
+    <select id="selectUserByUserId" resultClass="useraccount" parameterClass="long">
+    	select * from useraccount where UserId=#userId#
+    </select>
+    <!--insert UserAccount 插入用户-->
+    <insert id="addUser" parameterClass="useraccount">  
+        insert into useraccount(LoginName,MobilePhone,BindMobileFlag,AreaCode,UserLevel,NickName,Password,Phone,Email,BindEmailFlag,RelationSales,RelationUser,FundsAccount,
+        PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,OtherAccount1,OtherAccount2,RealName,IdCard,BankName,BankCardId,Address,
+        Postcode,qq,msn,sex,birthday,lastLoginTime,lastLoginIP,createTime, Reserve,Status) 
+        values(#loginName#,#mobilePhone#,#bindMobileFlag#,#areaCode#,#userLevel#,#nickName#,#password#,#phone#,#email#,#bindEmailFlag#,#relationSales#,#relationUser#,#fundsAccount#,
+        #prizeAccount#,#frozenAccount#,#commisionAccount#,#advanceAccount#,#awardAccount#,#otherAccount1#,#otherAccount2#,#realName#,#idCard#,
+        #bankName#,#bankCardId#,#address#,#postcode#,#qq#,#msn#,#sex#,#birthday#,#lastLoginTime#,#lastLoginIP#,now(),#reserve#,1)   
+        <selectKey resultClass="useraccount" >    
+	      SELECT @@IDENTITY AS UserId    
+	    </selectKey>
+    </insert>
+    <!--modify UserAccount 修改用户-->
+    <update id="updateUser" parameterClass="useraccount">  
+       update useraccount set #loginName#,#mobilePhone#,#bindMobileFlag#,#areaCode#,#userLevel#,#nickName#,#password#,#phone#,#email#,#bindEmailFlag#,#relationSales#,#relationUser#,#fundsAccount#,
+        #prizeAccount#,#frozenAccount#,#commisionAccount#,#advanceAccount#,#awardAccount#,#otherAccount1#,#otherAccount2#,#realName#,#idCard#,
+        #bankName#,#bankCardId#,#address#,#postcode#,#qq#,#msn#,#sex#,#birthday#,#lastLoginTime#,#lastLoginIP#,#reserve# where UserId=#userId#   
+    </update> 
+    <!--修改用户银行相关信息-->
+    <update id="updateUserForBank" parameterClass="useraccount">  
+       update useraccount set #realName#,#idCard#,#bankName#,#bankCardId# where UserId=#userId#   
+    </update> 
+    <!--修改用户密码-->
+    <update id="updateUserPassword" parameterClass="useraccount"> 
+    	update UserAccount set password= #newpassword# where LoginName=#loginName#  and password=#password#
+    </update>
+    <!--修改用户资金-->
+    <update id="updateAccountAbount" parameterClass="useraccount"> 
+    	update useraccount set fundsaccount=#fundsAccount#, prizeaccount=#prizeAccount#,frozenaccount=#frozenAccount#,commisionaccount=#commisionAccount#,advanceaccount=#advanceAccount#,
+    	awardaccount=#awardAccount#,otheraccount1=#otherAccount1#,otheraccount2=#otherAccount2# where UserId=#userId#
+    </update>
+    <!--根据用户ID查询账户资金-->
+    <select id="selectUserCountByUserId" resultClass="useraccount" parameterClass="long">
+    	select fundsaccount,prizeaccount,frozenaccount,commisionaccount,advanceaccount,awardaccount,otheraccount1,otheraccount2,UserId from useraccount where UserId=#userId# for update
+    </select>
+    <!--根据手机号查USERID-->
+    <select id="selectUser_IdByMobile" resultClass="long" parameterClass="String">
+    	select userid from useraccount where MobilePhone=#mobile# order by userid desc limit 1
+    </select>
+    <!--修改用户最后登录IP-->
+    <update id="updateUserLastIp" parameterClass="useraccount"> 
+    	update useraccount set lastLoginTime = #lastLoginTime#,lastLoginIP = #lastLoginIP# where userid=#userId#
+    </update>
+    <!--delete UserAccount 删除用户-->
+    <delete id="deleteUser" parameterClass="long">  
+        update useraccount set Status=0 where UserId=#userId#   
+    </delete>
+    
+   	<!--检查标识符是否存在-->
+    <select id="selectCountByIdentifier" resultClass="int" parameterClass="useraccount">
+		select count(1) from useraccount where loginname=#loginName# or email=#email#
+    </select>
+    
+   	<!--获得用户信息-->
+    <select id="selectUserInfoByIdentifier" resultClass="useraccount" parameterClass="useraccount">
+		select userid, loginname, mobilephone, bindmobileflag, areacode, userlevel, status, nickname, password, phone, email, bindemailflag, 
+			relationsales, relationuser, fundsaccount, prizeaccount, frozenaccount, commisionaccount, advanceaccount, awardaccount, 
+			otheraccount1, otheraccount2, realname, idcard, bankname, bankcardid, address, postcode, qq, msn, sex, birthday, 
+			lastlogintime, lastloginip, createtime, reserve from useraccount 
+		where userId=#userId# or loginname=#loginName# or mobilephone=#mobilePhone# or email=#email# limit 1
+    </select>
+    
+   	<!-- 账户交易时查找当前账户情况，select for update，该操作进行行锁 -->
+    <select id="getUserAccountInfoForUpdate" resultClass="useraccount" parameterClass="useraccount">
+		select userid, loginname, mobilephone, email, status, fundsaccount, prizeaccount, frozenaccount, commisionaccount, advanceaccount, 
+			awardaccount, otheraccount1, otheraccount2 from useraccount 
+		where 
+			(userId=#userId# or loginname=#loginName# or mobilephone=#mobilePhone# or email=#email#) and status=1 and fundsaccount + prizeaccount >= #sex# for update
+    </select>
+    
+    <!-- 查询有效的短信包月用户 -->
+    <select id="getUserAccountInfoForbindMobileFlag" resultClass="useraccount" >
+        select userid ,mobilephone from useraccount where (bindMobileFlag <![CDATA[ & ]]> 1)=1 and status=1
+    </select>
+    <!-- 6个条件查询的情况的总查询 -->
+    <!-- 
+    <select id="selectUserInfoForSex" resultClass="java.lang.Integer" parameterClass="java.util.Map">  
+       <![CDATA[ select count(*) from useraccount  ]]>
+        
+        <dynamic prepend=" WHERE">  
+        	<isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				createtime>=#startTime#
+      				]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				createtime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="mobilePhone">
+        		 <isNotNull property="mobilePhone" prepend=" and ">  
+        			<![CDATA[
+        				mobilePhone=#mobilePhone#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="realName">
+        		 <isNotNull property="realName" prepend=" and ">  
+        			<![CDATA[
+        				realName=#realName#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="idCard">
+        		 <isNotNull property="idCard" prepend=" and ">  
+        			<![CDATA[
+        				idCard=#idCard#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="areaCode">
+        		 <isNotNull property="areaCode" prepend=" and ">  
+        			<![CDATA[
+        				areaCode=#areaCode#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+    </select> 
+     -->
+     <select id="selectUserInfoForSex" resultClass="java.lang.Integer" parameterClass="java.util.Map">  
+       select count(*) from useraccount 
+        <dynamic prepend=" WHERE">  
+        	 <isNotNull property="mobilePhone">
+                <isGreaterThan prepend=" and " property="mobilePhone" compareValue="0">
+               	 	mobilePhone = #mobilePhone#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="realName">
+                <isGreaterThan prepend=" and " property="realName" compareValue="0">
+               	 	realName = #realName#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="idCard">
+                <isGreaterThan prepend=" and " property="idCard" compareValue="0">
+               	 	idCard = #idCard#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="areaCode">
+                <isGreaterThan prepend=" and " property="areaCode" compareValue="0">
+               	 	areaCode = #areaCode#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="startTime">
+                <isGreaterThan prepend=" and " property="startTime" compareValue="0">
+               	 	<![CDATA[
+        				createtime>=#startTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				createtime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    </dynamic> 
+    </select> 
+    <!-- 6个条件查询的情况的分页查询 -->
+     <select id="selectUserInfoForSexList" resultMap="UserAccountModelResult" parameterClass="java.util.Map">  
+        select * from useraccount   
+        	<dynamic prepend=" WHERE ">  
+        	  <isNotNull property="mobilePhone">
+                <isGreaterThan prepend=" and " property="mobilePhone" compareValue="0">
+               	 	mobilePhone = #mobilePhone#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="realName">
+                <isGreaterThan prepend=" and " property="realName" compareValue="0">
+               	 	realName = #realName#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="idCard">
+                <isGreaterThan prepend=" and " property="idCard" compareValue="0">
+               	 	idCard = #idCard#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="areaCode">
+                <isGreaterThan prepend=" and " property="areaCode" compareValue="0">
+               	 	areaCode = #areaCode#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="startTime">
+                <isGreaterThan prepend=" and " property="startTime" compareValue="0">
+               	 	<![CDATA[
+        				createtime>=#startTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				createtime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    </dynamic> 
+	    order by createtime desc
+	  limit #startPageNumber#, #endPageNumber#
+	  
+    </select> 
+   	<!-- 账户交易时修改账户余额，该操作前必须调用getUserAccountInfoForUpdate进行行锁 -->
+    <update id="updateUserAccountBalance" parameterClass="useraccount"> 
+    	update useraccount set fundsaccount=#fundsAccount#, prizeaccount=#prizeAccount#, frozenaccount=#frozenAccount# where UserId=#userId#
+    </update>
+    <!-- 更新 otheraccount1 字段作为积分使用-->
+    <update id="updateUserPoints" parameterClass="useraccount"> 
+    	update useraccount set otheraccount1=#otherAccount1# where UserId=#userId#
+    </update>
+
+    <!--修改用户手机绑定状态-->
+    <update id="setBindMobileFlag" parameterClass="java.util.Map">
+    	update useraccount set bindmobileflag=#bindMobileFlag#, userlevel=#userLevel# where userid=#userId#
+    </update>
+
+	<!-- 用户登录 -->
+	<select id="getUserForLogon" parameterClass="java.util.Map" resultClass="useraccount">
+		select userid, loginname, mobilephone, bindmobileflag, areacode, userlevel, status, nickname, password, phone, email, bindemailflag, 
+			relationsales, relationuser, fundsaccount, prizeaccount, frozenaccount, commisionaccount, advanceaccount, awardaccount, 
+			otheraccount1, otheraccount2, realname, idcard, bankname, bankcardid, address, postcode, qq, msn, sex, birthday, 
+			lastlogintime, lastloginip, createtime, reserve from useraccount 
+		where (loginname=#loginName# or mobilephone=#mobilePhone# or email=#email#) and password=#password#
+	</select>
+
+	<!-- 更新用户登录信息 -->
+	<update id="updateUserLoginInfo" parameterClass="java.util.Map">
+		update useraccount set lastloginip = #lastLoginIp#, lastLoginTime = now() where userId = #userId:NUMERIC#
+	</update>
+
+   <!-- 更新用户信息  -->
+   <update id="updateUserdetailInfo" parameterClass="useraccount">
+   		update useraccount set nickName =#nickName# ,email=#email#,realname=#realName#,idcard=#idCard#,address=#address# where userid=#userId#
+   </update>
+   <!-- wap更新用户信息 -->
+   <update id="updateUserInfo" parameterClass="useraccount">
+   		update useraccount set userid=#userId#
+   		<isNotEmpty property="nickName" prepend=",">
+   			nickName =#nickName#
+   		</isNotEmpty>
+   		<isNotEmpty property="realName" prepend=",">
+   			realname=#realName#
+   		</isNotEmpty>
+   		<isNotEmpty property="email" prepend=",">
+   			email=#email#
+   		</isNotEmpty>
+   		<isNotEmpty property="idCard" prepend=",">
+   			idcard=#idCard#
+   		</isNotEmpty>
+   		<isNotEmpty property="address" prepend=",">
+   			address =#address#
+   		</isNotEmpty>
+   		<isNotEmpty property="phone" prepend=",">
+   			phone =#phone#
+   		</isNotEmpty>
+   		<isNotEmpty property="bankName" prepend=",">
+   			bankname =#bankName#
+   		</isNotEmpty>
+   		<isNotEmpty property="bankCardId" prepend=",">
+   			bankcardid =#bankCardId#
+   		</isNotEmpty>
+   		<isNotEmpty property="postcode" prepend=",">
+   			postcode =#postcode#
+   		</isNotEmpty>
+   		<isNotEmpty property="qq" prepend=",">
+   			qq =#qq#
+   		</isNotEmpty>
+   		<isNotEmpty property="msn" prepend=",">
+   			msn =#msn#
+   		</isNotEmpty>
+   		
+   		<isNotEqual property="sex" compareValue="-1" prepend=",">
+   			sex =#sex#
+   		</isNotEqual>
+   		
+   		<isNotEmpty property="birthday" prepend=",">
+   			birthday =#birthday#
+   		</isNotEmpty>
+   		<isNotEmpty property="reserve" prepend=",">
+   			reserve =#reserve#
+   		</isNotEmpty>
+   		<isNotEmpty property="password" prepend=",">
+   			password =#password#
+   		</isNotEmpty>
+   		where userid=#userId#
+   </update>
+   <!-- 修改基本信息-->
+   <update id="updateUserInfoBaise" parameterClass="useraccount">
+   		update useraccount set userid=#userId#
+   		<isNotEmpty property="address" prepend=",">
+   			address =#address#
+   		</isNotEmpty>
+   		<isNotEmpty property="mobilePhone" prepend=",">
+   			mobilePhone =#mobilePhone#
+		</isNotEmpty>   		
+   		<isNotEmpty property="qq" prepend=",">
+   			qq =#qq#
+   		</isNotEmpty>
+   		<isNotEqual property="sex" compareValue="-1" prepend=",">
+   			sex =#sex#
+   		</isNotEqual>
+   		where userid=#userId#
+   </update>
+   
+   
+   <!-- 用户绑定银行卡 -->
+   <update id="updateUserInfoBank" parameterClass="useraccount">
+   		update useraccount set userid=#userId#
+   		<isNotEmpty property="bankName" prepend=",">
+   			bankname =#bankName#
+   		</isNotEmpty>
+   		<isNotEmpty property="bankCardId" prepend=",">
+   			bankcardid =#bankCardId#
+   		</isNotEmpty>
+   		where userid=#userId#
+   </update>
+   <!-- 修改真实姓名，身份证号码-->
+   <update id="updateUserInfoID" parameterClass="useraccount">
+   		update useraccount set userid=#userId#
+   		<isNotEmpty property="realName" prepend=",">
+   			realname=#realName#
+   		</isNotEmpty>
+   		<isNotEmpty property="idCard" prepend=",">
+   			idcard=#idCard#
+   		</isNotEmpty>
+   		where userid=#userId#
+   </update>
+   <!-- 修改用户密码 -->
+   <update id="updateUserPasswordInfo" parameterClass="java.util.Map">
+   		update useraccount set password=#password# where userid=#userid#
+   </update>
+   
+   <insert id="insertPointsTrans" parameterClass="userPointsModel">
+   INSERT INTO userpoints (transtype,transsubtype,userid,transtime,betamount,pointsource1,pointsource2,points,remark,reserve)
+   VALUES (#transType#,#transSubType#,#userId#,now(),#betAmount#,#pointSource1#,#pointSource2#,#points#,#remark#,#reserve#)
+   <selectKey resultClass="java.lang.String" >    
+	      SELECT @@IDENTITY AS pointid    
+   </selectKey>
+   </insert>
+</sqlMap>

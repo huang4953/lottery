@@ -1,0 +1,423 @@
+######################################################
+# 操作日志相关参数
+######################################################
+
+#默认值
+default.type=OTHERTYPE
+default.level=INFO
+default.rank=NORMAL
+default.message=记录操作日志
+default.selfMsg=true
+default.isLog=true
+
+# 后台登录成功
+10001.type=BACKSAFETY
+10001.level=INFO
+10001.rank=NORMAL
+10001.selfMsg=false
+10001.message=登录成功！
+10001.isLog=true
+
+# 后台登录失败
+11001.type=BACKSAFETY
+11001.level=WARN
+11001.rank=NORMAL
+11001.selfMsg=false
+11001.message=登录失败，失败原因：{errorMessage}。
+11001.isLog=true
+
+# 后台退出
+10002.type=BACKSAFETY
+10002.level=INFO
+10002.rank=NORMAL
+10002.selfMsg=false
+10002.message=退出系统！
+10002.isLog=true
+
+# 后台用户信息修改成功
+10003.type=BACKSAFETY
+10003.level=INFO
+10003.rank=NECESSARY
+10003.selfMsg=false
+10003.message=用户信息已经修改
+10003.isLog=true
+
+# 后台用户信息修改失败
+11003.type=BACKSAFETY
+11003.level=WARN
+11003.rank=NECESSARY
+11003.selfMsg=false
+11003.message=用户信息修改失败，失败原因：{errorMessage}。
+11003.isLog=true
+
+# 后台用户密码重置成功
+10004.type=BACKSAFETY
+10004.level=INFO
+10004.rank=IMPORTANT
+10004.selfMsg=false
+10004.message=用户密码已经重置
+10004.isLog=true
+
+# 后台用户密码重置失败
+11004.type=BACKSAFETY
+11004.level=WARN
+11004.rank=IMPORTANT
+11004.selfMsg=false
+11004.message=用户密码重置失败，失败原因：{errorMessage}。
+11004.isLog=true
+
+# 彩民密码找回成功
+20001.type=FRONTSAFETY
+20001.level=INFO
+20001.rank=NECESSARY
+20001.selfMsg=false
+20001.message=彩民密码找回，密码已经重置。
+20001.isLog=true
+
+# 彩民密码找回失败
+21001.type=FRONTSAFETY
+21001.level=WARN
+21001.rank=NECESSARY
+21001.selfMsg=false
+21001.message=彩民密码找回失败，失败原因：{errorMessage}。
+21001.isLog=true
+
+# 彩民密码找回关联操作-发送邮件成功
+20002.type=FRONTSAFETY
+20002.level=INFO
+20002.rank=NECESSARY
+20002.selfMsg=false
+20002.message=彩民密码找回，邮件已经发送到 {email} 。
+20002.isLog=true
+
+# 彩民密码找回关联操作-发送邮件失败
+21002.type=FRONTSAFETY
+21002.level=WARN
+21002.rank=NECESSARY
+21002.selfMsg=false
+21002.message=彩民密码找回邮件发送到 {email} 时失败，失败原因：{errorMessage}。
+21002.isLog=true
+
+# 彩民密码修改成功
+20003.type=FRONTSAFETY
+20003.level=INFO
+20003.rank=NECESSARY
+20003.selfMsg=false
+20003.message=彩民密码修改成功！
+20003.isLog=true
+
+# 彩民密码修改失败
+21003.type=FRONTSAFETY
+21003.level=WARN
+21003.rank=NECESSARY
+21003.selfMsg=false
+21003.message=彩民密码修改失败，失败原因：{errorMessage}。
+21003.isLog=true
+
+# 彩民账户信息修改成功
+20004.type=FRONTSAFETY
+20004.level=INFO
+20004.rank=NECESSARY
+20004.selfMsg=false
+20004.message=彩民账户信息修改成功！
+20004.isLog=true
+
+# 彩民账户信息修改失败
+21004.type=FRONTSAFETY
+21004.level=WARN
+21004.rank=NECESSARY
+21004.selfMsg=false
+21004.message=彩民账户信息修改失败，失败原因：{errorMessage}。
+21004.isLog=true
+
+# 开奖操作成功
+40001.type=PROCESSOR
+40001.level=INFO
+40001.rank=URGENT
+40001.selfMsg=false
+40001.message=开奖成功！
+40001.isLog=true
+
+# 开奖操作失败
+41001.type=PROCESSOR
+41001.level=ERROR
+41001.rank=URGENT
+41001.selfMsg=false
+41001.message=开奖失败，失败原因：{errorMessage}。
+41001.isLog=true
+
+
+# 足彩赛事信息修改成功
+40002.type=PROCESSOR
+40002.level=INFO
+40002.rank=URGENT
+40002.selfMsg=false
+40002.message=足彩赛事信息修改成功！
+40002.isLog=true
+
+# 足彩赛事信息修改失败
+41002.type=PROCESSOR
+41002.level=ERROR
+41002.rank=URGENT
+41002.selfMsg=false
+41002.message=足彩赛事信息修改失败，失败原因：{errorMessage}。
+41002.isLog=true
+
+
+# 限号信息修改成功
+40003.type=PROCESSOR
+40003.level=INFO
+40003.rank=URGENT
+40003.selfMsg=false
+40003.message=限号信息修改成功！原“{old}”更改为“{new}”。
+40003.isLog=true
+
+# 限号信息修改失败
+41003.type=PROCESSOR
+41003.level=ERROR
+41003.rank=URGENT
+41003.selfMsg=false
+41003.message=限号信息将“{old}”更改为“{new}”时失败，失败原因：{errorMessage}。
+41003.isLog=true
+
+# 兑奖开始
+40004.type=PROCESSOR
+40004.level=INFO
+40004.rank=URGENT
+40004.selfMsg=false
+40004.message=兑奖开始！
+40004.isLog=true
+
+# 兑奖单个失败
+41004.type=PROCESSOR
+41004.level=WARN
+41004.rank=IMPORTANT
+41004.selfMsg=false
+41004.message=彩民编号为 {userId} 的订单（{orderId}）兑奖时出现错误导致该订单兑奖失败，失败原因：{errorMessage}。
+41004.isLog=true
+
+# 兑奖成功结束
+40005.type=PROCESSOR
+40005.level=INFO
+40005.rank=URGENT
+40005.selfMsg=false
+40005.message=兑奖成功结束！
+40005.isLog=true
+
+# 兑奖失败结束，过程没有完成
+41005.type=PROCESSOR
+41005.level=ERROR
+41005.rank=URGENT
+41005.selfMsg=false
+41005.message=兑奖过程没有完成，兑奖失败，失败原因：{errorMessage}。
+41005.isLog=true
+
+# 兑奖关联操作成功-更新彩期状态
+40006.type=PROCESSOR
+40006.level=INFO
+40006.rank=URGENT
+40006.selfMsg=false
+40006.message=兑奖完成，彩期状态更新成功！
+40006.isLog=true
+
+# 兑奖关联操作失败-更新彩期状态
+41006.type=PROCESSOR
+41006.level=ERROR
+41006.rank=URGENT
+41006.selfMsg=false
+41006.message=兑奖完成，彩期状态更新失败，失败原因：{errorMessage}。
+41006.isLog=true
+
+# 追号处理开始
+40007.type=PROCESSOR
+40007.level=INFO
+40007.rank=URGENT
+40007.selfMsg=false
+40007.message=开始处理追号订单！
+40007.isLog=true
+
+# 追号处理中单个失败
+41007.type=PROCESSOR
+41007.level=WARN
+41007.rank=IMPORTANT
+41007.selfMsg=false
+41007.message=彩民编号为 {userId} 的追号订单（{orderId}）追号处理时出现错误，失败原因：{errorMessage}。
+41007.isLog=true
+
+# 追号处理成功结束
+40008.type=PROCESSOR
+40008.level=INFO
+40008.rank=URGENT
+40008.selfMsg=false
+40008.message=追号订单处理过程成功结束！
+40008.isLog=true
+
+# 追号处理结束，过程没有完成
+41008.type=PROCESSOR
+41008.level=ERROR
+41008.rank=URGENT
+41008.selfMsg=false
+41008.message=追号订单处理过程没有完成，追号处理失败，失败原因：{errorMessage}。
+41008.isLog=true
+
+# 开奖公告群发数据生成
+40020.type=PROCESSOR
+40020.level=INFO
+40020.rank=IMPORTANT
+40020.selfMsg=false
+40020.message={date} 开奖公告群发数据，任务编号为 {taskId} 的任务准备开始生成！
+40020.isLog=true
+
+# 开奖公告群发数据生成单个失败
+41020.type=PROCESSOR
+41020.level=ERROR
+41020.rank=IMPORTANT
+41020.selfMsg=false
+41020.message=为彩民编号为{userId} 电话号码为{mobilePhone}的用户生成开奖公告群发数据时失败，失败原因：{errorMessage}。
+41020.isLog=true
+
+# 开奖公告群发数据生成成功结束
+40021.type=PROCESSOR
+40021.level=INFO
+40021.rank=IMPORTANT
+40021.selfMsg=false
+40021.message={date}开奖公告群发数据，任务编号为{taskId}的任务数据生成过程结束！
+40021.isLog=true
+
+# 开奖公告群发数据生成失败结束，过程没有完成
+41021.type=PROCESSOR
+41021.level=ERROR
+41021.rank=IMPORTANT
+41021.selfMsg=false
+41021.message={date}开奖公告群发数据，任务编号为{taskId}的任务数据生成过程未能完成而失败，失败原因：{errorMessage}。
+41021.isLog=true
+
+# 开奖公告群发数据生成关联操作成功-生成任务信息
+40022.type=PROCESSOR
+40022.level=INFO
+40022.rank=IMPORTANT
+40022.selfMsg=false
+40022.message={date}开奖公告群发任务编号为{taskId}的任务信息成功生成！
+40022.isLog=true
+
+# 开奖公告群发数据生成关联操作失败-生成任务信息
+41022.type=PROCESSOR
+41022.level=ERROR
+41022.rank=IMPORTANT
+41022.selfMsg=false
+41022.message={date}开奖公告群发任务编号为{taskId}的任务信息生成失败，失败原因：{errorMessage}。
+41022.isLog=true
+
+# 中奖通知群发数据生成
+40023.type=PROCESSOR
+40023.level=INFO
+40023.rank=IMPORTANT
+40023.selfMsg=false
+40023.message=中奖通知群发数据生成开始，任务编号为{taskId}的任务数据准备生成！
+40023.isLog=true
+
+# 中奖通知群发数据生成单个失败
+41023.type=PROCESSOR
+41023.level=ERROR
+41023.rank=IMPORTANT
+41023.selfMsg=false
+41023.message=生成彩民编号为 {userId} 的订单（{orderId}）中奖通知群发数据时出现错误，失败原因：{errorMessage}。
+41023.isLog=true
+
+# 中奖通知群发数据生成成功结束
+40024.type=PROCESSOR
+40024.level=INFO
+40024.rank=IMPORTANT
+40024.selfMsg=false
+40024.message=中奖通知群发数据，任务编号为{taskId}的任务群发数据生成完毕！
+40024.isLog=true
+
+# 中奖通知群发数据生成失败结束，过程没有完成
+41024.type=PROCESSOR
+41024.level=ERROR
+41024.rank=IMPORTANT
+41024.selfMsg=false
+41024.message=中奖通知群发数据，任务编号为{taskId}的任务群发数据生成过程未能完成而失败，失败原因：{errorMessage}。
+41024.isLog=true
+
+# 中奖通知群发数据生成关联操作成功-生成任务信息
+40025.type=PROCESSOR
+40025.level=INFO
+40025.rank=IMPORTANT
+40025.selfMsg=false
+40025.message=中奖通知群发数据，任务编号为{taskId}的任务信息生成成功！
+40025.isLog=true
+
+# 中奖通知群发数据生成关联操作失败-生成任务信息
+41025.type=PROCESSOR
+41025.level=ERROR
+41025.rank=IMPORTANT
+41025.selfMsg=false
+41025.message=中奖通知群发数据，任务编号为{taskId}的任务信息生成失败，失败原因：{errorMessage}。
+41025.isLog=true
+
+# 开奖公告走势分析静态页面生成成功
+40030.type=PROCESSOR
+40030.level=INFO
+40030.rank=IMPORTANT
+40030.selfMsg=false
+40030.message={pageName}静态页面文件{pageFile}生成成功！
+40030.isLog=true
+
+# 开奖公告走势分析静态页面生成失败
+41030.type=PROCESSOR
+41030.level=ERROR
+41030.rank=IMPORTANT
+41030.selfMsg=false
+41030.message={pageName}静态页面文件{pageFile}生成失败，失败原因：{errorMessage}。
+41030.isLog=true
+
+
+# 统计报表中奖统计数据生成成功
+40040.type=PROCESSOR
+40040.level=INFO
+40040.rank=IMPORTANT
+40040.selfMsg=false
+40040.message=统计报表-中奖统计数据生成成功！
+40040.isLog=true
+
+# 统计报表中奖统计数据生成失败
+41040.type=PROCESSOR
+41040.level=ERROR
+41040.rank=IMPORTANT
+41040.selfMsg=false
+41040.message=统计报表-中奖统计数据生成失败，失败原因：{errorMessage}。
+41040.isLog=true
+
+# 统计报表账户统计数据生成成功
+40041.type=PROCESSOR
+40041.level=INFO
+40041.rank=IMPORTANT
+40041.selfMsg=false
+40041.message=统计报表-账户统计数据（{reportBeginTime} — {reportEndTime}）生成成功！
+40041.isLog=true
+
+# 统计报表账户统计数据生成失败
+41041.type=PROCESSOR
+41041.level=ERROR
+41041.rank=IMPORTANT
+41041.selfMsg=false
+41041.message=统计报表-账户统计数据（{reportBeginTime} — {reportEndTime}）生成失败，失败原因：{errorMessage}。
+41041.isLog=true
+
+#期结时处理合买方案成功
+40042.type=PROCESSOR
+40042.level=INFO
+40042.rank=IMPORTANT
+40042.selfMsg=false
+40042.message=合买系统处理-（{totalNum} — {successNum}）处理完成！
+40042.isLog=true
+
+#期结时处理合买方案失败
+41042.type=PROCESSOR
+41042.level=ERROR
+41042.rank=IMPORTANT
+41042.selfMsg=false
+41042.message=合买系统处理-（{planId}）处理失败，失败原因：{errorMessage}。
+41042.isLog=true
+

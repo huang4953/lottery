@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap         
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"         
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="drawMoney">
+	<typeAlias alias="drawMoneyDomain" type="com.success.lottery.account.model.DrawMoneyDomain" />
+	<typeAlias alias="userAdjustAccount" type="com.success.lottery.account.model.UserAccountModel"/> 
+	
+	<resultMap class="drawMoneyDomain" id="drawMoneyDomainResult">
+		<result property="drawid" column="drawid" />
+		<result property="userid" column="userid" />
+		<result property="bank" column="bank" />
+		<result property="bankprovince" column="bankprovince" />
+		<result property="bankcity" column="bankcity" />
+		<result property="bankname" column="bankname" />
+		<result property="bankcardid" column="bankcardid" />
+		<result property="cardusername" column="cardusername" />
+		<result property="procedurefee" column="procedurefee" />
+		<result property="drawstatus" column="drawstatus" />
+		<result property="drawmoney" column="drawmoney" />
+		<result property="submittime" column="submittime" />
+		<result property="drawreason" column="drawreason" />
+		<result property="dealtime" column="dealtime" />
+		<result property="dealreason" column="dealreason" />
+		<result property="drawtype" column="drawtype" />
+		<result property="opuser" column="opuser" />
+		<result property="operatetype" column="operatetype" />
+		<result property="operatesequence" column="operatesequence" />
+		<result property="source" column="source" />
+		<result property="sourcesequence" column="sourcesequence" />
+		<result property="reserve" column="reserve" />
+	</resultMap>
+	
+	<insert id="insertDrawMoney" parameterClass="drawMoneyDomain">
+	INSERT INTO drawmoney (drawid,userid,bank,bankprovince,bankcity,bankname,bankcardid,cardusername,procedurefee,
+	drawstatus,drawmoney,submittime,drawreason,drawtype,operatetype,operatesequence,opuser,source,sourcesequence)
+	VALUES (#drawid#,#userid#,#bank#,#bankprovince#,#bankcity#,#bankname#,#bankcardid#,#cardusername#,#procedurefee#,
+	#drawstatus#,#drawmoney#,now(),#drawreason#,#drawtype#,#operatetype#,#operatesequence#,#opuser#,#source#,#sourcesequence#)
+	<selectKey resultClass="java.lang.String" keyProperty="drawid">
+		select drawid from drawmoney where drawid = #drawid#
+	</selectKey>
+	</insert>
+	
+	<update id="updateDrawMoney" parameterClass="drawMoneyDomain">
+		update drawmoney set drawstatus=#drawstatus#,dealreason =#dealreason#,dealtime=now(),reserve=#reserve#,opuser=#opuser#
+		where drawid=#drawid#
+	</update>
+	
+	<select id="queryInfoById" parameterClass="java.lang.String" resultMap="drawMoneyDomainResult">
+		select drawid,userid,bank,bankprovince,bankcity,bankname,bankcardid,cardusername,procedurefee,
+		drawstatus,drawmoney,submittime,drawreason,dealtime,dealreason,reserve,drawtype,opuser,operatetype,operatesequence,source,sourcesequence
+		from drawmoney
+		where drawid = #drawid#
+	</select>
+	
+	<select id="queryInfoByIdForUpdate" parameterClass="java.lang.String" resultMap="drawMoneyDomainResult">
+		select drawid,userid,bank,bankprovince,bankcity,bankname,bankcardid,cardusername,procedurefee,
+		drawstatus,drawmoney,submittime,drawreason,dealtime,dealreason,reserve,drawtype,opuser,operatetype,operatesequence,source,sourcesequence
+		from drawmoney
+		where drawid = #drawid# for update
+	</select>
+	
+	<select id="queryInfoByUserStatus" parameterClass="java.util.Map" resultMap="drawMoneyDomainResult">
+		select drawid,userid,bank,bankprovince,bankcity,bankname,bankcardid,cardusername,procedurefee,
+		drawstatus,drawmoney,submittime,drawreason,dealtime,dealreason,reserve,drawtype,opuser,operatetype,operatesequence,source,sourcesequence
+		from drawmoney
+		where userid = #userId#
+		<isNotEmpty property="drawType" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawType">
+				drawtype = #drawType[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="drawstatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawstatus">
+				drawstatus = #drawstatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryInfoByStatus" parameterClass="java.util.Map" resultMap="drawMoneyDomainResult">
+		select drawid,userid,bank,bankprovince,bankcity,bankname,bankcardid,cardusername,procedurefee,
+		drawstatus,drawmoney,submittime,drawreason,dealtime,dealreason,reserve,drawtype,opuser,operatetype,operatesequence,source,sourcesequence
+		from drawmoney
+		<isNotEmpty property="drawstatus" prepend="where ">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawstatus">
+				drawstatus = #drawstatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="drawType" prepend="and ">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawType">
+				drawtype = #drawType[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+	</select>
+	
+	<sql id="queryDrawWithUserInfoCondition" >
+		<isNotEmpty property="province" prepend="and">
+			dr.bankprovince like '%$province$%'
+		</isNotEmpty>
+		<isNotEmpty property="city" prepend="and">
+			dr.bankcity like '%$city$%'
+		</isNotEmpty>
+		<isNotEmpty property="accountId" prepend="and">
+			(usera.userid = #accountId# or usera.mobilePhone = #accountId# or usera.loginName = #accountId# or usera.email=#accountId#)
+		</isNotEmpty>
+		<isNotEmpty property="cardusername" prepend="and">
+			dr.cardusername like '%$cardusername$%'
+		</isNotEmpty>
+		<isNotEmpty property="accountusername" prepend="and">
+			usera.realname like '%$accountusername$%'
+		</isNotEmpty>
+		<isNotEmpty property="beginTime" prepend="and">
+			dr.submittime <![CDATA[ >= ]]> #beginTime#
+		</isNotEmpty>
+		<isNotEmpty property="endTime" prepend="and">
+			dr.submittime <![CDATA[ < ]]> #endTime#
+		</isNotEmpty>
+		<isNotEmpty property="drawstatus" prepend="and ">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawstatus">
+				drawstatus = #drawstatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="drawType" prepend="and ">
+			drawtype = #drawType#
+		</isNotEmpty>
+		<isNotEmpty property="opUser" prepend="and ">
+			dr.opuser = #opUser#
+		</isNotEmpty>
+	</sql>
+	<select id="queryDrawWithUserInfo" parameterClass="java.util.Map" resultClass="drawMoneyDomain">
+		select drawid,dr.userid as userid,dr.bank as bank,dr.bankprovince as bankprovince,dr.bankcity as bankcity,dr.bankname as bankname,
+		dr.bankcardid as bankcardid,dr.cardusername as cardusername,dr.procedurefee as procedurefee,
+		dr.drawstatus as drawstatus,dr.drawmoney as drawmoney,submittime,drawreason,dealtime,dealreason,dr.reserve as reserve,drawtype,dr.opuser as opuser,
+		dr.operatetype as operatetype,dr.operatesequence as operatetype,usera.mobilephone as userPhone,usera.realname as userRealName,source,sourcesequence
+		from  drawmoney as dr, useraccount as usera
+		where dr.userid = usera.userid
+		<include refid="drawMoney.queryDrawWithUserInfoCondition"/>
+		order by submittime  desc
+		<isEqual property="isLimit" compareValue="0" >
+			limit #startPageNumber#, #endPageNumber#
+		</isEqual>
+	</select>
+	<select id="queryDrawWithUserInfoCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) as totalNum 
+		from  drawmoney as dr, useraccount as usera
+		where dr.userid = usera.userid
+		<include refid="drawMoney.queryDrawWithUserInfoCondition"/>
+	</select>
+	
+	<select id="queryAdjustAccountUserInfo" parameterClass="java.util.Map" resultClass="userAdjustAccount">
+		select userId,mobilePhone,loginName,status,fundsAccount,prizeAccount,frozenAccount,realName,idCard,areaCode
+		from useraccount
+		where 1 = 1
+		<isNotEmpty property="accountId" prepend="and">
+			(userid = #accountId# or mobilePhone = #accountId# or loginName = #accountId# or email=#accountId#)
+		</isNotEmpty>
+		<isNotEmpty property="userName" prepend="and">
+			(realName like '%$userName$%')
+		</isNotEmpty>
+		<isNotEmpty property="areaCode" prepend="and">
+			(areaCode = #areaCode# )
+		</isNotEmpty>
+		limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="queryAdjustAccountUserCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) as totalNum from useraccount where 1 = 1
+		<isNotEmpty property="accountId" prepend="and">
+			(userid = #accountId# or mobilePhone = #accountId# or loginName = #accountId# or email=#accountId#)
+		</isNotEmpty>
+		<isNotEmpty property="userName" prepend="and">
+			(realName like '%$userName$%')
+		</isNotEmpty>
+		<isNotEmpty property="areaCode" prepend="and">
+			(areaCode = #areaCode# )
+		</isNotEmpty>
+	</select>
+	
+	<select id="getUserDrawMoney" parameterClass="java.util.Map" resultMap="drawMoneyDomainResult">
+		select drawid,userid,bank,bankprovince,bankcity,bankname,bankcardid,cardusername,procedurefee,
+		drawstatus,drawmoney,submittime,drawreason,dealtime,dealreason,reserve,drawtype,opuser,operatetype,operatesequence,source,sourcesequence
+		from drawmoney
+		WHERE userid = #userId# and drawtype = 0
+		<isNotEmpty property="startDate" prepend="and">
+			submittime <![CDATA[ >= ]]> #startDate#
+		</isNotEmpty>
+		<isNotEmpty property="endDate" prepend="and">
+			submittime <![CDATA[ <= ]]> #endDate#
+		</isNotEmpty>
+		<isNotEmpty property="drawStatus" prepend="and ">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawStatus">
+				drawstatus = #drawStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		order by submittime desc
+		limit #start#,#count#
+	</select>
+	
+	<select id="getUserDrawMoneyCount" parameterClass="java.util.Map" resultClass="drawMoneyDomain">
+		select drawstatus,count(*) as drawtype,COALESCE(sum(drawmoney),0) as userid
+		from drawmoney
+		where  userid = #userId# and drawtype = 0
+		<isNotEmpty property="startDate" prepend="and">
+			submittime <![CDATA[ >= ]]> #startDate#
+		</isNotEmpty>
+		<isNotEmpty property="endDate" prepend="and">
+			submittime <![CDATA[ <= ]]> #endDate#
+		</isNotEmpty>
+		<isNotEmpty property="drawStatus" prepend="and ">
+			<iterate open="(" close=")" conjunction="or"
+				property="drawStatus">
+				drawstatus = #drawStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		group by drawstatus
+	</select>
+	
+</sqlMap>

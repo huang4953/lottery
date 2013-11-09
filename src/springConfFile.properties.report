@@ -1,0 +1,3 @@
+com/success/lottery/report/applicationContext-dataSource.xml=1
+com/success/lottery/report/applicationContext-report.xml=1
+com/success/lottery/report/applicationContext-sqlmap.xml=1

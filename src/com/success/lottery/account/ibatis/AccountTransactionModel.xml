@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+  
+<!DOCTYPE sqlMap         
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"         
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="AccountTransaction">
+	<typeAlias alias="account" type="com.success.lottery.account.model.AccountTransactionModel"/>  
+  
+    <resultMap class="account" id="AccountTransactionModelResult">  
+        <result property="transactionId" column="TransactionId"/>    
+        <result property="userId" column="UserId"/>   
+        <result property="amount" column="Amount"/>   
+        <result property="transactionTime" column="TransactionTime"/>   
+        <result property="transactionType" column="TransactionType"/>   
+        <result property="fundsAccount" column="FundsAccount"/>   
+        <result property="prizeAccount" column="PrizeAccount"/>   
+        <result property="frozenAccount" column="FrozenAccount"/>   
+        <result property="commisionAccount" column="CommisionAccount"/>   
+        <result property="advanceAccount" column="AdvanceAccount"/>   
+        <result property="awardAccount" column="AwardAccount"/>   
+        <result property="otherAccount1" column="OtherAccount1"/>   
+        <result property="otherAccount2" column="OtherAccount2"/>   
+        <result property="sourceType" column="SourceType"/>   
+        <result property="sourceSequence" column="SourceSequence"/>   
+        <result property="reserve" column="Reserve"/>     
+    </resultMap>  
+       
+    <!-- query all account -->  
+    <select id="selectAllAccountTRN" resultMap="AccountTransactionModelResult">  
+        <![CDATA[select * from accounttransaction   ]]>
+        
+        <dynamic prepend=" WHERE ">  
+	        <isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+        
+        <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic> 
+    </select> 
+    <!--查询所有交易数--> 
+    <select id="selectAllAccountTRNCount" resultClass="int">  
+        <![CDATA[select count(TransactionId) from accounttransaction ]]>  
+        <dynamic prepend=" WHERE ">  
+	        <isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+    </select>
+    
+    <!--query all account by user-->
+    <select id="selectAllAccountByUser" resultMap="AccountTransactionModelResult">  
+        <![CDATA[select TransactionId,UserId,Amount,TransactionTime,TransactionType,FundsAccount,PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,
+        OtherAccount1,OtherAccount2,SourceType,SourceSequence,Reserve from accounttransaction]]>
+        <dynamic prepend=" WHERE "> 
+        	<isPropertyAvailable property="userId">
+        		 <isNotNull property="userId" prepend=" and ">  
+        			<![CDATA[
+        				UserId=#userId# 
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	        <isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+	    <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic> 
+    </select>
+    <!--根据用户查交易记录条数-->
+    <select id="selectAllAccountByUserCount" resultClass="int">
+    	<![CDATA[select   count(TransactionId)   from accounttransaction ]]> 
+    	<dynamic prepend=" WHERE ">  
+    		<isPropertyAvailable property="userId">
+        		 <isNotNull property="userId" prepend=" and ">  
+        			<![CDATA[
+        				UserId=#userId# 
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	        <isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+    </select>
+    <!--根据用户查交易记录并翻页-->
+    <select id="selectAllAccountByUserpage" resultMap="AccountTransactionModelResult">
+    	<![CDATA[  
+        	select   TransactionId,UserId,Amount,TransactionTime,TransactionType,FundsAccount,PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,
+        OtherAccount1,OtherAccount2,SourceType,SourceSequence,Reserve   from accounttransaction
+        ]]> 
+        <dynamic prepend=" WHERE ">
+        	<isPropertyAvailable property="userId">
+        		 <isNotNull property="userId" prepend=" and ">  
+        			UserId=#userId#
+        		</isNotNull> 
+        	</isPropertyAvailable>  
+        	<isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        </dynamic>
+    	<dynamic prepend=" order by ">  
+        	$TransactionTime desc$
+	    </dynamic>  
+	  
+	    <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic>  
+    	
+    </select>
+    <!--一定时间范围内的交易记录总数-->
+    
+    <select id="selectAllAccountByUserpageCount" resultClass="int">
+    	<![CDATA[  
+        	select   count(*)   from accounttransaction 
+        ]]> 
+        <dynamic prepend=" WHERE ">  
+        	<isPropertyAvailable property="userId">
+        		 <isNotNull property="userId" prepend=" and ">  
+        			UserId=#userId#
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        </dynamic>
+    </select>
+    
+    <!--insert AccountTransaction 插入一条交易记录-->
+       
+    <insert id="addAccountTransaction" parameterClass="account">  
+        insert into accounttransaction(TransactionId,UserId,Amount,TransactionTime,TransactionType,FundsAccount,PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,
+        OtherAccount1,OtherAccount2,SourceType,SourceSequence,Reserve ) 
+        values(#transactionId#,#userId#,#amount#,#transactionTime#,#transactionType#,#fundsAccount#,#prizeAccount#,#frozenAccount#,#commisionAccount#,#advanceAccount#,#awardAccount#,
+        #otherAccount1#,#otherAccount2#,#sourceType#,#sourceSequence#,#reserve#)   
+        
+    </insert>
+    <!--modify AccountTransaction 修改一条交易记录-->
+    <update id="updateAccount" parameterClass="account">  
+        update accounttransaction set TransactionId=#transactionId#,UserId=#userId#,Amount=#amount#,TransactionTime=#transactionTime#,TransactionType=#transactionType#,
+        FundsAccount=#fundsAccount#,PrizeAccount=#prizeAccount#,FrozenAccount=#frozenAccount#,CommisionAccount=#commisionAccount#,AdvanceAccount=#advanceAccount#,AwardAccount=#awardAccount#,
+        OtherAccount1=#otherAccount1#,OtherAccount2=#otherAccount2#,SourceType=#sourceType#,SourceSequence=#sourceSequence#,Reserve=#reserve# where TransactionId=#transactionId#   
+    </update> 
+    <!--delete AccountTransaction 删除一条交易记录-->
+    <delete id="deleteaddAccount" parameterClass="String">  
+        delete from accounttransaction where TransactionId=#transactionId#   
+    </delete>
+    <!--根据用户id、TransactionType 交易类型、sourceType 交易渠道查交易记录-->
+    <select id="selectUserTransaction" resultMap="AccountTransactionModelResult">  
+        <![CDATA[select TransactionId,UserId,Amount,TransactionTime,TransactionType,FundsAccount,PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,
+        OtherAccount1,OtherAccount2,SourceType,SourceSequence,Reserve from accounttransaction]]>
+        <dynamic prepend=" WHERE "> 
+        	<isPropertyAvailable property="userId">
+        		 <isNotNull property="userId" prepend=" and ">  
+        			<![CDATA[
+        				UserId=#userId# 
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="transactionType">
+        		 <isNotEqual property="transactionType" prepend=" and "  compareValue="0">  
+        			<![CDATA[
+        				transactionType=#transactionType# 
+        			]]>
+        		</isNotEqual> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="sourceType">
+        		 <isNotEqual  property="sourceType" prepend=" and "  compareValue="0">  
+        			<![CDATA[
+        				sourceType=#sourceType# 
+        			]]>
+        		</isNotEqual> 
+        	</isPropertyAvailable>
+	        <isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+	    <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic> 
+    </select>
+    <!--根据用户id、TransactionType 交易类型、sourceType 交易渠道查交易记录数-->
+    <select id="selectUserTransactionCount" resultClass="int">
+    	<![CDATA[select   count(TransactionId)   from accounttransaction ]]> 
+    	<dynamic prepend=" WHERE ">  
+    		<isPropertyAvailable property="userId">
+        		 <isNotNull property="userId" prepend=" and ">  
+        			<![CDATA[
+        				UserId=#userId# 
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="transactionType">
+        		 <isNotEqual property="transactionType" prepend=" and "  compareValue="0">  
+        			<![CDATA[
+        				transactionType=#transactionType# 
+        			]]>
+        		</isNotEqual> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="sourceType">
+        		 <isNotEqual  property="sourceType" prepend=" and "  compareValue="0">  
+        			<![CDATA[
+        				sourceType=#sourceType# 
+        			]]>
+        		</isNotEqual> 
+        	</isPropertyAvailable>
+	        <isPropertyAvailable property="startTime">
+        		 <isNotNull property="startTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime>=#startTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+        	<isPropertyAvailable property="endTime">
+        		 <isNotNull property="endTime" prepend=" and ">  
+        			<![CDATA[
+        				TransactionTime<=#endTime#
+        			]]>
+        		</isNotNull> 
+        	</isPropertyAvailable>
+	    </dynamic> 
+    </select>
+    
+    <!-- 插入交易记录，在插入交易记录前，必须使用UserAccountModel.xml定义的getUserAccountInfoForUpdate取出最新余额并更新账户余额成功后 -->
+	<insert id="addTransactionInfo" parameterClass="account">  
+        insert into accounttransaction(TransactionId, UserId, Amount, transactiontime, TransactionType, FundsAccount, PrizeAccount, FrozenAccount, 
+        	CommisionAccount, AdvanceAccount, AwardAccount, OtherAccount1,OtherAccount2,SourceType,SourceSequence,remark,Reserve ) 
+        values(#transactionId#, #userId#, #amount#, now(), #transactionType#, #fundsAccount#, #prizeAccount#, #frozenAccount#, #commisionAccount#, 
+        	#advanceAccount#, #awardAccount#, #otherAccount1#, #otherAccount2#, #sourceType#, #sourceSequence#, #remark#, #reserve#)
+    </insert>  
+    
+    <sql id="getUserTransactiones_condition">
+    	<isNotEqual property="userId" compareValue="-1" prepend="and">
+			tra.userId = #userId#
+		</isNotEqual>
+		<isNotEmpty property="userIdentify" prepend="and">
+			(usr.userId=#userIdentify# or usr.loginname=#userIdentify# or usr.mobilephone=#userIdentify# or usr.email=#userIdentify# or usr.realname = #userIdentify#)
+		</isNotEmpty>
+		<isNotEmpty property="startDate" prepend="and">
+			<![CDATA[
+        		TransactionTime >= #startDate#
+        	]]>
+		</isNotEmpty>
+		<isNotEmpty property="endDate" prepend="and">
+			<![CDATA[
+        		TransactionTime <= #endDate#
+        	]]>
+		</isNotEmpty>
+		<isNotEmpty property="transcationType">
+			<isNotEqual property="transcationType" compareValue="-1" prepend="and">
+				transactionType = #transcationType#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="sourceType">
+			<isNotEqual property="sourceType" compareValue="-1" prepend="and">
+				SourceType = #sourceType#
+			</isNotEqual>
+		</isNotEmpty>
+    </sql>
+    <select id="getUserTransactiones" parameterClass="java.util.Map" resultClass="account">
+    	SELECT tra.transactionId AS transactionId,tra.userId AS userId,tra.amount AS amount,tra.transactionTime AS transactionTime,
+		tra.transactionType  AS	transactionType,tra.fundsAccount AS fundsAccount,tra.prizeAccount AS prizeAccount,
+		tra.frozenAccount  AS frozenAccount,tra.commisionAccount AS commisionAccount,tra.advanceAccount AS advanceAccount,
+		tra.awardAccount AS awardAccount,tra.otherAccount1 AS otherAccount1,tra.otherAccount2 AS otherAccount2,tra.sourceType AS sourceType,
+		tra.sourceSequence AS sourceSequence,tra.remark AS remark,tra.reserve AS reserve,tra.transactionTime AS transactionTime,
+		usr.loginName AS loginName,usr.mobilePhone AS mobilePhone,usr.realName AS realName
+		FROM accounttransaction AS tra,useraccount AS usr
+		WHERE tra.userId = usr.userId
+		<include refid="AccountTransaction.getUserTransactiones_condition"/>
+		order by transactionTime desc
+		limit #start#,#count#
+    </select>
+    
+    <select id="getUserTransactionesCount" parameterClass="java.util.Map" resultClass="account">
+    	SELECT transactionType,COUNT(*) AS userId,COALESCE(SUM(amount),0) AS amount
+    	FROM accounttransaction AS tra,useraccount AS usr
+    	WHERE tra.userId = usr.userId
+    	<include refid="AccountTransaction.getUserTransactiones_condition"/>
+    	group by transactionType
+    </select>
+    <!-- 根据 交易类型及SourceSequence查询 交易记录 -->
+    <select id="getUserTransactionBySourceSequence" parameterClass="java.util.Map" resultClass="account" >
+    	select TransactionId,UserId,Amount,TransactionTime,TransactionType,FundsAccount,PrizeAccount,FrozenAccount,CommisionAccount,AdvanceAccount,AwardAccount,
+        OtherAccount1,OtherAccount2,SourceType,SourceSequence,Reserve from accounttransaction where SourceSequence=#sourceSequence# and SourceType=#sourceType#
+    </select>
+</sqlMap>

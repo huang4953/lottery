@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="GBK" ?>  
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="ehandTerm">
+	<typeAlias alias="ehandTermModel" type="com.success.lottery.ehand.eterm.domain.EhandTermModel"/>
+	
+    <resultMap id="ehandTermModelResult" class="ehandTermModel" >  
+        <result property="lotteryId"         column="lotteryid"/>       
+        <result property="ehandLotteryId"    column="ehandlotteryid"/>           
+        <result property="issue"             column="issue"/>       
+        <result property="startTime"         column="starttime"/>       
+        <result property="endTime"           column="endtime"/>      
+        <result property="printStart"        column="printstart"/> 
+        <result property="printEnd"          column="printend"/>     
+        <result property="status"            column="status"/> 
+        <result property="bonuscode"         column="bonuscode"/>    
+        <result property="salemoney"         column="salemoney"/>   
+        <result property="bonusmoney"        column="bonusmoney"/> 
+        <result property="reserve"           column="reserve"/>   
+    </resultMap>
+    
+    <!-- 查询掌中奕彩期信息 -->
+    <select id="queryEhandTermInfo" parameterClass="ehandTermModel" resultMap="ehandTermModelResult">
+    	SELECT lotteryid,ehandlotteryid,issue,starttime,endtime,printstart,printend,status,bonuscode,salemoney,bonusmoney,reserve
+    	FROM ehandterm
+    	WHERE 1=1 and issue = #issue#
+    	<isGreaterThan property="lotteryId" compareValue="0"  prepend="and">
+			lotteryid = #lotteryId#
+		</isGreaterThan>
+		<isNotEmpty prepend="and" property="ehandLotteryId">
+     		ehandlotteryid = #ehandLotteryId#
+     	</isNotEmpty>
+    </select>
+    
+    <!-- 更新掌中奕彩期信息 -->
+    <update id="updateEhandTermInfo" parameterClass="ehandTermModel">
+    	UPDATE ehandterm SET lotteryid = lotteryid
+    	<isNotEmpty prepend="," property="startTime">
+     		starttime = #startTime#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="endTime">
+     		endtime = #endTime#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="printStart">
+     		printstart = #printStart#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="printEnd">
+     		printend = #printEnd#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="bonuscode">
+     		bonuscode = #bonuscode#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="salemoney">
+     		salemoney = #salemoney#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="bonusmoney">
+     		bonusmoney = #bonusmoney#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="," property="reserve">
+     		reserve = #reserve#
+     	</isNotEmpty>
+     	<isNotEqual prepend="," property="status" compareValue="-99">
+     		status = #status#
+     	</isNotEqual>
+    	WHERE 1=1 AND issue = #issue#
+    	<isGreaterThan property="lotteryId" compareValue="0"  prepend="and">
+			lotteryid = #lotteryId#
+		</isGreaterThan>
+		<isNotEmpty prepend="and" property="ehandLotteryId">
+     		ehandlotteryid = #ehandLotteryId#
+     	</isNotEmpty>
+    </update>
+</sqlMap>

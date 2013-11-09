@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans default-autowire="no" default-lazy-init="false" default-dependency-check="none">
+	<!-- SERVICE -->
+	
+	<bean id="lotteryBetTicketService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.ticket.service.interf.BetTicketServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.ticket.service.impl.BetTicketService">
+                <property name="betTicketDao">
+                  <ref bean="lotteryBetTicketDaoImpl"/>
+                </property>       
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="update*">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="insert*">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="queryBet*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED,readOnly,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+	
+  	<!--END SERVICE-->
+  	
+  	<!--DAO-->
+	<bean id="lotteryBetTicketDaoImpl" class="com.success.lottery.ticket.dao.impl.BetTicketDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientTicket"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

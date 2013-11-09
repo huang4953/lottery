@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.i18n.reload" value="true" />
+	<!--
+		修改资源文件后自动装载
+	-->
+	<constant name="struts.devMode" value="true" />
+	<!--
+		开发模式会有更多日志信息
+	-->
+	<constant name="struts.i18n.encoding" value="GBK" />
+	<constant name="struts.locale" value="zh_CN" />
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<!--
+		修改Struts配置文件后自动装载
+	-->
+	<!--
+		<constant name="struts.custom.i18n.resources"
+		value="ApplicationResources" />
+	--> <!--资源文件名 -->
+	<constant name="struts.serve.static" value="true" />
+	<!--
+		指明Struts的静态内容取法,true到jar包中拿,false到../struts路径中拿
+	-->
+	<constant name="struts.serve.static.browserCache" value="false" />
+	<constant name="struts.multipart.maxSize" value="2097152" />
+	<!--
+		文件上传大小
+	-->
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.action.extension" value="jhtml" />
+
+	<package name="default" extends="struts-default">
+		<interceptors>
+			<interceptor name="bindUrlInteceptor"
+				class="com.success.lottery.web.interceptor.BindUrlInteceptor"></interceptor>
+			<interceptor name="loginInteceptor"
+				class="com.success.lottery.web.interceptor.LoginInteceptor"></interceptor>
+			<interceptor-stack name="clientCompleteStack">
+				<interceptor-ref name="completeStack" />
+				<interceptor-ref name="bindUrlInteceptor" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="clientCompleteStack"></default-interceptor-ref>
+		<global-results>
+			<result name="unauthorized">/unauthorized.jsp</result>
+			<result name="failure">/failure.jsp</result>
+			<result name="gobalSuccess">/success.jsp</result>
+			<result name="ajaxjson">/util/ajaxJsonString.jsp</result>
+			<result name="thickBoxSuccess">/thickBoxSuccess.jsp</result>
+			<result name="ajaxNotLogin">/ajaxNotLogin.jsp</result>
+			<result name="login">/other/login.jsp</result>
+		</global-results>
+	</package>
+	<package name="customer" extends="default">
+		<action name="Jumplogin"  class="com.success.lottery.web.customer.action.ClientLoginAction" method="Jumplogin">
+			<result name="Jumplogin">/head.jsp</result>
+		</action>
+		<action name="showMoney"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="showMoney">
+		</action>
+		<action name="checkLogin"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="checkLogin">
+			<result name="loginin">/head.jsp</result>
+			<result name="loginout">/head.jsp</result>
+		</action>
+		<action name="remoreCustomer"
+			class="com.success.lottery.web.customer.action.ClientLoginAction" method="remoreCustomer">
+		</action>
+		<action name="newAjaxLogin"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="newAjaxLogin">
+		</action>
+		<action name="register"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="register">
+			<result>/other/register.jsp</result>
+		</action>
+		<action name="regsub"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="regsub">
+			<result name="input">/other/register.jsp</result>
+			<result name="validateEml">/other/reg_succ.jsp</result>
+		</action>
+		<action name="flgOnlylabeled"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="flgOnlylabeled">
+		</action>
+		<action name="getUName"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="getUName">
+		</action>
+		<action name="showHead" class="com.success.lottery.web.customer.action.ClientLoginAction" 
+		method="showHead" >
+			<result name="showHead">/loginHead.jsp</result>
+		</action>
+		<action name="login"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="login">
+			<result name="loginin">/loginIn.jsp</result>
+			<result name="loginout">/loginOut.jsp</result>
+		</action>
+		
+		<action name="loginform"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="login">
+			<result name="loginin">/other/login.jsp</result>
+			<result name="loginout">/customer/index.jsp</result>
+		</action>
+		<action name="ajaxLogin"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="ajaxLogin">
+		</action>
+		<action name="loginOut"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="loginout">
+		</action>
+		<action name="outLogin"
+			class="com.success.lottery.web.customer.action.ClientLoginAction"
+			method="outLogin">
+			<result name="index">/index.jsp</result>
+		</action>
+		<!-- 用户找回密码开始 -->
+		<action name="findBackPassword" class="com.success.lottery.web.customer.action.FBPasswordAction" method="findBackPassword">
+    		<result name="findBackPassword">/other/fbpassword.jsp</result>
+    	</action>
+    	<action name="findPassword" class="com.success.lottery.web.customer.action.FBPasswordAction" method="findPassword">
+    		<result name="input">/other/fbpassword.jsp</result>
+    	</action>
+		<!-- 用户找回密码结束 -->
+	</package>
+	<package name="customer_center" extends="default">
+		<interceptors>
+			<interceptor-stack name="customer_default_interceptor">
+				<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+				<interceptor-ref name="loginInteceptor"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="customer_default_interceptor"></default-interceptor-ref>
+		<action name="orderDetails" class="com.success.lottery.web.customer.action.CustomerBetCenterAction" method="getXq">
+			<result>/customer/xq.jsp</result>
+		</action>
+		<action name="userindex"
+			class="com.success.lottery.web.customer.action.ClientLoginAction" method="index">
+			<result name="index">/customer/index.jsp</result>
+			<result name="loginout">/other/login.jsp</result>
+		</action>
+		<action name="getMoney" class="com.success.lottery.web.customer.action.ClientLoginAction" method="getMoney">
+		</action>
+		<action name="judgmentLogin"
+			class="com.success.lottery.web.customer.action.ClientLoginAction" method="judgmentLogin">
+		</action>
+		<action name="userMoney"
+			class="com.success.lottery.web.customer.action.ClientLoginAction" method="userMoney">
+			<result name="userMoney">/customer/capital_management/account_ca.jsp</result>
+		</action>
+		<action name="chaseCenter"
+			class="com.success.lottery.web.customer.action.CustomerBetCenterAction"
+			method="getZh">
+			<result>/customer/user_lottery/user_bl_chase.jsp</result>
+		</action>
+		<action name="stopChase"
+			class="com.success.lottery.web.customer.action.CustomerBetCenterAction"
+			method="stopzh"><result>/customer/user_lottery/user_bl_chase.jsp</result>
+		</action>
+		<action name="betCenter"
+			class="com.success.lottery.web.customer.action.CustomerBetCenterAction"
+			method="getdg">
+			<result>/customer/capital_management/transaction_buy.jsp</result>
+		</action>
+		<action name="details"
+			class="com.success.lottery.web.customer.action.CustomerAccount"
+			method="details">
+			<result>/customer/capital_management/transaction_details.jsp</result>
+		</action>
+		<action name="recharge"
+			class="com.success.lottery.web.customer.action.CustomerAccount"
+			method="recharge">
+			<result>/customer/capital_management/transaction_record.jsp</result>
+		</action>
+		<action name="prize"
+			class="com.success.lottery.web.customer.action.CustomerAccount"
+			method="prize">
+			<result>/customer/capital_management/transaction_send.jsp</result>
+		</action>
+		<action name="withdraw"
+			class="com.success.lottery.web.customer.action.CustomerAccount"
+			method="withdraw">
+			<result>/customer/capital_management/taransaction_w_record.jsp</result>
+		</action>
+		<!-- 我发起的合买 -->
+		<action name="initiatedChipped"
+			class="com.success.lottery.web.customer.action.CustomerAccount"
+			method="initiatedChipped">
+			<result>/customer/user_lottery/user_bl_together.jsp</result>
+		</action>
+        <!-- 我参与的合买 -->
+        <action name="participatingChipped"
+			class="com.success.lottery.web.customer.action.CustomerAccount"
+			method="participatingChipped">
+			<result>/customer/user_lottery/user_bl_otherbuy.jsp</result>
+		</action>
+        
+		<!-- 环迅充值开始 -->
+		<action name="wycz"
+			class="com.success.lottery.web.customer.action.IPSOdersAction" method="wycz">
+			<result name="success">/customer/wycz.jsp</result>
+		</action>
+		<action name="ipsorderadd"
+			class="com.success.lottery.web.customer.action.IPSOdersAction" method="addIPSOrder">
+		</action>
+		<action name="ipsorderpay"
+			class="com.success.lottery.web.customer.action.IPSOdersAction" method="IPSPayMoney">
+			<result name="pagMoney">/customer/redirect.jsp</result>
+		</action>
+		<action name="ipsorderpaysuccess"
+			class="com.success.lottery.web.customer.action.IPSOdersAction" method="paySuccess">
+			<result name="success">/customer/paysuccess.jsp</result>
+			<result name="fail">/customer/payfail.jsp</result>
+		</action>
+
+		<action name="ipsorderpayfail"
+			class="com.success.lottery.web.customer.action.IPSOdersAction" method="payFail">
+			<result name="pagMoney">/customer/payfail.jsp</result>
+		</action>
+		<action name="ipsorderpayerror"
+			class="com.success.lottery.web.customer.action.IPSOdersAction" method="payError">
+			<result name="pagMoney">/customer/payerror.jsp</result>
+		</action>
+		<!-- 环迅充值结束 -->
+		<!-- 快钱充值开始 -->
+		<action name="gobill" class="com.success.lottery.web.customer.action.BillOrderAction" method="gobill">
+			<result name="success">/customer/user_addmoney/user_chase.jsp</result>
+		</action>
+		<action name="billorderadd" class="com.success.lottery.web.customer.action.BillOrderAction" method="billorderadd">
+		</action>
+		<action name="sendBillPay" class="com.success.lottery.web.customer.action.BillOrderAction" method="BillPayMoney">
+		    <result name="success">/customer/billSent.jsp</result>
+		</action>
+		<action name="billReceive" class="com.success.lottery.web.customer.action.BillOrderAction" method="billReceive">
+			<result name="success">/customer/user_addmoney/user_chase_successful.jsp</result>
+			<result name="error">/customer/billError.jsp</result>
+			<result name="fail">/customer/billFail.jsp</result>
+		</action>
+		<!-- 快钱充值结束 -->
+		<!-- 彩民信息修改开始 -->
+		<action name="grzl"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="updateUserInfoPage">
+			<result name="success">/customer/user_manager/user_info.jsp</result>
+		</action>
+
+		<action name="xgmm"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="updateUserInfoPage">
+			<result name="success">/customer/user_manager/user_save_pwd.jsp</result>
+		</action>
+		
+		<action name="goSafetyData"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="goSafetyData">
+			<result name="goSafetyData">/customer/user_manager/user_save.jsp</result>
+		</action>
+		<action name="useraccountupdatePwd"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="updatePwdUserAccount">
+		</action>
+		<action name="updateUserInfo"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="updateUserInfo">
+		</action>
+		<action name="updateUserInfoBaise"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="updateUserInfoBaise">
+		</action>
+		<action name="gobindingIdCard" class="com.success.lottery.web.customer.action.UserAccountAction"
+		method="gobindingIdCard">
+			<result name="gobindingIdCard">/customer/user_manager/user_id_binding.jsp</result>
+    		<result name="successBinding">/customer/user_manager/user_id-binding-successful.jsp</result>
+		</action>
+		<action name="updateUserInfoIdCard" class="com.success.lottery.web.customer.action.UserAccountAction"
+		method="updateUserInfoIdCard">
+			<result name="gobindingIdCard">/customer/user_manager/user_id_binding.jsp</result>
+    		<result name="successBinding">/customer/user_manager/user_id-binding-successful.jsp</result>
+		</action>
+		<action name="updateUserinforIdCardToBankCard" class="com.success.lottery.web.customer.action.UserAccountAction"
+		method="updateUserinforIdCardToBankCard">
+			<result name="gobindingIdCard">/customer/user_manager/user_bankcard.jsp</result>
+    		<result name="gobindingBankCard">/customer/user_manager/user_bandcard2.jsp</result>
+		</action>
+		<action name="gobindingBankCard" class="com.success.lottery.web.customer.action.UserAccountAction"
+		method="gobindingBankCard">
+			<result name="gobindingIdCard">/customer/user_manager/user_bankcard.jsp</result>
+			<result name="gobindingBankCard">/customer/user_manager/user_bandcard2.jsp</result>
+    		<result name="successBinding">/customer/user_manager/user_bankcard_succ.jsp</result>
+		</action>
+		<action name="udateBankCard" class="com.success.lottery.web.customer.action.UserAccountAction"
+		method="udateBankCard">
+			<result name="gobindingBankCard">/customer/user_manager/user_bandcard2.jsp</result>
+    		<result name="successBinding">/customer/user_manager/user_bankcard_succ.jsp</result>
+		</action>
+		<action name="flgEml"
+			class="com.success.lottery.web.customer.action.UserAccountAction"
+			method="flgEml">
+		</action>
+		<!-- 彩民信息修改密码修改结束 -->
+
+		<!-- 彩民提现开始 -->
+		<action name="withdrawal" class="com.success.lottery.web.customer.action.WithdrawalAction" method="withdrawal">
+    		<result name="withdrawalSuccess">/customer/user_addmoney/user_extracts_cash.jsp</result>
+    		<result name="withdrawal">/customer/user_addmoney/user_extracts_cash.jsp</result>
+    	</action>
+
+    	<action name="withdrawalFailed" class="com.success.lottery.web.customer.action.WithdrawalAction" method="withdrawalFailed">
+    		<result name="withdrawalFailed">/customer/updateUserInfo.jsp</result>
+    	</action>
+
+    	<action name="withdrawalAdd" class="com.success.lottery.web.customer.action.WithdrawalAction" method="withdrawalAdd">
+    		<result name="withdrawalAddSuccess">/customer/user_addmoney/user_extracts_cashsuccessful.jsp</result>
+    		<result name="withdrawalAddFailed">/customer/user_addmoney/Copy of user_extracts_cashFail.jsp</result>
+    		<result name="input">/customer/user_addmoney/user_extracts_cash.jsp</result>
+    	</action>
+    	<action name="withdrawalConfirm" class="com.success.lottery.web.customer.action.WithdrawalAction" method="withdrawalConfirm">
+    		<result name="withdrawalConfirm">/customer/user_addmoney/user_extracts_cash_ms.jsp</result>
+    	</action>
+		<!-- 彩民提现结束 -->
+	</package>
+	<package name="trade" extends="default">
+		<action name="*lotteryindex"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="{1}">
+			<param name="type">{1}</param>
+			<result>/trade/${type}/${type}.jsp</result>
+		</action>
+		
+		<action name="dltGoAttend"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="dltGoAttend">
+			<result>/trade/dlt/dlt_hemai.jsp</result>
+		</action>
+		<action name="*raceindex"
+			class="com.success.lottery.web.trade.action.RacePageAction" method="{1}">
+			<param name="type">{1}</param>
+			<result>/trade/race/${type}.jsp</result>
+		</action>
+		<action name="drawindex"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="index">
+			<result>/drawlottery/newPage/index.jsp</result>
+		</action>
+		<action name="*drawlist"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="list">
+			<result>/drawlottery/{1}/list.jsp</result>
+		</action>
+		<action name="dlclist"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="syxw">
+			<result>/drawlottery/dlc/list.jsp</result>
+		</action>
+		<!-- <action name="*drawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="detail">
+			<result>/drawlottery/{1}/detail.jsp</result>
+		</action>
+		 -->
+		 <action name="zc6drawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="zc6drawdetail">
+			<result>/drawlottery/newPage/zc6.jsp</result>
+		</action>
+		 <action name="dltdrawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="dltdrawdetail">
+			<result>/drawlottery/newPage/dlt.jsp</result>
+		</action>
+		<action name="jq4drawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="jq4drawdetail">
+			<result>/drawlottery/newPage/jq4.jsp</result>
+		</action>
+		 <action name="qxcdrawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="qxcdrawdetail">
+			<result>/drawlottery/newPage/qxc.jsp</result>
+		</action>
+		<action name="dlcdrawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="dlcdrawdetail">
+			<result>/drawlottery/newPage/dlc.jsp</result>
+		</action>
+		 <action name="plsdrawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="plsdrawdetail">
+			<result>/drawlottery/newPage/pls.jsp</result>
+		</action>
+		 <action name="plwdrawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="plwdrawdetail">
+			<result>/drawlottery/newPage/plw.jsp</result>
+		</action>
+		 <action name="sfcdrawdetail"
+			class="com.success.lottery.web.trade.action.DrawLotteryAction" method="sfcdrawdetail">
+			<result>/drawlottery/newPage/sfc.jsp</result>
+		</action>
+		<action name="*direction"
+			class="com.success.lottery.web.trade.action.LotteryDirectionAction"
+			method="{1}">
+			<param name="type">{1}</param>
+			<result>/direction/directionJsp/${type}.jsp</result>
+		</action>
+
+
+		<action name="*lotteryPage"
+			class="com.success.lottery.web.trade.action.LotteryPageAction">
+			<param name="type">{1}</param>
+			<result>/trade/${type}/${type}.jsp</result>
+		</action>
+		<action name="dltChinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="dltChinppedtube">
+			<result>/trade/buytogether/dlt.jsp</result>
+		</action>
+		<action name="qxcChinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="qxcChinppedtube">
+			<result>/trade/buytogether/qxc.jsp</result>
+		</action>
+		<action name="plsChinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="plsChinppedtube">
+			<result>/trade/buytogether/pls.jsp</result>
+		</action>
+		<action name="plwChinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="plwChinppedtube">
+			<result>/trade/buytogether/plw.jsp</result>
+		</action>
+		<action name="rjChinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="rjChinppedtube">
+			<result>/trade/buytogether/rj.jsp</result>
+		</action>
+		<action name="rsChinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="rsChinppedtube">
+			<result>/trade/buytogether/rs.jsp</result>
+		</action>
+		<action name="zc6Chinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="zc6Chinppedtube">
+			<result>/trade/buytogether/zc6.jsp</result>
+		</action>
+		<action name="jq4Chinppedtube"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="jq4Chinppedtube">
+			<result>/trade/buytogether/jq4.jsp</result>
+		</action>
+		<action name="ogetherDetails"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="ogetherDetails">
+			<result name="ogetherDetails">/customer/user_lottery/user_bl_together_details.jsp</result>
+		</action>
+		<action name="ogetherDatailsList"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="ogetherDatailsList">
+			<result name="ogetherDatailsList">/customer/user_lottery/user_bl_togeterh_details_list.jsp</result>
+		</action>
+		<action name="ogetherDatailsMyList"
+			class="com.success.lottery.web.trade.action.LotteryPageAction" method="ogetherDatailsMyList">
+			<result name="ogetherDatailsMyList">/customer/user_lottery/ogetherDatailsMyList.jsp</result>
+		</action>
+		<action name="lotteryTrade"
+			class="com.success.lottery.web.trade.action.LotteryTradeAction">
+			<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+			<interceptor-ref name="loginInteceptor">
+				<param name="isAjax">true</param>
+			</interceptor-ref>
+		</action>
+		<action name="lotteryChase"
+			class="com.success.lottery.web.trade.action.LotteryTradeAction"
+			method="chase">
+			<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+			<interceptor-ref name="loginInteceptor">
+				<param name="isAjax">true</param>
+			</interceptor-ref>
+		</action>
+		<action name="revocateCreatePlan"
+			class="com.success.lottery.web.trade.action.LotteryTradeAction"
+			method="revocateCreatePlan">
+			<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+			<interceptor-ref name="loginInteceptor">
+				<param name="isAjax">true</param>
+			</interceptor-ref>
+		</action>	
+		<action name="revocateJionOrder"
+			class="com.success.lottery.web.trade.action.LotteryTradeAction"
+			method="revocateJionOrder">
+			<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+			<interceptor-ref name="loginInteceptor">
+				<param name="isAjax">true</param>
+			</interceptor-ref>
+		</action>
+		<action name="coopBetJoin"
+			class="com.success.lottery.web.trade.action.LotteryTradeAction"
+			method="coopBetJoin">
+			<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+			<interceptor-ref name="loginInteceptor">
+				<param name="isAjax">true</param>
+			</interceptor-ref>
+		</action>	
+		<action name="lotteryCoopBetCreate"
+			class="com.success.lottery.web.trade.action.LotteryTradeAction"
+			method="coopBetCreate">
+			<interceptor-ref name="clientCompleteStack"></interceptor-ref>
+			<interceptor-ref name="loginInteceptor">
+				<param name="isAjax">true</param>
+			</interceptor-ref>
+		</action>	
+		<action name="futureTerm"
+			class="com.success.lottery.web.trade.action.LotteryTermAction" method="future"></action>
+		<action name="historyTerm"
+			class="com.success.lottery.web.trade.action.LotteryTermAction" method="history"></action>
+		<action name="allTerm"
+			class="com.success.lottery.web.trade.action.LotteryTermAction" method="all"></action>
+		<action name="havaDispatchTerm"
+			class="com.success.lottery.web.trade.action.LotteryTermAction" method="haveDispatch"></action>
+	</package>
+	<package name="home" extends="default">
+		<action name="home" class="com.success.lottery.web.home.action.HomeAction">
+			<result>/index.jsp</result>
+		</action>
+		<action name="rsTouzhu" class="com.success.lottery.web.home.action.HomeAction" method="rsTouzhu">
+			<result name="rsTouzhu">/rs.jsp</result>
+		</action>
+		
+		<action name="rjTouzhu" class="com.success.lottery.web.home.action.HomeAction" method="rjTouzhu">
+			<result name="rjTouzhu">/rj.jsp</result>
+		</action>
+		
+		
+		<action name="zc6Touzhu" class="com.success.lottery.web.home.action.HomeAction" method="zc6Touzhu">
+			<result name="zc6Touzhu">zc6.jsp</result>
+		</action>
+		
+		<action name="jq4Touzhu" class="com.success.lottery.web.home.action.HomeAction" method="jq4Touzhu">
+			<result name="jq4Touzhu">/jq4.jsp</result>
+		</action>
+	</package>
+	<package name="other" extends="default">
+		<action name="announcement" class="com.success.lottery.web.home.action.HelpAction" method="announcement">
+			<result name="announcement">/other/announcement.jsp</result>
+		</action>
+		<action name="ratherforecast" class="com.success.lottery.web.home.action.HelpAction" method="ratherforecast">
+			<result name="ratherforecast">/other/ratherforecast.jsp</result>
+		</action>
+		<action name="trends" class="com.success.lottery.web.home.action.HelpAction" method="trends">
+			<result name="trends">/other/trends.jsp</result>
+		</action>
+	</package>
+	<package name="news_center" extends="default">
+		<action name="newsindex" class="com.success.lottery.web.home.action.NewsAction">
+			<result>/news/index.jsp</result>
+		</action>
+	</package>
+</struts>

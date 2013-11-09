@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >  
+
+<beans>
+	
+	<!-- SERVICE -->
+	
+	<bean id="ehandTermService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.ehand.eterm.service.interf.EhangTermServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.ehand.eterm.service.impl.EhandTermService">
+                <property name="ehandTermDao">
+                  <ref bean="ehandTermDaoImpl"/>
+                </property>
+                <property name="eMsgDao">
+                  <ref bean="ehandMsgDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="update*">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="insertEhandMsgLog">PROPAGATION_REQUIRES_NEW</prop>
+            </props>
+        </property>
+    </bean>
+	
+  	<!--END SERVICE-->
+  	
+  	<!--DAO-->
+	<bean id="ehandTermDaoImpl" class="com.success.lottery.ehand.eterm.dao.impl.EhandTermDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientEhandTerm"/>
+		</property>		
+	</bean>
+	<bean id="ehandMsgDaoImpl" class="com.success.lottery.ehand.eterm.dao.impl.EhandMsgDao">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientEhandTerm"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

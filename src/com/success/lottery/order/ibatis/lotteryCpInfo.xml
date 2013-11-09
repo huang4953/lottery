@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="cpInfo">
+	<typeAlias alias="cpInfoDomain"
+		type="com.success.lottery.order.domain.CpInfoDomain" />
+
+	<resultMap id="cpInfoDomainResult" class="cpInfoDomain">
+		<result property="cpInfoId" column="cpinfoid" />
+		<result property="planId" column="planid" />
+		<result property="userId" column="userid" />
+		<result property="lotteryId" column="lotteryid" />
+		<result property="betTerm" column="betterm" />
+		<result property="playType" column="playtype" />
+		<result property="betType" column="bettype" />
+		<result property="cpOrderType" column="cpordertype" />
+		<result property="cpUnit" column="cpunit" />
+		<result property="cpAmount" column="cpamount" />
+		<result property="orderTime" column="ordertime" />
+		<result property="orderStatus" column="orderstatus" />
+		<result property="winStatus" column="winstatus" />
+		<result property="prize" column="prize" />
+		<result property="otherColumn1" column="othercolumn1" />
+		<result property="otherColumn2" column="othercolumn2" />
+		<result property="otherColumn3" column="othercolumn3" />
+		<result property="otherColumn4" column="othercolumn4" />
+		<result property="reserve" column="reserve" />
+		
+	</resultMap>
+
+	<!-- 插入合买信息表 -->
+	<insert id="insertCpInfo" parameterClass="cpInfoDomain">
+		INSERT INTO coopinfo
+		(cpinfoid,planid,userid,lotteryid,betterm,playtype,bettype,cpordertype,cpunit,cpamount,
+		ordertime,orderstatus,winstatus,othercolumn1,othercolumn2,othercolumn3,othercolumn4,reserve) 
+		VALUES (#cpInfoId#,#planId#,#userId#,#lotteryId#,#betTerm#,#playType#,#betType#,
+		#cpOrderType#,#cpUnit#,#cpAmount#,now(),#orderStatus#,#winStatus#,#otherColumn1#,
+		#otherColumn2#,#otherColumn3#,#otherColumn4#,#reserve#)
+		<selectKey resultClass="java.lang.String" keyProperty="cpInfoId">
+			select cpinfoid from coopinfo where cpinfoid = #cpInfoId#
+		</selectKey>
+	</insert>
+	<!-- 根据方案编号查询所有的参与信息 -->
+	<select id="getCoopInfoByPlanId" parameterClass="java.lang.String" resultMap="cpInfoDomainResult">
+		SELECT cpinfoid,planid,userid,lotteryid,betterm,playtype,bettype,cpordertype,cpunit,cpamount
+		,ordertime,orderstatus,winstatus,prize,othercolumn1,othercolumn2,othercolumn3,othercolumn4,reserve
+		FROM coopinfo
+		WHERE planid = #value#
+	</select>
+	<!-- 更新参与信息的状态 -->
+	<update id="updateInfoOrderStatus" parameterClass="java.util.Map">
+		UPDATE coopinfo SET orderstatus = #orderStatus#
+		WHERE cpinfoid = #coopInfoId#
+	</update>
+	<!-- 根据参与id查询参与信息并锁定 -->
+	<select id="getCoopInfoForUpdate" parameterClass="java.lang.String" resultMap="cpInfoDomainResult">
+		SELECT cpinfoid,planid,userid,lotteryid,betterm,playtype,bettype,cpordertype,cpunit,cpamount
+		,ordertime,orderstatus,winstatus,prize,othercolumn1,othercolumn2,othercolumn3,othercolumn4,reserve
+		FROM coopinfo
+		WHERE cpinfoid = #value# for update
+	</select>
+	<!-- 更新合买参与信息的奖金情况，在兑奖时调用 -->
+	<update id="updateCoopInfoPrize">
+		UPDATE coopinfo SET orderstatus=#orderStatus#,winstatus=#winStatus#,prize=#prize#
+		WHERE cpinfoid = #coopInfoId#
+	</update>
+	<!-- 查询参与id查询参与信息 -->
+	<select id="getCoopInfoByInfoId" parameterClass="java.lang.String" resultMap="cpInfoDomainResult">
+		SELECT cpinfoid,planid,userid,lotteryid,betterm,playtype,bettype,cpordertype,cpunit,cpamount
+		,ordertime,orderstatus,winstatus,prize,othercolumn1,othercolumn2,othercolumn3,othercolumn4,reserve
+		FROM coopinfo
+		WHERE cpinfoid = #value#
+	</select>
+	<!-- 查询合买参与的还有未派奖的订单数量 -->
+	<select id="getNotDispatchInfoNum" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		SELECT COUNT(1) as notDisCount 
+		FROM coopinfo
+		WHERE planid = #value# AND orderstatus = 7
+	</select>
+	
+</sqlMap>

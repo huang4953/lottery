@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+  
+<!DOCTYPE sqlMap         
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"         
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="ipsOrder">
+	<typeAlias alias="ipsOrder" type="com.success.lottery.account.model.IPSOrderModel"/>  
+  
+    <resultMap class="ipsOrder" id="ipsOrderModelResult">  
+        <result property="orderId" column="orderid"/>   
+        <result property="amount" column="amount"/>   
+        <result property="userId" column="userid"/>   
+        <result property="orderDate" column="orderdate"/>   
+        <result property="currencyType" column="currencytype"/>   
+        <result property="gatewayType" column="gatewaytype"/>   
+        <result property="succFlag" column="succflag"/>   
+        <result property="ipsBillNo" column="ipsbillno"/>   
+        <result property="ipsBankTime" column="ipsbanktime"/>   
+        <result property="ipsMsg" column="ipsmsg"/>   
+        <result property="attach" column="attach"/>   
+        <result property="orderStatus" column="orderstatus"/>   
+        <result property="orderMessage" column="ordermessage"/>   
+        <result property="accountTransactionId" column="accounttransactionid"/>   
+        <result property="checkedStatus" column="checkedstatus"/>   
+        <result property="checkedTime" column="checkedtime"/>   
+        <result property="checkedMessage" column="checkedmessage"/>   
+        <result property="reserve" column="reserve"/>    
+    </resultMap>
+    
+    <!--插入环迅交易-->
+    <insert id="addIpsOrder" parameterClass="ipsOrder">  
+        insert into ipsorder(orderid, amount, userid, orderdate, currencytype, gatewaytype, ordertime, succflag, attach, orderstatus, 
+        	ordermessage, checkedstatus, reserve) 
+        values(
+        	#orderId#, #amount#, #userId#, #orderDate#, #currencyType#, #gatewayType#, now(), #succFlag#, #attach#, #orderStatus#, 
+        	#orderMessage#, #checkedStatus#, #reserve#)   
+    </insert>
+
+	<!--修改信息-->
+    <update id="updateIpsOrder" parameterClass="ipsOrder">  
+		update ipsorder set succflag=#succFlag#, ipsbillno=#ipsBillNo#, ipsbanktime=#ipsBankTime#, ipsmsg=#ipsMsg#, orderstatus=#orderStatus#, 
+			ordermessage=#orderMessage#, accounttransactionid=#accountTransactionId#, checkedstatus=#checkedStatus#, checkedmessage=#checkedMessage#
+			, checkedtime=now(), reserve=#reserve# where orderid=#orderId#  
+    </update>
+
+	<!-- 根据环迅订单编号查询订单信息用于进行环迅交易处理，执行此语句将会对记录进行行锁 -->
+	<select id="getIPSOrderByOrderIdforUpdate" parameterClass="java.lang.String" resultClass="ipsOrder">
+		select orderid, amount, userid, orderdate, currencytype, gatewaytype, succflag, ipsbillno, ipsbanktime, ipsmsg, attach, orderstatus, 
+			ordermessage, accounttransactionid, checkedstatus, checkedtime, checkedmessage, reserve from ipsorder where orderid=#orderId# for update
+	</select>
+
+	<!-- 根据环迅订单编号查询订单信息 -->
+	<select id="getIPSOrderByOrderId" parameterClass="java.lang.String" resultClass="ipsOrder">
+		select orderid, amount, userid, orderdate, currencytype, gatewaytype, succflag, ipsbillno, ipsbanktime, ipsmsg, attach, orderstatus, 
+			ordermessage, accounttransactionid, checkedstatus, checkedtime, checkedmessage, reserve from ipsorder where orderid=#orderId# for update
+	</select>
+
+	<!-- 根据条件查询环迅不同状态的订单条数以及合计金额 -->
+	<select id="getIPSOrderesTotalInfo" parameterClass="java.util.Map" resultClass="ipsOrder">
+		select o.orderstatus as orderStatus, count(*) as amount, COALESCE(sum(o.amount), 0) as userId from ipsorder as o, useraccount as u
+		where o.userid=u.userid
+		<isNotNull property="userIdentify" prepend="and">
+			(u.loginname=#userIdentify# or u.mobilephone=#userIdentify# or u.email=#userIdentify# or u.realname=#userIdentify#)
+		</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					o.orderTime >= #startTime#
+   				]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					o.orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend=" and " >
+				<isGreaterThan property="orderStatus" compareValue="-1">
+					o.orderstatus = #orderStatus:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+	    group by orderstatus
+	</select>
+
+	<!-- 根据条件查询环迅不同状态的订单条数以及合计金额 -->
+	<select id="getIPSOrderes" parameterClass="java.util.Map" resultClass="ipsOrder">
+		select o.orderid as orderId, o.amount as amount, o.userid as userId, o.orderdate as orderDate, o.currencytype as currencyType, 
+			o.gatewaytype as gatewayType, o.ordertime as orderTime, o.succflag as succFlag, o.ipsbillno as ipsBillNo, o.ipsbanktime as ipsBankTime,
+			o.ipsmsg as ipsMsg, o.attach as attach, o.orderstatus as orderStatus, o.ordermessage as orderMessage, 
+			o.accounttransactionid as accountTransactionId, o.checkedstatus as checkedStatus, o.checkedtime as checkedTime,
+			o.checkedmessage as checkedMessage, o.reserve as reserve, u.loginname as loginName, u.mobilephone as mobilePhone, 
+			u.realName as realName
+		from ipsorder as o, useraccount as u where o.userid=u.userid
+			<isNotNull property="userIdentify" prepend="and">
+				(u.loginname=#userIdentify# or u.mobilephone=#userIdentify# or u.email=#userIdentify# or u.realname=#userIdentify#)
+			</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					o.orderTime >= #startTime#
+   				]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					o.orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend=" and " >
+				<isGreaterThan property="orderStatus" compareValue="-1">
+					o.orderstatus = #orderStatus:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			limit #start#,#count#
+	</select>
+
+
+
+
+
+    <!-- 查询IPS订单记录 -->  
+	<!--
+    <select id="selectAllIpsorder" resultMap="iPSOrderModelResult">  
+        <![CDATA[select orderid,amount,userid,orderdate,currencytype,gatewaytype,succflag,ipsbillno,ipsbanktime,ipsmsg,attach,orderstatus,ordermessage,
+        accounttransactionid,checkedstatus,checkedtime,checkedmessage,reserve from ipsorder]]>
+        <dynamic prepend=" WHERE ">
+        	<isPropertyAvailable property="startTime">  
+	            <isNotEqual  property="startTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate >=#startTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+	        <isPropertyAvailable property="endTime">  
+	            <isNotEqual  property="endTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate <=#endTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+        </dynamic>
+        <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic> 
+    </select>
+    -->
+     
+    <!-- 查询IPS订单记录总数 -->  
+    <!-- 
+    <select id="selectAllIpsorderCount" resultClass="int">
+       <![CDATA[ 	select count(orderid) from ipsorder 
+        ]]>
+         <dynamic prepend=" WHERE ">  
+        	<isPropertyAvailable property="startTime">  
+	            <isNotEqual  property="startTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate >=#startTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+	        <isPropertyAvailable property="endTime">  
+	            <isNotEqual  property="endTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate <=#endTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+        </dynamic>
+    </select>
+     -->
+     
+    <!-- 查询个人IPS订单记录 -->  
+    <!-- 
+    <select id="selectIPSOrderByUser" resultMap="iPSOrderModelResult">  
+        <![CDATA[select orderid,amount,userid,orderdate,currencytype,gatewaytype,succflag,ipsbillno,ipsbanktime,ipsmsg,attach,orderstatus,ordermessage,
+        accounttransactionid,checkedstatus,checkedtime,checkedmessage,reserve from ipsorder ]]>
+        <dynamic prepend=" WHERE "> 	
+         	<isPropertyAvailable property="userid">  
+	            <isNotNull  property="userid" prepend=" and ">  
+	                userid =#userid#
+	            </isNotNull>  
+	        </isPropertyAvailable>
+        	<isPropertyAvailable property="startTime">  
+	            <isNotEqual  property="startTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate >=#startTime#]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+	        <isPropertyAvailable property="endTime">  
+	            <isNotEqual  property="endTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate <=#endTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+        </dynamic>
+        <dynamic>  
+	        <isPropertyAvailable property="firstResult">  
+	            <isNotNull property="firstResult">  
+	                limit #firstResult#    
+	            </isNotNull>  
+	        </isPropertyAvailable>  
+	        <isPropertyAvailable property="maxResult" prepend=" , ">  
+	            <isNotNull property="maxResult">  
+	                #maxResult#   
+	             </isNotNull>  
+	        </isPropertyAvailable>  
+	    </dynamic> 
+    </select> 
+ 	-->
+    
+    <!-- 查询个人IPS订单记录总数 -->
+    <!-- 
+    <select id="selectIPSOrderByUserCount" resultClass="int">
+       <![CDATA[ 	select count(orderid) from ipsorder 
+        ]]>
+         <dynamic prepend=" WHERE ">  
+         	<isPropertyAvailable property="userid">  
+	            <isNotNull  property="userid" prepend=" and ">  
+	                userid =#userid#
+	            </isNotNull>  
+	        </isPropertyAvailable>
+        	<isPropertyAvailable property="startTime">  
+	            <isNotEqual  property="startTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate >=#startTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+	        <isPropertyAvailable property="endTime">  
+	            <isNotEqual  property="endTime" prepend=" and " compareValue="0">  
+	                <![CDATA[orderdate <=#endTime# ]]>
+	            </isNotEqual>  
+	        </isPropertyAvailable>
+        </dynamic>
+    </select>
+    <select id="selectIpsorderByOrderid" resultClass="iPSOrder">
+    	select orderid,amount,userid,orderdate,currencytype,gatewaytype,succflag,ipsbillno,ipsbanktime,ipsmsg,attach,orderstatus,ordermessage,
+        accounttransactionid,checkedstatus,checkedtime,checkedmessage,reserve from ipsorder where orderid=#orderid#  
+    </select>
+     -->
+     
+    <!--修改信息-->
+    <!-- 
+    <update id="updateUser" parameterClass="iPSOrder">  
+       update ipsorder set orderid=#orderid#,amount=#amount#,userid=#userid#,orderdate=#orderdate#,currencytype=#currencytype#,
+       gatewaytype=#gatewaytype#,succflag=#succflag#,ipsbillno=#ipsbillno#,ipsbanktime=#ipsbanktime#,ipsmsg=#ipsmsg#,attach=#attach#,
+       orderstatus=#orderstatus#,ordermessage=#ordermessage#,accounttransactionid=#accounttransactionid#,
+       checkedstatus=#checkedstatus#,checkedtime=#checkedtime#,checkedmessage=#checkedmessage#,reserve=#reserve# where orderid=#orderid#   
+    </update>
+     -->
+</sqlMap>

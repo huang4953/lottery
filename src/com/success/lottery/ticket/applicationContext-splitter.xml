@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans default-autowire="no" default-lazy-init="false" default-dependency-check="none">
+	<!-- SERVICE -->
+	
+	<bean id="qhtcBetSplitterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.ticket.service.interf.BetSplitterService</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.ticket.service.impl.QHTCOrderSplitter">
+                <property name="betTicketDao">
+                  <ref bean="lotteryBetTicketDaoImpl"/>
+                </property>
+                <property name="betOrderDao">
+                  <ref bean="lotteryBetOrderDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="orderSplit">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="createPrintFile">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="confirmTicket">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+
+	<bean id="qgbBetSplitterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.ticket.service.interf.BetSplitterService</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.ticket.service.impl.QGBOrderSplitter">
+                <property name="betTicketDao">
+                  <ref bean="lotteryBetTicketDaoImpl"/>
+                </property>
+                <property name="betOrderDao">
+                  <ref bean="lotteryBetOrderDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="orderSplit">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+
+	<bean id="eHandBetSplitterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.ticket.service.interf.BetSplitterService</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.ticket.service.impl.EHandOrderSplitter">
+                <property name="betTicketDao">
+                  <ref bean="lotteryBetTicketDaoImpl"/>
+                </property>
+                <property name="betOrderDao">
+                  <ref bean="lotteryBetOrderDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="orderSplit">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+
+	<!-- 
+	<bean id="sdtcBetSplitterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.ticket.service.interf.BetSplitterService</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.ticket.service.impl.SDTCOrderSplitter">
+                <property name="betTicketDao">
+                  <ref bean="lotteryBetTicketDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="orderSplit">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+ 	-->
+
+  	<!--END SERVICE-->
+  	
+  	<!--DAO-->
+	<bean id="lotteryBetTicketDaoImpl" class="com.success.lottery.ticket.dao.impl.BetTicketDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientTicket"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

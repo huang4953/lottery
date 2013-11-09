@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="betTicket">
+
+	<typeAlias alias="betTicketDomain"
+		type="com.success.lottery.ticket.domain.BetTicketDomain" />
+
+	<typeAlias alias="BetOrderDomain"
+		type="com.success.lottery.order.domain.BetOrderDomain" />
+
+	<resultMap id="betTicketDomainResult" class="betTicketDomain">
+		<result property="ticketSequence" column="TicketSequence" />
+		<result property="orderId" column="OrderId" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="betTerm" column="BetTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="betCode" column="BetCode" />
+		<result property="betCount" column="BetCount" />
+		<result property="betAmount" column="BetAmount" />
+		<result property="ticketTime" column="TicketTime" />
+		<result property="lastTicketTime" column="LastTicketTime" />
+		<result property="areaCode" column="AreaCode" />
+		<result property="printStation" column="PrintStation" />
+		<result property="ticketStatus" column="TicketStatus" />
+		<result property="ticketId" column="TicketId" />
+		<result property="printerId" column="PrinterId" />
+		<result property="printResult" column="PrintResult" />
+		<result property="printTime" column="PrintTime" />
+		<result property="ticketData" column="TicketData" />
+		<result property="ticketDataMD" column="TicketDataMD" />
+		<result property="ticketPassword" column="TicketPassword" />
+		<result property="preTaxPrize" column="PreTaxPrize" />
+		<result property="prizeResult" column="PrizeResult" />
+		<result property="saveStatus" column="SaveStatus" />
+		<result property="reserve" column="Reserve" />
+	</resultMap>
+
+	<resultMap id="betTicketFilesResult" class="betTicketDomain">
+		<result property="ticketSequence" column="TicketSequence" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="betTerm" column="BetTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="lastTicketTime" column="LastTicketTime" />
+		<result property="printerId" column="PrinterId" />
+		<result property="ticketData" column="TicketData" />
+	</resultMap>
+
+	<resultMap id="BetOrderDomainResult" class="BetOrderDomain">
+		<result property="orderId" column="OrderId" />
+		<result property="planId" column="PlanId" />
+		<result property="planSource" column="PlanSource" />
+		<result property="chaseNumber" column="ChaseNumber" />
+		<result property="userId" column="UserId" />
+		<result property="areaCode" column="AreaCode" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="betTerm" column="BetTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betCodeMode" column="BetCodeMode" />
+		<result property="betCode" column="BetCode" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="betAmount" column="BetAmount" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="orderStatus" column="OrderStatus" />
+		<result property="ticketTime" column="TicketTime" />
+		<result property="ticketStat" column="TicketStat" />
+		<result property="winStatus" column="WinStatus" />
+		<result property="preTaxPrize" column="PreTaxPrize" />
+		<result property="reserve" column="Reserve" />
+		<result property="winCode" column="wincode" />
+	</resultMap>
+
+
+	<typeAlias alias="TicketOrderDomain"
+		type="com.success.lottery.ticket.domain.WinOrderTicketDomain" />
+
+
+	
+	<!-- 插入方案表 -->
+	<insert id="insertBetTicket" parameterClass="betTicketDomain">
+		INSERT INTO betticket (TicketSequence,OrderId,LotteryId,BetTerm,PlayType,BetType,BetMultiple
+        ,BetCode,BetCount,BetAmount,TicketTime,LastTicketTime,AreaCode
+        ,PrintStation,TicketStatus,PreTaxPrize,PrizeResult,SaveStatus,Reserve)
+		VALUES (#ticketSequence#,#orderId#,#lotteryId#,#betTerm#,#playType#,#betType#
+        ,#betMultiple#,#betCode#,#betCount#,#betAmount#,now()
+        ,now(),#areaCode#,#printStation#,#ticketStatus#,#preTaxPrize#,#prizeResult#,#saveStatus#,#reserve#)
+		<selectKey resultClass="java.lang.String"
+			keyProperty="ticketSequence">
+			select TicketSequence from betticket where TicketSequence = #ticketSequence#
+		</selectKey>
+	</insert>
+	
+	<insert id="insertBetTicketBatch" parameterClass="betTicketDomain">
+		INSERT INTO betticket (TicketSequence,OrderId,LotteryId,BetTerm,PlayType,BetType,BetMultiple
+        ,BetCode,BetCount,BetAmount,TicketTime,LastTicketTime,AreaCode
+        ,PrintStation,TicketStatus,PreTaxPrize,PrizeResult,SaveStatus,Reserve)
+		VALUES (#ticketSequence#,#orderId#,#lotteryId#,#betTerm#,#playType#,#betType#
+        ,#betMultiple#,#betCode#,#betCount#,#betAmount#,now()
+        ,#lastTicketTime#,#areaCode#,#printStation#,#ticketStatus#,#preTaxPrize#,#prizeResult#,#saveStatus#,#reserve#)
+	</insert>
+	<!-- 更新彩票状态 -->
+	<update id="updateBetTicketStatus" parameterClass="java.util.Map">
+		update betticket set TicketStatus = #ticketStatus:NUMERIC# where TicketSequence = #ticketSequence#
+	</update>
+	<!-- 更新打票系统返回信息 -->
+	<update id="updateBetTicketPrintInfo" parameterClass="betTicketDomain">
+		update betticket set printTime= now()
+		<isNotEmpty property="printerId" prepend=", ">
+		PrinterId=#printerId#
+		</isNotEmpty>
+		<isNotEmpty property="printResult" prepend=", ">
+		PrintResult=#printResult#
+		</isNotEmpty>
+		<isNotEmpty property="ticketData" prepend=", ">
+		TicketData=#ticketData#
+		</isNotEmpty>
+		<isNotEmpty property="ticketDataMD" prepend=", ">
+		TicketDataMD=#ticketDataMD#
+		</isNotEmpty>
+		<isNotEmpty property="ticketPassword" prepend=", ">
+		TicketPassword=#ticketPassword#
+		</isNotEmpty>
+		<isNotEmpty property="ticketStatus" prepend=", ">
+		TicketStatus=#ticketStatus#
+		</isNotEmpty>
+		<isNotEmpty property="ticketId" prepend=", ">
+		TicketId=#ticketId#
+		</isNotEmpty>
+		where ticketSequence = #ticketSequence#
+	</update>
+
+	<!-- 提交打印票请求后更新彩票信息（大赢家快打系统生成文件） -->
+	<update id="updateBetTicketInfo" parameterClass="java.util.Map">
+		update betticket set ticketStatus = #ticketStatus#
+		<isNotEmpty property="ticketData" prepend=", ">
+			ticketdata = #ticketData#
+		</isNotEmpty>
+		<isNotEmpty property="lastTicketTime" prepend=", ">
+			LastTicketTime = #lastTicketTime#
+		</isNotEmpty>
+		<isNotEmpty property="printId" prepend=", ">
+			PrinterId = #printId#
+		</isNotEmpty>
+		<isNotEmpty property="printResult" prepend=", ">
+			printresult = #printResult#
+		</isNotEmpty>
+		<isNotEmpty property="printTime" prepend=", ">
+			printtime = #printTime#
+		</isNotEmpty>
+		<isNotEmpty property="ticketDataMD" prepend=", ">
+			ticketdatamd = #ticketDataMD#
+		</isNotEmpty>
+		where 
+			<iterate open="(" close=")" conjunction="or"
+				property="ticketSequence">
+				TicketSequence = #ticketSequence[]#
+			</iterate>
+	</update>	
+	<!-- 更新中奖信息 -->
+	<update id="updateBetTicketPrizeResult" parameterClass="java.util.Map">
+		update betticket set PreTaxPrize=#preTaxPrize:NUMERIC#,PrizeResult=#prizeResult:NUMERIC#
+		where TicketSequence = #ticketSequence#
+	</update>
+	
+	<select id="queryBetOrderIdTicket" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(1) from betticket where OrderId = #value# for update
+	</select>
+
+	<select id="getTicketsByOrderId" parameterClass="java.lang.String" resultMap="betTicketDomainResult">
+		select * from betticket where OrderId = #value#
+	</select>
+
+	<select id="queryNotPrintTicket" resultClass="betTicketDomain">
+		select * from betticket where ticketstatus = 0
+	</select>
+	
+	<select id="getTicketsToPrint" parameterClass="java.util.Map" resultMap="betTicketDomainResult">
+		select * from betticket where ticketstatus = 0
+		<dynamic prepend=" and ">  
+			<isNotNull property="lotteryId">
+				<isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="termNo" prepend=" and " >
+				betterm = #termNo#            
+			</isNotNull>
+	    </dynamic>
+	</select>
+
+	<select id="getTicketesCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) from betticket
+		<dynamic prepend=" where ">  
+			<isNotNull property="lotteryId">
+				<isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="ticketStatus" prepend=" and " >
+				ticketstatus in 
+				<iterate  property="ticketStatus" open="(" close=")" conjunction=", ">   
+             		#ticketStatus[]#
+				</iterate>   
+			</isNotNull>
+	    </dynamic>
+	</select>
+	
+	<select id="getTicketesForWeb" parameterClass="java.util.Map" resultMap="betTicketDomainResult">
+		select * from betticket 
+		<dynamic prepend=" where ">  
+			<isNotNull property="lotteryId">
+				<isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="ticketStatus" prepend=" and " >
+				ticketstatus in 
+				<iterate  property="ticketStatus" open="(" close=")" conjunction=", ">   
+             		#ticketStatus[]#
+				</iterate>   
+			</isNotNull>
+	    </dynamic>
+		limit #start#, #number#
+	</select>
+
+	<select id="getTicketFilesCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) from (select ticketdata from betticket where ticketstatus=1 and ticketdata is not null 
+		<dynamic prepend=" and ">  
+			<isNotNull property="lotteryId">
+				<isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+	    </dynamic>
+		group by ticketdata) as tmp
+	</select>
+
+	<select id="getTicketFiles" parameterClass="java.util.Map" resultMap="betTicketFilesResult">
+		select ticketsequence, lotteryid, betterm, playtype, bettype, betmultiple, ticketdata, lasttickettime, printerid from betticket 
+			where ticketstatus=1 and ticketdata is not null
+		<dynamic prepend=" and ">  
+			<isNotNull property="lotteryId">
+				<isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+	    </dynamic>
+		group by ticketdata limit #start#, #number#
+	</select>
+
+	<select id="getTicketOrderesCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) 
+		from betticket as t, betorder as o where t.orderid = o.orderid 
+		<dynamic prepend=" and ">
+			<isNotNull property="winStatus" prepend=" and " >
+				o.winstatus in 
+				<iterate  property="winStatus" open="(" close=")" conjunction=", ">   
+             		#winStatus[]#
+				</iterate>   
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend=" and " >
+				o.orderstatus in 
+				<iterate  property="orderStatus" open="(" close=")" conjunction=", ">   
+             		#orderStatus[]#
+				</iterate>   
+			</isNotNull>	
+			<isNotNull property="ticketStatus" prepend=" and " >
+				t.ticketstatus in 
+				<iterate  property="ticketStatus" open="(" close=")" conjunction=", ">   
+             		#ticketStatus[]#
+				</iterate>   
+			</isNotNull>
+			<isNotNull property="lotteryId" prepend=" and " >
+				<isGreaterThan property="lotteryId" compareValue="0">
+					t.lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				t.betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="orderId" prepend=" and " >
+				t.orderid = #orderId:VARCHAR#            
+			</isNotNull>
+	    </dynamic>
+	</select>
+	
+	<select id="getTicketOrderes" parameterClass="java.util.Map" resultClass="TicketOrderDomain">
+		select t.orderid as orderId, t.lotteryid as lotteryId, t.betterm as betTerm, t.playtype as playType, t.bettype as betType, 
+			t.betMultiple as betMultiple, t.tickettime as ticketTime, t.areacode as areaCode, t.printstation as printStation,
+			t.ticketstatus as ticketStatus, t.ticketid as ticketId, t.printerid as printerId, t.printresult as printResult, 
+			t.printtime as printTime, t.ticketdata as ticketData, t.ticketDataMD as ticketDataMD, t.ticketPassword as ticketPassword, 
+			t.prizeResult as prizeResult, t.saveStatus as saveStatus, o.planId as planId, o.planSource as planSource, o.userId as userId, 
+			o.betCode as betCode, o.winCode as winCode, o.betAmount as betAmount, o.orderTime as orderTime, o.orderStatus as orderStatus, 
+			o.ticketStat as ticketStat, o.winStatus as winStatus, o.preTaxPrize as preTaxPrize, o.reserve as reserve
+		from betticket as t, betorder as o 
+		where t.orderid = o.orderid
+		<dynamic prepend=" and ">
+			<isNotNull property="winStatus" prepend=" and " >
+				o.winstatus in 
+				<iterate  property="winStatus" open="(" close=")" conjunction=", ">   
+             		#winStatus[]#
+				</iterate>   
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend=" and " >
+				o.orderstatus in 
+				<iterate  property="orderStatus" open="(" close=")" conjunction=", ">   
+             		#orderStatus[]#
+				</iterate>   
+			</isNotNull>	
+			<isNotNull property="ticketStatus" prepend=" and " >
+				t.ticketstatus in 
+				<iterate  property="ticketStatus" open="(" close=")" conjunction=", ">   
+             		#ticketStatus[]#
+				</iterate>
+			</isNotNull>
+			<isNotNull property="lotteryId" prepend=" and " >
+				<isGreaterThan property="lotteryId" compareValue="0">
+					t.lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				t.betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="orderId" prepend=" and " >
+				t.orderid = #orderId:VARCHAR#            
+			</isNotNull>
+	    </dynamic>
+	    limit #start#, #number#
+	</select>
+	
+	<select id="getTicket" parameterClass="java.lang.String" resultClass="betTicketDomain">
+		select * from betticket where ticketsequence=#ticketSequence#
+	</select>
+	
+	<select id="getOrderByTicketSequence" parameterClass="java.lang.String" resultClass="BetOrderDomain">
+		select * from betorder where OrderId = (select orderid from betticket where ticketsequence = #value#)
+	</select>
+	
+	<update id="updateMultipleTicketPrintResult" parameterClass="java.util.Map" >
+		update betticket set 
+			ticketstatus = #ticketStatus#, 
+			printtime=now(), 
+			ticketdatamd=#ticketDataMD#, 
+			printresult=#printResult#
+		where ticketStatus = 1 and ticketsequence in
+		<iterate  property="ticketSequences" open="(" close=")" conjunction=", ">   
+			#ticketSequences[]#
+		</iterate>   
+	</update>
+
+	<select id="queryUndeliverTicketQueTicket"
+		resultMap="betTicketDomainResult" parameterClass="java.util.Map">
+		select
+			ticketsequence, orderid, lotteryid, betterm, playtype, bettype, betmultiple, betcode, betcount, betamount, tickettime, lasttickettime,
+			areacode, printstation, ticketstatus, ticketid, printerid, printresult, printtime, ticketdata, ticketdatamd, ticketpassword, pretaxprize,
+			prizeresult, savestatus, reserve
+		from betticket
+		where 1=1
+		<isNotEmpty property="ticketStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="ticketStatus">
+				ticketstatus = #ticketStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="condition" prepend="and">
+			($condition$)
+		</isNotEmpty>
+		<isGreaterThan property="limitNumber" compareValue="0">
+			LIMIT #limitNumber#
+		</isGreaterThan>
+	</select>
+
+	<update id="updateBetTicketStatusBySequences" parameterClass="java.util.Map">
+		update betticket set TicketStatus = #ticketStatus# where 1=1
+		<dynamic prepend=" and ">
+			<isNotEmpty prepend=" and " >
+				ticketstatus in
+				<iterate open="(" close=")" conjunction=", " property="whoes">
+					#whoes[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="ticketSequences" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="ticketSequences">
+					ticketSequence = #ticketSequences[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</update>
+</sqlMap>

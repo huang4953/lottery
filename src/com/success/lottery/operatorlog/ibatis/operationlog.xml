@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="operationLog">
+
+	<typeAlias alias="OperationLogDomain" type="com.success.lottery.operatorlog.domain.OperationLog" />
+		
+	<resultMap id="OperationLogDomainResult" class="OperationLogDomain">
+		<result property="id" column="id" />
+		<result property="level" column="level" />
+		<result property="type" column="type" />
+		<result property="rank" column="rank" />
+		<result property="userid" column="userid" />
+		<result property="name" column="name" />
+		<result property="userkey" column="userkey" />
+		<result property="keyword1" column="keyword1" />
+		<result property="keyword2" column="keyword2" />
+		<result property="keyword3" column="keyword3" />
+		<result property="keyword4" column="keyword4" />
+		<result property="operattime" column="operattime" />
+		<result property="message" column="message" />
+		<result property="reserve" column="reserve" />
+	</resultMap>
+	
+	
+	<!--insert UserAccount 插入日志-->
+    <insert id="insertOperationLog" parameterClass="OperationLogDomain">  
+        insert into operationlog(level,type,rank,userid,name,userkey,keyword1,keyword2,keyword3,keyword4,operattime,message,reserve) 
+        values(#level#,#type#,#rank#,#userid#,#name#,#userkey#,#keyword1#,#keyword2#,#keyword3#,#keyword4#,#operattime#,#message#,#reserve#)   
+    </insert>
+    
+    <!-- 查询日志 -->
+    <select id="selectOperationLogList" resultMap="OperationLogDomainResult" parameterClass="java.util.Map">  
+        select id,level,type,rank,userid,name,userkey,keyword1,keyword2,keyword3,keyword4,operattime,message,reserve from operationlog   
+        	<dynamic prepend=" WHERE ">  
+        	  <isNotNull property="level">
+                <isGreaterThan prepend=" and " property="level" compareValue="0">
+               	 	<![CDATA[
+        				level>=#level#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="type">
+                <isGreaterThan prepend=" and " property="type" compareValue="-1">
+               	 	type = #type#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="rank">
+                <isGreaterThan prepend=" and " property="rank" compareValue="0">
+               	 	<![CDATA[
+        				rank>=#rank#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="userId">
+                <isGreaterThan prepend=" and " property="userId" compareValue="0">
+               	 	userId = #userId#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="name">
+                <isGreaterThan prepend=" and " property="name" compareValue="0">
+               	 	name = #name#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="userKey">
+                <isGreaterThan prepend=" and " property="userKey" compareValue="0">
+               	 	userKey = #userKey#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="keyword1">
+                <isGreaterThan prepend=" and " property="keyword1" compareValue="0">
+               	 	keyword1 = #keyword1#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="keyword2">
+                <isGreaterThan prepend=" and " property="keyword2" compareValue="0">
+               	 	keyword2 = #keyword2#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="keyword3">
+                <isGreaterThan prepend=" and " property="keyword3" compareValue="0">
+               	 	keyword3 = #keyword3#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="keyword4">
+                <isGreaterThan prepend=" and " property="keyword4" compareValue="0">
+               	 	keyword4 = #keyword4#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="message">
+                <isGreaterThan prepend=" and " property="message" compareValue="0">
+               	 	message = #message#
+                </isGreaterThan>    
+              </isNotNull>
+               <isNotNull property="beginTime">
+                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+               	 	<![CDATA[
+        				operattime>=#beginTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				operattime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+              
+	    </dynamic> 
+	    order by operattime desc 
+	  limit #startPageNumber#, #endPageNumber# 
+	  
+    </select> 
+    
+    <select id="selectOperationLogCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">  
+       select count(*) from operationlog 
+        <dynamic prepend=" WHERE">  
+        	 <isNotNull property="level">
+                <isGreaterThan prepend=" and " property="level" compareValue="0">
+               	 	<![CDATA[
+        				level>=#level#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="type">
+                <isGreaterThan prepend=" and " property="type" compareValue="-1">
+               	 	type = #type#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="rank">
+                <isGreaterThan prepend=" and " property="rank" compareValue="0">
+               	 	<![CDATA[
+        				rank>=#rank#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="userId">
+                <isGreaterThan prepend=" and " property="userId" compareValue="0">
+               	 	userId = #userId#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="name">
+                <isGreaterThan prepend=" and " property="name" compareValue="0">
+               	 	name = #name#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="userKey">
+                <isGreaterThan prepend=" and " property="userKey" compareValue="0">
+               	 	userKey = #userKey#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="keyword1">
+                <isGreaterThan prepend=" and " property="keyword1" compareValue="0">
+               	 	keyword1 = #keyword1#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="keyword2">
+                <isGreaterThan prepend=" and " property="keyword2" compareValue="0">
+               	 	keyword2 = #keyword2#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="keyword3">
+                <isGreaterThan prepend=" and " property="keyword3" compareValue="0">
+               	 	keyword3 = #keyword3#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="keyword4">
+                <isGreaterThan prepend=" and " property="keyword4" compareValue="0">
+               	 	keyword4 = #keyword4#
+                </isGreaterThan>             
+              </isNotNull>
+               <isNotNull property="message">
+                <isGreaterThan prepend=" and " property="message" compareValue="0">
+               	 	message = #message#
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="beginTime">
+                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+               	 	<![CDATA[
+        				operattime>=#beginTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				operattime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    </dynamic> 
+    </select> 
+</sqlMap>

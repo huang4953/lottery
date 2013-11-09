@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="busCoopBetOrder">
+		<typeAlias alias="coopInfoDomain" type="com.success.lottery.business.domain.BusCpInfoDomain" />
+	<typeAlias alias="BusPlanDomain" type="com.success.lottery.business.domain.BusCoopPlanDomain" />
+	
+	<!-- 合买信息对照 -->
+	<resultMap id="BusCoopDomainResult" class="coopInfoDomain">
+		<result property="cpInfoId" column="cpinfoid" />
+		<result property="planId" column="planid" />
+		<result property="userId" column="userid" />
+		<result property="lotteryId" column="lotteryid" />
+		<result property="betTerm" column="betterm" />
+		<result property="playType" column="playtype" />
+		<result property="betType" column="bettype" />
+		<result property="cpOrderType" column="cpordertype" />
+		<result property="cpUnit" column="cpunit" />
+		<result property="cpAmount" column="cpamount" />
+		<result property="orderTime" column="ordertime" />
+		<result property="orderStatus" column="orderstatus" />
+		<result property="winStatus" column="winstatus" />
+		<result property="prize" column="prize" />
+		<result property="otherColumn1" column="othercolumn1" />
+		<result property="otherColumn2" column="othercolumn2" />
+		<result property="otherColumn3" column="othercolumn3" />
+		<result property="otherColumn4" column="othercolumn4" />
+		<result property="reserve" column="reserve" />
+		<result property="loginName" column="loginName" />
+		<result property="mobilePhone" column="mobilePhone" />
+		<result property="status" column="status" />
+		<result property="nickName" column="nickName" />
+		<result property="realName" column="realName" />
+	</resultMap>
+	
+	<!-- 合买方案信息对照，用于合买的参与投注 -->
+	<resultMap id="BusPlanDomainResult" class="BusPlanDomain">
+		<result property="planId" column="planid" />
+		<result property="userId" column="userid" />
+		<result property="areaCode" column="areacode" />
+		<result property="lotteryId" column="lotteryid" />
+		<result property="startTerm" column="startterm" />
+		<result property="playType" column="playtype" />
+		<result property="betType" column="bettype" />
+		<result property="betCodeMode" column="betcodemode" />
+		<result property="betCode" column="betcode" />
+		<result property="chaseCount" column="chasecount" />
+		<result property="chasedCount" column="chasedcount" />
+		<result property="winStoped" column="winstoped" />
+		<result property="planType" column="plantype" />
+		<result property="betMultiple" column="betmultiple" />
+		<result property="unitAmount" column="unitamount" />
+		<result property="planTime" column="plantime" />
+		<result property="stopTime" column="stoptime" />
+		<result property="planTitle" column="plantitle" />
+		<result property="planDescription" column="plandescription" />
+		<result property="planOpenType" column="planopentype" />
+		<result property="totalUnit" column="totalunit" />
+		<result property="unitPrice" column="unitprice" />
+		<result property="unitBuySelf" column="unitbuyself" />
+		<result property="commisionPercent" column="commisionpercent" />
+		<result property="selledUnit" column="selledunit" />
+		<result property="planStatus" column="planstatus" />
+		<result property="planSource" column="plansource" />
+		<result property="reserve" column="reserve" />
+		<result property="loginName" column="loginname" />
+		<result property="mobilePhone" column="mobilephone" />
+		<result property="status" column="status" />
+		<result property="nickName" column="nickname" />
+		<result property="realName" column="realname" />
+	</resultMap>
+	
+	
+	<!-- 合买查询 -->
+	<sql id="selectCoopContent">
+		SELECT 
+		cpinfoid,planid,bet.userid as userid,lotteryid,betterm,playtype,bettype,
+		cpordertype,cpunit,cpamount,ordertime,orderstatus,winstatus,prize,othercolumn1,othercolumn2,
+		othercolumn3,othercolumn4,bet.reserve as reserve,loginName,mobilePhone,status,nickName,realName
+		FROM  coopinfo AS bet,useraccount as usera
+		WHERE bet.UserId = usera.userid
+	</sql>
+	
+	<!-- 合买的参与 begin -->
+	<sql id="selectCoopPlanContent">
+		SELECT 
+		plan.planid as planid,plan.userid as userid,plan.areacode as areacode,plan.lotteryid as lotteryid,
+		plan.startterm as startterm,plan.playtype as playtype,plan.bettype as bettype,plan.betcodemode as betcodemode,
+		plan.betcode as betcode,plan.chasecount as chasecount,plan.chasedcount as chasedcount,plan.winstoped as winstoped,
+		plan.plantype as plantype,plan.betmultiple as betmultiple,plan.unitamount as unitamount,plan.plantime as plantime,
+		plan.stoptime as stoptime,plan.plantitle as plantitle,plan.plandescription as plandescription,
+		plan.planopentype as planopentype,plan.totalunit as totalunit,plan.unitprice as unitprice,plan.unitbuyself as unitbuyself,
+		plan.commisionpercent as commisionpercent,plan.selledunit as selledunit,
+		COALESCE(bet.orderstatus,CONCAT('90',plan.planstatus)) as planstatus,
+		plan.plansource as plansource,
+		plan.reserve as reserve,loginname,mobilephone,status,nickname,realname
+		FROM  betplan AS plan left join betorder as bet on plan.planid = bet.planid,useraccount as usera
+		WHERE plan.userid = usera.userid
+	</sql>
+	
+	<sql id="selectCoopPlanCondition" >
+		<isNotEmpty property="planId" prepend="AND">
+				plan.planid = #planId#
+		</isNotEmpty>
+		<isNotEmpty property="planType" prepend="AND">
+				plan.plantype = #planType#
+		</isNotEmpty>
+		<isNotEmpty property="planStatus">
+			<isNotEqual property="planStatus" compareValue="-1">
+			<isEqual property="planStatus" prepend="AND" compareValue="100">
+			plan.planstatus=0
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="106">
+			plan.planstatus=4
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="101">
+			bet.orderstatus in(0,1,2)
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="102">
+			bet.orderstatus in (4,5)
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="103">
+			bet.orderstatus=10
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="104">
+			bet.orderstatus=10
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="105">
+			bet.orderstatus in (3,6)
+			</isEqual>
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="lotteryId">
+			<isNotEqual property="lotteryId" prepend="AND" compareValue="0">
+				plan.lotteryid = #lotteryId#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="termNo">
+			<isNotEqual property="termNo" prepend="AND" compareValue="0">
+				plan.startterm = #termNo#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="planProgress">
+			<isEqual property="planProgress" prepend="AND" compareValue="0">
+				plan.totalunit = plan.selledunit
+			</isEqual>
+			<isEqual property="planProgress" prepend="AND" compareValue="1">
+				plan.totalunit <![CDATA[ > ]]> plan.selledunit
+			</isEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="planMoneyDown">
+			<isNotEqual property="planMoneyDown" prepend="AND" compareValue="-1">
+			 plan.unitamount <![CDATA[ >= ]]> #planMoneyDown#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="planMoneyUp">
+			<isNotEqual property="planMoneyUp" prepend="AND" compareValue="-1">
+			plan.unitamount <![CDATA[ < ]]> #planMoneyUp#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="tiChengDown">
+			<isNotEqual property="tiChengDown" prepend="AND" compareValue="-1">
+			 plan.commisionpercent <![CDATA[ >= ]]> #tiChengDown#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="tiChengUp">
+			<isNotEqual property="tiChengUp" prepend="AND" compareValue="-1">
+			plan.commisionpercent <![CDATA[ < ]]> #tiChengUp#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="begin_Time" prepend="AND ">
+			plan.plantime <![CDATA[ >= ]]> #begin_Time#
+		</isNotEmpty>
+		<isNotEmpty property="end_Time" prepend="AND">
+			plan.plantime <![CDATA[ <= ]]> #begiend_Timen_Time#
+		</isNotEmpty>
+		<isNotEmpty property="userIdentify" prepend="AND">
+			(usera.userid =#userIdentify# or usera.mobilePhone=#userIdentify# or usera.loginName=#userIdentify# or usera.email=#userIdentify# or usera.nickname=#userIdentify#)
+		</isNotEmpty>
+	</sql>
+	<select id="queryCoopPlan" resultMap="BusPlanDomainResult" parameterClass="java.util.Map">
+		<include refid="busCoopBetOrder.selectCoopPlanContent"/>
+		<include refid="busCoopBetOrder.selectCoopPlanCondition"/>
+		order by plantime desc
+		limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="queryCoopPlanCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(1) as totalNum
+		FROM   betplan AS plan left join betorder as bet on plan.planid = bet.planid,useraccount as usera
+		WHERE plan.userid = usera.userid
+		<include refid="busCoopBetOrder.selectCoopPlanCondition"/>
+	</select>
+	<!-- 合买的参与 附加了用户信息 end -->
+	
+	
+	<!-- 合买派奖相关操作begin -->
+	<sql id="queryCoopInfoCanDispatchInfo_condition">
+		and bet.orderstatus = 7 and bet.winstatus in (2,3)
+		<isNotNull prepend="and" property="lotteryIdTerms">   
+             concat(lotteryid,betterm) in   
+            <iterate  property="lotteryIdTerms" open="(" close=")" conjunction=",">   
+             #lotteryIdTerms[]#   
+            </iterate>   
+         </isNotNull> 
+         <isNotEmpty prepend="and" property="userIdentify">
+         (usera.userId=#userIdentify# or usera.loginname=#userIdentify# or usera.mobilephone=#userIdentify# or usera.email=#userIdentify#)
+         </isNotEmpty>
+	</sql>
+	
+	<select id="queryCoopInfoCanDispatch" resultMap="BusCoopDomainResult" parameterClass="java.util.Map">
+		<include refid="busCoopBetOrder.selectCoopContent"/>
+		<include refid="busCoopBetOrder.queryCoopInfoCanDispatchInfo_condition"/>
+		 limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="getCoopInfoCanDispatchCount" resultClass="BusBetOrderCountDomain"  parameterClass="java.util.Map">
+		select count(1) as totalNum,COALESCE(sum(prize),0) as totalPrize
+		from coopinfo AS bet,useraccount as usera 
+		where bet.UserId = usera.userid
+		<include refid="busCoopBetOrder.queryCoopInfoCanDispatchInfo_condition"/>
+	</select>
+	<!-- 合买派奖相关操作end -->
+	
+	<!-- 合买参与信息查询begin -->
+	<sql id="queryCoopInofS_condition">
+		<isEqual property="isQianOrHou" prepend="and" compareValue="0">
+			bet.cpordertype in (0,1,3)
+		</isEqual>
+		<isNotEmpty property="lotteryId">
+			<isNotEqual property="lotteryId" prepend="AND" compareValue="0">
+			bet.lotteryid=#lotteryId#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="termNo">
+			<isNotEqual property="termNo" prepend="AND" compareValue="0">
+			bet.betterm=#termNo#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="planId" prepend="AND">
+			bet.planid=#planId#
+		</isNotEmpty>
+		<isNotEmpty property="coopInfoId" prepend="AND">
+			bet.cpinfoid=#coopInfoId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="jionUser">
+         (usera.userId=#jionUser# or usera.loginname=#jionUser# or usera.mobilephone=#jionUser# or usera.email=#jionUser#)
+         </isNotEmpty>
+         <isNotEmpty property="begin_Time" prepend="AND ">
+			bet.ordertime <![CDATA[ >= ]]> #begin_Time#
+		</isNotEmpty>
+		<isNotEmpty property="end_Time" prepend="AND">
+			bet.ordertime <![CDATA[ <= ]]> #end_Time#
+		</isNotEmpty>
+		<isNotEmpty property="coopType">
+			<isNotEqual property="coopType" prepend="AND" compareValue="-1">
+			bet.cpordertype=#coopType#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="orderStatus">
+			<isNotEqual property="orderStatus" prepend="AND" compareValue="-1">
+			bet.orderstatus=#orderStatus#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="winStatus">
+			<isNotEqual property="winStatus" prepend="AND" compareValue="-1">
+			bet.winstatus=#winStatus#
+			</isNotEqual>
+		</isNotEmpty>
+	</sql>
+	<select id="queryCoopInfos" resultMap="BusCoopDomainResult" parameterClass="java.util.Map">
+		<include refid="busCoopBetOrder.selectCoopContent"/>
+		<include refid="busCoopBetOrder.queryCoopInofS_condition"/>
+		order by planid,ordertime desc
+		 limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="getCoopInfosCount" resultClass="java.lang.Integer"  parameterClass="java.util.Map">
+		select count(1) as totalNum
+		from coopinfo AS bet,useraccount as usera 
+		where bet.UserId = usera.userid
+		<include refid="busCoopBetOrder.queryCoopInofS_condition"/>
+	</select>
+	<!-- 合买参与信息查询end -->
+	
+	<!-- 前台账户中心查发起的合买开始 -->
+	<sql id="selectCoopPlanCreateContent">
+		SELECT 
+		betplan.planid as planId,betplan.lotteryid as lotteryId,betplan.startterm as startTerm,
+		betplan.plantitle as planTitle,
+		betplan.plantime as planTime,betplan.unitamount as unitAmount,betplan.totalunit as totalUnit,betplan.unitBuySelf as unitBuySelf,
+		betplan.selledUnit as selledUnit,
+		COALESCE(betorder.winstatus,0) as planSource,
+		COALESCE(betorder.orderstatus,CONCAT('90',betplan.planstatus)) as planStatus,
+		COALESCE(betorder.pretaxprize,0) as chaseCount,#userId# as userId
+		FROM  betplan left join betorder on betplan.planid = betorder.planid
+		WHERE betplan.plantype=1 
+	</sql>
+	<sql id="selectCoopPlanCreateContent_condition">
+		<isEqual property="faQiOrCanYu" prepend="and" compareValue="0">
+		betplan.userid=#userId#
+		</isEqual>
+		<isEqual property="faQiOrCanYu" prepend="and" compareValue="1">
+		EXISTS (SELECT 1 FROM coopinfo WHERE coopinfo.planid=betplan.planid and coopinfo.userid=#userId#)
+		</isEqual>
+		<isNotEmpty property="lotteryId">
+			<isNotEqual property="lotteryId" prepend="AND" compareValue="-1">
+			betplan.lotteryid=#lotteryId#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="termNo">
+			<isNotEqual property="termNo" prepend="AND" compareValue="-1">
+			betplan.betterm=#termNo#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="planStatus">
+			<isNotEqual property="planStatus" compareValue="-1">
+			<isEqual property="planStatus" prepend="AND" compareValue="100">
+			betplan.planstatus=0
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="106">
+			betplan.planstatus=4
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="101">
+			betorder.orderstatus in(0,1,2)
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="102">
+			betorder.orderstatus in (4,5)
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="103">
+			betorder.orderstatus=10
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="104">
+			betorder.orderstatus=10
+			</isEqual>
+			<isEqual property="planStatus" prepend="AND" compareValue="105">
+			betorder.orderstatus in (3,6)
+			</isEqual>
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty property="winStatus">
+			<isNotEqual property="winStatus" compareValue="-1" prepend="and">
+			(betorder.orderstatus=#winStatus# or betplan.planstatus=0)
+			</isNotEqual>
+		</isNotEmpty>
+         <isNotEmpty property="begin_Time" prepend="AND ">
+			betplan.planTime <![CDATA[ >= ]]> #begin_Time#
+		</isNotEmpty>
+		<isNotEmpty property="end_Time" prepend="AND">
+			betplan.planTime <![CDATA[ <= ]]> #end_Time#
+		</isNotEmpty>
+	</sql>
+	<select id="queryCoopPlanCreateInfos" resultClass="BusPlanDomain" parameterClass="java.util.Map">
+		<include refid="busCoopBetOrder.selectCoopPlanCreateContent"/>
+		<include refid="busCoopBetOrder.selectCoopPlanCreateContent_condition"/>
+		 order by betplan.planTime desc
+		 limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="getCoopPlanCreateCount" resultClass="java.lang.Integer"  parameterClass="java.util.Map">
+		select count(1) as totalNum
+		FROM  betplan left join betorder on betplan.planid = betorder.planid
+		WHERE betplan.plantype=1
+		<include refid="busCoopBetOrder.selectCoopPlanCreateContent_condition"/>
+	</select>
+	<!-- 前台账户中心查发起的合买结束 -->
+	
+	<!-- 查询合买方案的信息并包含出票订单的情况，用于前台合买详细信息的显示 -->
+	<select id="getCoopPlanForWeb" resultClass="BusPlanDomain" parameterClass="java.lang.String">
+		SELECT 
+		betplan.planid as planId,betplan.userid as userId,betplan.lotteryid as lotteryId,betplan.startterm as startTerm,
+		betplan.plantitle as planTitle,betplan.plandescription as planDescription,betplan.playtype as playtype,betplan.bettype as bettype,
+		betplan.betcode as betCode,betplan.planopentype as planOpenType,betplan.betmultiple as betMultiple,
+		betplan.plantime as planTime,betplan.unitamount as unitAmount,betplan.totalunit as totalUnit,betplan.unitBuySelf as unitBuySelf,
+		betplan.selledUnit as selledUnit,betplan.commisionpercent as commisionPercent,betplan.unitprice as unitPrice,
+		COALESCE(betorder.winstatus,0) as planSource,
+		COALESCE(betorder.orderstatus,CONCAT('90',betplan.planstatus)) as planStatus,
+		COALESCE(betorder.afttaxprize,0) as chaseCount,
+		COALESCE(betorder.deductprize,0) as chasedCount,
+		COALESCE(betorder.wincode,'') as reserve
+		FROM  betplan left join betorder on betplan.planid = betorder.planid
+		WHERE betplan.planid = #value#
+	</select>
+	<!--  -->
+	
+</sqlMap>

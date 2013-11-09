@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="adminUser">
+	<typeAlias alias="AdminUserDomain"
+		type="com.success.admin.user.domain.AdminUser" />
+
+	<resultMap id="AdminUserDomainResult" class="AdminUserDomain">
+		<result property="userId" column="userId" />
+		<result property="loginName" column="loginName" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="sex" column="sex" />
+		<result property="age" column="age" />
+		<result property="telphone" column="telphone" />
+		<result property="mobile" column="mobile" />
+		<result property="email" column="email" />
+		<result property="company" column="company" />
+		<result property="createTime" column="createTime" />
+		<result property="lastLoginTime" column="lastLoginTime" />
+		<result property="lastLoginIp" column="lastLoginIp" />
+		<result property="status" column="status" />
+		<result property="reserve" column="reserve" />
+		<result property="roles"  column="userId" select="adminUser.getAdminUserRoles"/>
+	</resultMap>
+
+	<typeAlias alias="AdminRolePrivilegesDomain"
+		type="com.success.admin.user.domain.AdminRolePrivileges" />
+
+	<resultMap id="AdminRolePrivilegesDomainResult" class="AdminRolePrivilegesDomain">
+		<result property="roleId" column="roleId" />
+		<result property="privilegeId" column="privilegeId" />
+		<result property="privilegeType" column="privilegeType" />
+		<result property="accessKey" column="accessKey" />
+		<result property="reserve" column="reserve" />
+	</resultMap>
+
+	<typeAlias alias="AdminUserRolesDomain"
+		type="com.success.admin.user.domain.AdminUserRoles" />
+
+	<resultMap id="AdminUserRolesDomainResult" class="AdminUserRolesDomain">
+		<result property="userId" column="userId" />
+		<result property="roleId" column="roleId" />
+		<result property="reserve" column="reserve" />
+	</resultMap>
+
+	<!-- 插入AdminUser表一条记录 -->
+	<insert id="insertAdminUser" parameterClass="AdminUserDomain">
+		insert into adminuser(loginname, password, name, sex, age, telphone, mobile, email, company, createtime, lastlogintime, 
+			lastloginip, status, reserve) 
+		values(
+			#loginName#, #password#, #name#, #sex#, #age#, #telphone#, #mobile#, #email#, #company#, now(), #lastLoginTime#, 
+			#lastLoginIp#, #status#, #reserve#)
+        <selectKey resultClass="AdminUserDomain" >    
+	      SELECT @@IDENTITY AS userId
+	    </selectKey>
+	</insert>
+
+	<!-- 更新用户密码 -->
+	<update id="updateAdminUserPassword" parameterClass="java.util.Map">
+		update adminuser set password = #password# where userId = #userId:NUMERIC# and password = #oldPassword#
+	</update>
+
+	<!-- 更新用户信息 -->
+	<update id="updateAdminUser" parameterClass="AdminUserDomain">
+		update adminuser set name = #name#, sex = #sex#, age = #age#, telphone = #telphone#, mobile = #mobile#, email = #email#, 
+			company = #company# where userId = #userId:NUMERIC#
+	</update>
+	
+	<!-- 更新用户登录信息 -->
+	<update id="updateAdminUserLoginInfo" parameterClass="java.util.Map">
+		update adminuser set lastloginip = #lastLoginIp#, lastLoginTime = now() where userId = #userId:NUMERIC#
+	</update>
+
+	<!-- 查询用户信息，条件为loginName 以及 password -->
+	<select id="getAdminUserForLogon" parameterClass="java.util.Map" resultMap="AdminUserDomainResult">
+		select userid, loginname, password, name, sex, age, telphone, mobile, email, company, createtime, lastlogintime, 
+			lastloginip, status, reserve from adminuser where loginname = #loginName# and password = #password#
+	</select>
+
+	<!-- 查询用户信息，条件为userId -->
+	<select id="getAdminUser" parameterClass="java.lang.Long" resultMap="AdminUserDomainResult">
+		select userid,password, loginname, name, sex, age, telphone, mobile, email, company, createtime, lastlogintime, 
+			lastloginip, status, reserve from adminuser where userId = #userId:NUMERIC#
+	</select>
+
+	<!-- 查询所有用户信息 -->
+	<select id="getAdminUseres" resultMap="AdminUserDomainResult">
+		select userid, loginname, name, sex, age, telphone, mobile, email, company, createtime, lastlogintime, 
+			lastloginip, status, reserve from adminuser
+	</select>
+
+	<!-- 查询指定userId的用户的权限 -->
+	<select id="getAdminUserPrivileges" parameterClass="java.lang.Long" resultMap="AdminRolePrivilegesDomainResult">
+		select roleid, privilegeid, privilegeType, accesskey, reserve from adminroleprivileges 
+			where 
+				roleid in(select roleid from adminuserroles where userid=#userId:NUMERIC#)
+	</select>
+
+	<!-- 插入AdminUserRoles表一条记录 -->
+	<insert id="insertAdminUserRoles" parameterClass="AdminUserRolesDomain">
+		insert into adminuserroles(userid, roleid, reserve) values(#userId#, #roleId#, #reserve#)
+	</insert>
+
+	<!-- 删除指定userId, roleId的AdminUserRoles表一条记录 -->
+	<delete id="deleteAdminUserRoles" parameterClass="java.util.Map">
+		delete from adminuserroles where userid = #userId:NUMERIC# and roleid = #roleId#
+	</delete>
+
+	<!-- 删除指定userId的AdminUserRoles表的所有记录 -->
+	<delete id="deleteAdminUserAllRoles" parameterClass="java.lang.Long">
+		delete from adminuserroles where userid = #userId:NUMERIC#
+	</delete>
+
+	<!-- 查询指定userId的用户角色Id -->
+	<select id="getAdminUserRoles" parameterClass="java.lang.Long" resultMap="AdminUserRolesDomainResult">
+		select userid, roleid, reserve from adminuserroles where userid = #userId:NUMERICE#
+	</select>
+	  
+	  <!-- 根据用户登录名去查询 -->
+	<select id="getAdminUser4lognameList" resultClass="AdminUserDomain" resultMap="AdminUserDomainResult"  parameterClass="java.util.Map">          
+	   select * from adminuser   
+	  	 <dynamic prepend=" WHERE ">  
+       	  	<isNotNull property="loginName">
+               <isGreaterThan prepend=" and " property="loginName" compareValue="0">
+              	 	loginName = #loginName#
+               </isGreaterThan>             
+             </isNotNull>
+    	</dynamic> 
+    	order by createtime desc
+	</select>   
+	
+</sqlMap>

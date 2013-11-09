@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="GBK" ?>  
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="lotteryTerm">
+	<typeAlias alias="lotteryTermModel" type="com.success.lottery.term.domain.LotteryTermModel"/>
+	<typeAlias alias="lotteryTermSwitch" type="com.success.lottery.term.domain.LotteryTermSwitchDomain"/> 
+	
+    <!-- 定义告诉缓存模型,以后如果要部署集群，需要换成OSCACHE -->
+    <!-- 
+    <cacheModel id="lotteryCurrentTerm" type="MEMORY" readOnly="false" serialize="true">
+    	<flushInterval hours="12"/>
+    	<flushOnExecute statement="lotteryTerm.updateTermStatus"/>
+    	<flushOnExecute statement="lotteryTerm.updateTermSalesInfo"/>
+    	<flushOnExecute statement="lotteryTerm.updateTermWinStatus"/>
+    	<flushOnExecute statement="lotteryTerm.updateTermSwitch"/>
+    	<flushOnExecute statement="lotteryTerm.updateTermWinInfo"/>
+    	<flushOnExecute statement="lotteryTerm.updateTermLimitNumber"/>
+    	<property name="reference-type" value="SOFT"/>
+    </cacheModel>
+     -->
+    <resultMap id="lotteryTermModelResult" class="lotteryTermModel" >  
+        <result property="lotteryId"         column="LotteryId"/>       
+        <result property="termNo"            column="TermNo"/>           
+        <result property="termStatus"        column="TermStatus"/>       
+        <result property="winStatus"         column="WinStatus"/>       
+        <result property="saleStatus"        column="SaleStatus"/>      
+        <result property="salesInfo"         column="SalesInfo"/> 
+        <result property="startTime"         column="StartTime"/>     
+        <result property="deadLine"          column="DeadLine"/> 
+        <result property="deadLine2"         column="DeadLine2"/>    
+        <result property="winLine"           column="WinLine"/>   
+        <result property="startTime2"        column="StartTime2"/> 
+        <result property="deadLine3"         column="DeadLine3"/> 
+        <result property="winLine2"          column="WinLine2"/> 
+        <result property="changeLine"        column="ChangeLine"/>
+        <result property="lotteryResult"     column="LotteryResult"/>   
+        <result property="lotteryResultPlus" column="LotteryResultPlus"/>
+        <result property="missCount"         column="MissCount"/>
+        <result property="limitNumber"       column="LimitNumber"/>
+        <result property="salesVolume"       column="SalesVolume"/>       
+        <result property="jackpot"           column="Jackpot"/>           
+        <result property="winResult"         column="WinResult"/>         
+        <result property="nextTerm"          column="NextTerm"/>          
+        <result property="reserve1"          column="Reserve1"/>    
+    </resultMap>
+    
+    <resultMap id="currentlotteryTermResult" class="lotteryTermModel" >  
+        <result property="lotteryId"         column="LotteryId"/>       
+        <result property="termNo"            column="TermNo"/>           
+        <result property="termStatus"        column="TermStatus"/>       
+        <result property="winStatus"         column="WinStatus"/>       
+        <result property="saleStatus"        column="SaleStatus"/>      
+        <result property="salesInfo"         column="SalesInfo"/> 
+        <result property="startTime"         column="StartTime"/>     
+        <result property="deadLine"          column="DeadLine"/> 
+        <result property="deadLine2"         column="DeadLine2"/>    
+        <result property="winLine"           column="WinLine"/>   
+        <result property="startTime2"        column="StartTime2"/> 
+        <result property="deadLine3"         column="DeadLine3"/> 
+        <result property="winLine2"          column="WinLine2"/> 
+        <result property="changeLine"        column="ChangeLine"/>
+        <result property="lotteryResult"     column="LotteryResult"/>   
+        <result property="lotteryResultPlus" column="LotteryResultPlus"/>
+        <result property="missCount"         column="MissCount"/>
+        <result property="limitNumber"       column="LimitNumber"/>
+        <result property="salesVolume"       column="SalesVolume"/>       
+        <result property="jackpot"           column="Jackpot"/>           
+        <result property="winResult"         column="WinResult"/>         
+        <result property="nextTerm"          column="NextTerm"/>          
+        <result property="reserve1"          column="Reserve1"/>
+        <result property="startTimeSec"      column="startTimeSec"/>  
+        <result property="deadLineSec"       column="deadLineSec"/>       
+    </resultMap>  
+    <!-- 更新彩期期数状态 -->
+    <update id="updateTermStatus" parameterClass="lotteryTermModel">
+    	UPDATE lotteryterm SET TermStatus = #termStatus:NUMERIC#
+    	WHERE LotteryId = #lotteryId:NUMERIC# AND TermNo = #termNo:VARCHAR#
+    </update> 
+    <!-- 输入彩种的开奖信息 -->
+    <update id="updateTermWinInfo" parameterClass="lotteryTermModel">
+    	UPDATE lotteryterm SET WinStatus = #winStatus#,SaleStatus=#saleStatus#,LotteryResult=#lotteryResult#,LotteryResultPlus=#lotteryResultPlus#,
+    	SalesVolume=#salesVolume#,Jackpot=#jackpot#,WinResult=#winResult#,MissCount=#missCount#,Reserve1=#reserve1#,winline = now()
+    	WHERE LotteryId = #lotteryId# AND TermNo = #termNo# AND TermStatus=2 AND SaleStatus=2 AND WinStatus=1
+    </update>
+    
+    <!-- 更新彩期销售信息 -->
+    <update id="updateTermSalesInfo" parameterClass="lotteryTermModel">
+    	UPDATE lotteryterm SET SalesInfo = #salesInfo:VARCHAR#,StartTime=#startTime#,DeadLine=#deadLine#,
+    	DeadLine2=#deadLine2#,WinLine=#winLine#,StartTime2=#startTime2#,DeadLine3=#deadLine3#,WinLine2=#winLine2#,ChangeLine=#changeLine#
+    	WHERE LotteryId = #lotteryId:NUMERIC# AND TermNo = #termNo:VARCHAR# AND TermStatus = 0 AND SaleStatus = 4
+    </update> 
+     
+    <!-- 更新彩期的开奖状态 -->
+    <update id="updateTermWinStatus" parameterClass="lotteryTermModel">
+    	UPDATE lotteryterm SET WinStatus = #winStatus:NUMERICR#
+    	WHERE LotteryId = #lotteryId:NUMERIC# AND TermNo = #termNo:VARCHAR#
+    </update> 
+    <!-- 查询彩期信息 -->
+     <select id="queryTermInfo" parameterClass="lotteryTermModel" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm
+     	WHERE LotteryId = #lotteryId:NUMERIC# AND TermNo = #termNo:VARCHAR#
+     </select>
+     
+     <!-- 查询彩期上一期的彩期信息 -->
+     <select id="queryLastOneTermInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm
+     	WHERE LotteryId = #lotteryId:NUMERIC# AND NextTerm = #termNo:VARCHAR#
+     </select>
+     
+     <!-- 取彩种的当前期信息 -->
+     <!--  <select id="queryTermCurrentInfo" parameterClass="java.util.Map" resultMap="currentlotteryTermResult" cacheModel="lotteryCurrentTerm">-->
+     <select id="queryTermCurrentInfo" parameterClass="java.util.Map" resultMap="currentlotteryTermResult" >
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber,
+     		   coalesce((UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(starttime)),-1) AS startTimeSec,
+     		   coalesce((UNIX_TIMESTAMP(DeadLine) - UNIX_TIMESTAMP(now())),-1) AS deadLineSec 
+     	FROM lotteryterm
+     	WHERE LotteryId = #lotteryId:NUMERIC# AND TermStatus = 1 order by TermNo asc limit 0,#limitNum#
+     </select>
+     
+     <!-- 获取某一个彩种已经开奖的已售期信息列表 -->
+     <select id="queryHaveWinTermInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm
+     	WHERE LotteryId = #lotteryId:NUMERIC# AND TermStatus = 2 AND SaleStatus = 5 order by TermNo desc limit 0,#limitNum#
+     </select>
+     <!-- 用于高频多乐彩的开奖查询，按照日期 -->
+      <select id="queryHaveWinTermInfoToDate" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm
+     	WHERE LotteryId=#lotteryId# AND TermStatus = 2 AND SaleStatus = 5 AND TermNO like #termno#  order by TermNo asc 
+     </select>
+     <!-- 获取所有彩种的开奖信息,暂时不使用 -->
+     <select id="queryAllLastTermInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm as tabM
+     	WHERE TermStatus = 2 and SaleStatus = 5
+     	and exists (select max(tabS.TermNo) as TermNos from lotteryterm as tabS
+       where tabS.TermStatus = 2 and tabS.SaleStatus = 5
+       and tabS.LotteryId = tabM.LotteryId group by LotteryId having tabM.TermNo = max(tabS.TermNo))
+     </select>
+     
+     <!-- 获取彩期最近一期的开奖信息 -->
+     <!-- <select id="queryTermLastCashInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult" cacheModel="lotteryCurrentTerm"> -->
+     <select id="queryTermLastCashInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm
+     	WHERE LotteryId = #lotteryId:NUMERIC# AND TermStatus = 2 AND SaleStatus = 5 
+     	AND TermNo = (select max(TermNo) as TermNo from lotteryterm where LotteryId = #lotteryId:NUMERIC# AND TermStatus = 2 AND SaleStatus = 5)
+     </select>
+     
+     <!-- 获取某一彩种的所有期数信息 -->
+     <select id="queryTermInfoList" parameterClass="java.lang.Integer" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber 
+     	FROM lotteryterm
+     	WHERE LotteryId = #value:NUMERIC#
+     </select>
+     <!-- 根据条件查询彩期编号列表,用于查询可以开奖(K)、可以兑奖(D)、可以派奖(P)、可以开奖以及已经开过奖(L)、
+     可以销售(S)、当前期和未售期(X)、能追号(Z)的的期号,已经输入开奖信息(HK),已经派奖(HP),官方止售(DL3) -->
+     <select id="queryCanOpTermNoList" parameterClass="java.util.Map" resultClass="java.lang.String">
+     	SELECT TermNo
+     	FROM lotteryterm
+     	WHERE LotteryId = #lotteryId:NUMERIC# 
+     	<isEqual prepend="and" property="opType" compareValue="K">
+     		WinStatus=1 AND SaleStatus=2 AND TermStatus=2 order by TermNo asc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="D">
+     		(WinStatus=2 or WinStatus=3) AND TermStatus=2 AND SaleStatus=5 order by TermNo asc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="P">
+     		(WinStatus=4 or WinStatus=7) AND TermStatus=2 AND SaleStatus=5 order by TermNo asc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="L">
+     		(SaleStatus=2 or SaleStatus = 5 or WinStatus=1) AND TermStatus=2 order by TermNo desc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="S">
+     		TermStatus = 1 order by TermNo asc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="X">
+     		(TermStatus = 1 or TermStatus = 0) order by TermNo asc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="C">
+     		(TermStatus = 1 or TermStatus = 2) order by TermNo desc
+     	</isEqual> 
+     	<isEqual prepend="and" property="opType" compareValue="Z">
+     		(TermStatus = 0) order by TermNo
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="HK">
+     		(TermStatus = 2) AND SaleStatus = 5 order by TermNo DESC
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="HP">
+     		(TermStatus = 2) AND (WinStatus = 7 OR WinStatus = 8) order by TermNo DESC
+     	</isEqual> 
+     	<isEqual prepend="and" property="opType" compareValue="LIMIT">
+     		(TermStatus = 1 OR (TermStatus = 2 and LimitNumber is not null)) order by TermNo DESC
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="DL3">
+     		(TermStatus = 2 AND DeadLine3 <![CDATA[ <= ]]> now()) order by TermNo DESC
+     	</isEqual>       	
+     	<isNotEmpty property="limitNum">
+     		limit 0,#limitNum#
+     	</isNotEmpty>
+     </select>
+     
+     <!-- 更新彩期状态和彩期销售状态,该SQL语句不允许其他地方使用 -->
+     <update id="updateTermSwitch" parameterClass="lotteryTermSwitch">
+     	update lotteryterm set TermStatus = #termStatus#,SaleStatus = #saleStatus#
+     	where LotteryId = #lotteryId# and TermNo = #currentTermNo# and TermStatus = #old_termStatus# and (SaleStatus = #old_saleStatus# or SaleStatus = 3)
+     </update>
+     
+     <!-- 查询需要开始将预售期改为当前期的彩期，该方法只有足彩用到 -->
+     <select id="queryTermSwitchBeginInfo" resultClass="lotteryTermModel" parameterClass="java.util.Map">
+     	select LotteryId as lotteryId,TermNo as termNo,StartTime as startTime
+     	from lotteryterm
+     	where LotteryId = #lotteryId# and TermStatus = 0 and StartTime is not null 
+     	order by StartTime asc limit 0,#limitNum#
+     </select>
+     <!-- 更新限号信息 -->
+     <update id="updateTermLimitNumber" parameterClass="java.util.Map">
+     	update lotteryterm set LimitNumber = #limitNumber# 
+     	where LotteryId = #lotteryId:NUMERIC# and TermNo = #termNo# and TermStatus = 1
+     </update>
+     
+     <!-- 根据条件查询彩期编号列表,用于查询可以开奖以及已经开过奖(L),可以修改销售信息(X)的彩种信息 -->
+     
+     <select id="queryCanOpTermInfoList" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+        FROM lotteryterm
+        WHERE LotteryId = #lotteryId:NUMERIC#
+        <isNotEmpty prepend="and" property="begin_termNo">
+     		TermNo <![CDATA[ >= ]]> #begin_termNo#
+     	</isNotEmpty>
+     	<isNotEmpty prepend="and" property="end_termNo">
+     		TermNo <![CDATA[ <= ]]> #end_termNo#
+     	</isNotEmpty>
+     	
+        <isEqual prepend="and" property="opType" compareValue="L">
+     		(SaleStatus=2 or SaleStatus = 5 or WinStatus=1) and termStatus = 2 order by TermNo desc
+     	</isEqual>
+     	<isEqual prepend="and" property="opType" compareValue="X">
+     		(termStatus = 0 or termStatus = 1) order by TermNo asc
+     	</isEqual>
+     	
+     	<isEqual prepend="and" property="opType" compareValue="LIMIT">
+     		(termStatus = 1 or (termStatus = 2 and limitNumber is not null)) order by TermNo desc
+     	</isEqual>
+     	
+     	<isNotEmpty property="limitNum">
+     		limit 0,#limitNum#
+     	</isNotEmpty>
+     </select>
+     <!-- 根据开奖日期来查询彩期列表 -->
+      <select id="queryHaveWinTermInfobytime" parameterClass="java.lang.String" resultMap="lotteryTermModelResult">
+     	SELECT LotteryId,TermNo,TermStatus,WinStatus,SaleStatus,SalesInfo,DeadLine,WinLine,
+     		   ChangeLine,LotteryResult,LotteryResultPlus,SalesVolume,Jackpot,WinResult,NextTerm,Reserve1,
+     		   StartTime,DeadLine2,StartTime2,DeadLine3,WinLine2,MissCount,LimitNumber
+     	FROM lotteryterm
+     	WHERE winLine like #winLine#
+     </select>
+    
+     <!-- 以下用于WEB页面分页查询彩期李冰添加
+     <select id="getLotteryTermInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+		select lotteryid, termno, termstatus, winstatus, salestatus, salesinfo, starttime, deadline, deadline2, 
+				winline, starttime2, deadline3,	winline2, changeline, lotteryresult, lotteryresultplus, misscount, 
+				limitnumber, salesvolume, jackpot, winresult, nextterm, reserve1 
+		from lotteryterm where 1=1
+
+			<isGreaterThan property="lotteryId" compareValue="0"  prepend="and">
+				lotteryid = #lotteryId#
+			</isGreaterThan>
+			<isNotEmpty property="wheres" >
+				$wheres$
+			</isNotEmpty>
+		 limit #startPageNumber#, #endPageNumber#
+     </select>
+ -->
+     <!-- 以下用于WEB页面分页查询彩期李冰添加
+     <select id="getLotteryTermCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from lotteryterm where 1=1
+			<isGreaterThan property="lotteryId" compareValue="0"  prepend="and">
+				lotteryid = #lotteryId#
+			</isGreaterThan>
+			<isNotEmpty property="wheres" >
+				$wheres$
+			</isNotEmpty>
+     </select>
+      -->
+     <!-- 以下已经由潘祖朝修改过 -->
+     <select id="getLotteryTermInfo" parameterClass="java.util.Map" resultMap="lotteryTermModelResult">
+		select lotteryid, termno, termstatus, winstatus, salestatus, salesinfo, starttime, deadline, deadline2, 
+				winline, starttime2, deadline3,	winline2, changeline, lotteryresult, lotteryresultplus, misscount, 
+				limitnumber, salesvolume, jackpot, winresult, nextterm, reserve1 
+		from lotteryterm where 1=1
+
+			<isGreaterThan property="lotteryId" compareValue="0"  prepend="and">
+				lotteryid = #lotteryId#
+			</isGreaterThan>
+			<isNotNull property="startTerm">
+              <isGreaterThan prepend=" and " property="startTerm" compareValue="0">
+             	 	<![CDATA[
+      				TermNo>=#startTerm#
+    				]]>
+              </isGreaterThan>             
+            </isNotNull>
+            <isNotNull property="endTerm">
+              <isGreaterThan prepend=" and " property="endTerm" compareValue="0">
+             	 	<![CDATA[
+      				TermNo<=#endTerm#
+      			]]>
+              </isGreaterThan>             
+            </isNotNull>
+            order by starttime desc  
+		 limit #startPageNumber#, #endPageNumber#
+     </select>
+     <select id="getLotteryTermCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from lotteryterm where 1=1
+			<isGreaterThan property="lotteryId" compareValue="0"  prepend="and">
+				lotteryid = #lotteryId#
+			</isGreaterThan>
+			<isNotNull property="startTerm">
+              <isGreaterThan prepend=" and " property="startTerm" compareValue="0">
+             	 	<![CDATA[
+      				TermNo>=#startTerm#
+    				]]>
+              </isGreaterThan>             
+            </isNotNull>
+            <isNotNull property="endTerm">
+              <isGreaterThan prepend=" and " property="endTerm" compareValue="0">
+             	 	<![CDATA[
+      				TermNo<=#endTerm#
+      			]]>
+              </isGreaterThan>             
+            </isNotNull>
+     </select>
+     <!-- 获取能打印彩票的彩种彩期 -->
+     <select id="getCanPrintLotteryTerm" resultClass="java.lang.String">
+     	SELECT concat('(lotteryid=',lotteryid,' and ','betterm=''',termno,''')')
+     	FROM lotteryterm l where starttime <![CDATA[ <= ]]> now() and deadline3 <![CDATA[ >= ]]> now()
+     </select>
+</sqlMap>

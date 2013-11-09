@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >  
+
+<beans>
+	
+	<!-- SERVICE -->
+	
+	<bean id="lotteryTermService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.LotteryTermService">
+                <property name="lotteryTermDao">
+                  <ref bean="lotteryTermDaoImpl"/>
+                </property>     
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="update*">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="queryTermCurrentInfo">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED,readOnly,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+	
+  	<!--END SERVICE-->
+
+
+	<!-- 生成HTML的Service类 开始-->
+	<bean id="tohtml" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		 <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+		<property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.ToHtmlInterf</value>
+        </property>
+		<property name="target">
+            <bean class="com.success.lottery.term.service.impl.ToHtml">
+           	</bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*fileSource">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+	</bean>
+	<!-- 生成HTML的Service类 结束-->
+
+
+  	<!--DAO-->
+	<bean id="lotteryTermDaoImpl" class="com.success.lottery.term.dao.impl.LotteryTermDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientTerm"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

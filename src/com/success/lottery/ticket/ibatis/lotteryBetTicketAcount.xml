@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="betTicketAcount">
+
+	<typeAlias alias="betTicketAcountDomain"
+		type="com.success.lottery.ticket.domain.BetTicketAcountDomain" />
+
+	<resultMap id="BetTicketAcountDomainResult" class="BetTicketAcountDomain">
+		<result property="ticketSequence" column="TicketSequence" />
+		<result property="orderId" column="OrderId" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="betTerm" column="BetTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="betCode" column="BetCode" />
+		<result property="betCount" column="BetCount" />
+		<result property="betAmount" column="BetAmount" />
+		<result property="ticketTime" column="TicketTime" />
+		<result property="lastTicketTime" column="LastTicketTime" />
+		<result property="areaCode" column="AreaCode" />
+		<result property="printStation" column="PrintStation" />
+		<result property="ticketStatus" column="TicketStatus" />
+		<result property="ticketId" column="TicketId" />
+		<result property="printerId" column="PrinterId" />
+		<result property="printResult" column="PrintResult" />
+		<result property="printTime" column="PrintTime" />
+		<result property="ticketData" column="TicketData" />
+		<result property="ticketDataMD" column="TicketDataMD" />
+		<result property="ticketPassword" column="TicketPassword" />
+		<result property="preTaxPrize" column="PreTaxPrize" />
+		<result property="prizeResult" column="PrizeResult" />
+		<result property="saveStatus" column="SaveStatus" />
+		<result property="reserve" column="Reserve" />
+		<result property="userId" column="userId" />
+		<result property="loginName" column="loginName" />
+		<result property="mobilePhone" column="mobilePhone" />
+		<result property="nickName" column="nickName" />
+		<result property="realName" column="realName" />
+		<result property="planSource" column="planSource" />
+	</resultMap>
+	
+	
+	<!-- 彩票情况查询条件部分-->
+	<sql id="queryBetTicketInfo_condition">
+		from betticket bet,
+		useraccount as user,betorder AS betorder where  bet.orderId=betorder.orderId and betorder.userId=user.userid
+		  	 <dynamic>  
+			  	 <isNotNull property="orderId">
+	                <isGreaterThan prepend=" and " property="orderId" compareValue="0">
+	               	 	bet.orderId = #orderId#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="ticketSequence">
+	                <isGreaterThan prepend=" and " property="ticketSequence" compareValue="0">
+	               	 	bet.ticketSequence = #ticketSequence#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="accountId">
+	                <isGreaterThan prepend=" and " property="accountId" compareValue="0">
+	               	 	user.mobilePhone = #accountId#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="userName">
+	                <isGreaterThan prepend=" and " property="userName" compareValue="0">
+	               	 	user.realName = #userName#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="planSource">
+	                <isGreaterThan prepend=" and " property="planSource" compareValue="0">
+	               	 	betorder.PlanSource = #planSource#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="lotteryId">
+	                <isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+	               	 	bet.lotteryId = #lotteryId#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="ticketStatus" prepend="and">
+					<iterate open="(" close=")" conjunction="or"
+						property="ticketStatus">
+						bet.ticketStatus = #ticketStatus[]:NUMERIC#
+					</iterate>
+	    		</isNotNull>
+	              <isNotNull property="prizeResult">
+	                <isGreaterThan prepend=" and " property="prizeResult" compareValue="-1">
+	               	 	bet.prizeResult = #prizeResult#
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="betTerm_begin">
+	                <isGreaterThan prepend=" and " property="betTerm_begin" compareValue="0">
+	               	 	<![CDATA[
+	        				bet.betTerm>=#betTerm_begin#
+	      				]]>
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="betTerm_end">
+	                <isGreaterThan prepend=" and " property="betTerm_end" compareValue="0">
+	               	 	<![CDATA[
+	        				bet.betTerm<=#betTerm_end#
+	        			]]>
+	                </isGreaterThan>             
+	              </isNotNull>
+	             <isNotNull property="beginTime">
+	                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+	               	 	<![CDATA[
+	        				bet.printTime>=#beginTime#
+	      				]]>
+	                </isGreaterThan>             
+	              </isNotNull>
+	              <isNotNull property="endTime">
+	                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+	               	 	<![CDATA[
+	        				bet.printTime<=#endTime#
+	        			]]>
+	                </isGreaterThan>             
+	              </isNotNull>
+	    	</dynamic> 
+	</sql>
+
+	<!-- Select部分 -->
+	<sql id="queryBetTicketSelect_condition">
+		select ticketSequence,bet.orderId as orderId,bet.lotteryId as lotteryId,bet.betTerm as betTerm,bet.playType as playType,bet.betType as betType,
+		bet.betMultiple as betMultiple,bet.betCode as betCode,bet.betCount as betCount,bet.betAmount as betAmount,bet.ticketTime as ticketTime,
+		bet.lastTicketTime as lastTicketTime,bet.areaCode as areaCode,bet.printStation as printStation,bet.ticketStatus as ticketStatus,
+		bet.ticketId as ticketId,bet.printerId as printerId,bet.printResult as printResult,bet.printTime as printTime,bet.ticketData as ticketData,
+		bet.ticketDataMD as ticketDataMD,bet.ticketPassword as ticketPassword,bet.preTaxPrize as preTaxPrize,bet.prizeResult as prizeResult,
+		bet.saveStatus as saveStatus,bet.reserve as reserve,user.userid as userId,user.loginName as loginName,user.mobilePhone as mobilePhone,
+		user.nickName as nickName,user.realName as realName,betorder.planSource as planSource
+	</sql>
+	
+		<!-- 彩票情况查询总数-->
+	<select id="getBetTicketesCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(bet.ticketSequence) 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/>
+	</select>
+	<!-- 彩票情况查询条目-->
+	<select id="getBetTicketesList" parameterClass="java.util.Map" resultClass="BetTicketAcountDomain">
+		<include refid="betTicketAcount.queryBetTicketSelect_condition"/>
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/>
+			order by bet.printTime desc  
+	    	limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<!-- 彩票情况查询投注数目统计-->
+	<select id="getBetTicketesNumber" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select count(bet.ticketSequence) 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/>
+	</select>
+	<!-- 彩票情况查询投注金额统计-->
+	<select id="getBetTicketesMoney" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select sum(bet.betAmount) 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/>
+	</select>
+	
+	<!-- 中奖彩票查询总条数 -->
+	<select id="getWinningBetTicketesCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(bet.ticketSequence) 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/> 
+		and bet.prizeResult in(2,3)
+	</select>
+	<!-- 中奖彩票查询条目 -->
+	<select id="getWinningBetTicketes" parameterClass="java.util.Map" resultClass="BetTicketAcountDomain">
+		<include refid="betTicketAcount.queryBetTicketSelect_condition"/> 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/>
+		 and bet.prizeResult in(2,3)
+		 order by bet.printTime desc
+   	 limit #startPageNumber#, #endPageNumber#
+	</select>
+	<!-- 中奖彩票数目统计-->
+	<select id="getWinningBetTicketesNumber" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select count(bet.ticketSequence) 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/>
+		and bet.prizeResult in(2,3)
+	</select>
+	<!-- 中奖彩票金额统计-->
+	<select id="getWinningBetTicketesMoney" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		select sum(bet.preTaxPrize) 
+		<include refid="betTicketAcount.queryBetTicketInfo_condition"/> 
+		and bet.prizeResult in(2,3)
+	</select>
+	<!--  按菜单orderId去查询彩票情况 -->
+	<select id="getBetTicketes4OrderId" parameterClass="java.util.Map" resultClass="BetTicketAcountDomain">
+		<include refid="betTicketAcount.queryBetTicketSelect_condition"/>
+		from betticket bet,useraccount as user,
+		betorder AS betorder where  bet.orderId=betorder.orderId and betorder.userId=user.userid and bet.orderId=#orderId#
+	</select>
+	
+	<!--  按菜编号去查询彩票明细情况 -->
+	<select id="getTicketAcount" parameterClass="java.util.Map" resultClass="BetTicketAcountDomain">
+		<include refid="betTicketAcount.queryBetTicketSelect_condition"/>
+		 from betticket bet,useraccount as user,
+		betorder AS betorder where  bet.orderId=betorder.orderId and betorder.userId=user.userid and bet.ticketSequence=#ticketSequence#
+	</select>
+	
+</sqlMap>

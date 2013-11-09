@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans>
+	<description>配置普通数字彩的彩期切换调度，各个彩期切换的时间还没有配置</description>
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:com/success/lottery/util/LotteryType.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- ################################################################################## -->
+	<!-- 大乐透和生肖乐 -->
+	<!-- 要调用的工作类 -->
+	<bean id="superLotteryJob"
+		class="com.success.lottery.term.service.impl.LotteryTSScheduler">
+		<!--  <property name="scheduler" ref="schedulerFactory"/>-->
+		<property name="termService" ref="SuperTermSwitchService" />
+	</bean>
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="superLotteryJobtask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="superLotteryJob" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>termSwitchScheduler</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- 定义触发时间 -->
+	<bean id="superLotteryCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="superLotteryJobtask" />
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+			<value>${1000001.checkCron}</value>
+		</property>
+	</bean>
+	<!-- ################################################################################## -->
+
+	<!-- ################################################################################## -->
+	<!-- 七星彩 -->
+	<!-- 要调用的工作类 -->
+	<bean id="sevenLotteryJob"
+		class="com.success.lottery.term.service.impl.LotteryTSScheduler">
+		<property name="termService" ref="SevenTermSwitchService" />
+	</bean>
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="sevenLotteryJobtask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="sevenLotteryJob" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>termSwitchScheduler</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- 定义触发时间 -->
+	<bean id="sevenLotteryCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="sevenLotteryJobtask" />
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+			<value>${1000002.checkCron}</value>
+		</property>
+	</bean>
+
+	<!-- ################################################################################## -->
+
+
+	<!-- ################################################################################## -->
+	<!-- 排列3和排列5 -->
+	<!-- 要调用的工作类 -->
+	<bean id="arrangeLotteryJob"
+		class="com.success.lottery.term.service.impl.LotteryTSScheduler">
+		<property name="termService" ref="ArrangeTermSwitchService" />
+	</bean>
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="arrangeLotteryJobtask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="arrangeLotteryJob" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>termSwitchScheduler</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- 定义触发时间 -->
+	<bean id="arrangeLotteryCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="arrangeLotteryJobtask" />
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+			<value>${1000003.checkCron}</value>
+		</property>
+	</bean>
+
+	<!-- ################################################################################## -->
+
+	<!-- ################################################################################## -->
+	<!-- 多乐彩 -->
+	<!-- 要调用的工作类 -->
+	<bean id="dlcLotteryJob"
+		class="com.success.lottery.term.service.impl.LotteryTSScheduler">
+		<property name="termService" ref="DlcTermSwitchService" />
+	</bean>
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="dlcLotteryJobtask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="dlcLotteryJob" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>termSwitchScheduler</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- 定义触发时间 -->
+	<bean id="dlcLotteryCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="dlcLotteryJobtask" />
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+			<value>${1200001.checkCron}</value>
+		</property>
+	</bean>
+	
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="dlcSaleLotteryJobtask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="dlcLotteryJob" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>termSwitchSaleScheduler</value>
+		</property>
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- 定义触发时间 -->
+	<bean id="dlcSaleLotteryCronTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="dlcSaleLotteryJobtask" />
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+			<value>${1200001.checkSaleCron}</value>
+		</property>
+	</bean>
+
+	<!-- ################################################################################## -->
+
+	<!-- ################################################################################## -->
+	<!-- 快乐扑克 -->
+
+	<!-- ################################################################################## -->
+
+
+	<!-- 调度总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  -->
+	<bean id="schedulerFactory" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean" destroy-method="destroy">
+		<property name="waitForJobsToCompleteOnShutdown" value="true" />
+		<property name="triggers">
+			<list>
+				<!-- 大乐透和生肖乐 -->
+				<ref bean="superLotteryCronTrigger" />
+				<!-- 七星彩 -->
+				<ref bean="sevenLotteryCronTrigger" />
+				<!-- 排列3和排列5 -->
+				<ref bean="arrangeLotteryCronTrigger" />
+				<!-- 多乐彩 -->
+				<ref bean="dlcLotteryCronTrigger" />
+				<!-- 多乐彩销售状态,如果上一期的止售和下一期的开售不是同一个时间点，则需要开启该服务 -->
+			   <!-- ref bean="dlcSaleLotteryCronTrigger" / --> 
+			</list>
+		</property>
+	</bean>
+</beans>

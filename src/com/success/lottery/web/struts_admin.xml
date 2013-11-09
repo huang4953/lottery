@@ -1,0 +1,501 @@
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+	<!-- START SNIPPET: xworkSample -->
+<struts>
+
+
+	<package name="login" extends="struts-default" >
+		<action name="loginLotteryAdmin" class="com.success.lottery.web.admin.action.LoginAction" method="login">
+			<result name="success">/admin/index.jsp</result>
+			<result name="failed">/admin/login.jsp</result>
+			<result name="logout">/admin/login.jsp</result>
+		</action>
+		<action name="adminlogin" class="com.success.lottery.web.admin.action.LoginAction" method="index">
+			<result name="success">/admin/login.jsp</result>
+		</action>
+		<action name="mainframe" class="com.success.lottery.web.admin.action.LoginAction"	method="mainframe">
+			<result name="success">/admin/mainframe.jsp</result>
+		</action>
+		<action name="top" class="com.success.lottery.web.admin.action.LoginAction"	method="top">
+			<result name="success">/admin/top.jsp</result>
+		</action>
+		<action name="menu" class="com.success.lottery.web.admin.action.LoginAction"	method="menu">
+			<result name="success">/admin/menu.jsp</result>
+			<result name="failed">/admin/login.jsp</result>
+		</action>
+		<action name="welcome" class="com.success.lottery.web.admin.action.LoginAction"	method="welcome">
+			<result name="success">/admin/welcome.jsp</result>
+		</action>
+		
+		<!-- panzuchao add -->
+		<action name="changePasswdShow" class="com.success.lottery.web.admin.action.LoginAction"	method="changePasswdShow">
+			<result name="changePasswdShow">/admin/changePasswdShow.jsp</result>
+		</action>
+		<action name="changepasswd" class="com.success.lottery.web.admin.action.LoginAction"	method="changepasswd">
+			<result name="changepasswdSuccess">/admin/changePasswdSuccess.jsp</result>
+			<result name="changepasswdFailed">/admin/changepasswdFailed.jsp</result>
+			<result name="input">/admin/changePasswdShow.jsp</result>
+		</action>
+	</package>
+
+	<!-- 彩期管理 -->
+	<package name="betManager" extends="struts-default" >
+		<global-results>
+			<result name="ajaxjson">/admin/term/win/ajaxJsonString.jsp</result>
+		</global-results>
+		<!-- 开奖相关操作begin -->
+		<action name="showWinInfo" class="com.success.lottery.web.admin.action.TermWinShowAction" method="termWinInfoShow">
+			<result name="success">/admin/term/win/termwinshowinfo.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		 
+		<action name="getTermList" class="com.success.lottery.web.admin.action.QueryConditionAction" method="queryTermList">
+		</action>
+		
+		<action name="showInputWinInfo" class="com.success.lottery.web.admin.action.TermWinShowAction" method="showInputWinInfo">
+			<result name="1000001">/admin/term/win/superwininput.jsp</result>
+			<result name="1000005">/admin/term/win/superwininput.jsp</result>
+			<result name="1000003">/admin/term/win/arrange3wininput.jsp</result>
+			<result name="1000004">/admin/term/win/arrange3wininput.jsp</result>
+			<result name="1000002">/admin/term/win/sevencolorwininput.jsp</result>
+			<result name="1300001">/admin/term/win/ballwininput.jsp</result>
+			<result name="1300002">/admin/term/win/ballwininput.jsp</result>
+			<result name="1300003">/admin/term/win/ball6wininput.jsp</result>
+			<result name="1300004">/admin/term/win/ball4wininput.jsp</result>
+			<result name="1200001">/admin/term/win/jxdlcwininput.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="showTermInfoDetail" class="com.success.lottery.web.admin.action.TermInfoDetailAction" method="showTermInfoDetail">
+			<result name="success">/admin/term/terminfodetail.jsp</result>
+			<result name="error">/admin/term/terminfodetail.jsp</result>
+		</action>
+		<!--  -->
+		<action name="superWinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotterySuperWinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="colorWinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotteryColorWinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="arrangeWinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotteryArrangeWinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="ballWinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotteryBallWinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="ball6WinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotteryBall6WinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="ball4WinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotteryBall4WinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="jxDlcWinInput" class="com.success.lottery.web.admin.action.TermWinInputAction" method="lotteryJxDlcWinInput">
+			<result name="success">/admin/term/win/wininputsucess.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="getEhandWinStatus" class="com.success.lottery.web.admin.action.TermWinShowAction" method="checkEhandTermStatus"></action>
+		<action name="updateEhandWinStatus" class="com.success.lottery.web.admin.action.TermWinShowAction" method="updateEhandTermKj"></action>
+		
+		<!-- 开奖相关操作end -->
+		<!-- 限号信息操作 begin -->
+		<action name="showLimitNumber" class="com.success.lottery.web.admin.action.LimitNumberAction" method="showLimitNumberInfo">
+			<result name="success">/admin/term/limit/termlimitshowinfo.jsp</result>
+			<result name="error">/admin/term/limit/inputerror.jsp</result>
+		</action>
+		
+		<action name="showlimitInputInfo" class="com.success.lottery.web.admin.action.LimitNumberAction" method="showInputLimitInfo">
+			<result name="success">/admin/term/limit/termlimitinput.jsp</result>
+			<result name="error">/admin/term/limit/inputerror.jsp</result>
+		</action>
+		
+		<action name="inputLimitInfo" class="com.success.lottery.web.admin.action.LimitNumberAction" method="inputLimitInfo">
+			<result name="success">/admin/term/limit/inputsucess.jsp</result>
+			<result name="error">/admin/term/limit/inputerror.jsp</result>
+		</action>
+		<!-- 限号信息操作 end -->
+		
+		<!-- 投注订单begin -->
+		<action name="showBetOrderInfo" class="com.success.lottery.web.admin.action.BetOrderInfoAction" method="betOrderInfoShow">
+			<result name="success">/admin/term/order/betordershowinfo.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		
+		<action name="showOrderInfoDetail" class="com.success.lottery.web.admin.action.BetOrderInfoDetailAction" method="showOrderInfoDetail">
+			<result name="success">/admin/term/orderinfodetail.jsp</result>
+			<result name="error">/admin/term/orderinfodetail.jsp</result>
+		</action>
+		<!--  
+		<action name="updateOrderInfoShow" class="com.success.lottery.web.admin.action.BetOrderInfoAction" method="updateOrderInfoShow">
+			<result name="success">/admin/term/order/updatefailOrderinfo.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		<action name="updateFailOrder" class="com.success.lottery.web.admin.action.BetOrderInfoAction" method="updateFailOrder">
+		</action>
+		-->
+		<!-- 未出票订单处理 -->
+		<action name="notChuPiaoOrderShow" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="notChuPiaoOrderShow">
+			<result name="success">/admin/term/order/notchupiaoorder.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		<action name="updateNotChuPiaoOrder" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="upNotChuPiaoOrder">
+		</action>
+		<!-- 代购出票失败订单处理 -->
+		<action name="daiGouErrOrderShow" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="daiGoucPErrorOrderShow">
+			<result name="success">/admin/term/order/daigouerrorder.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		<action name="daiGouErrOrderConfirm" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="daiGouTuiKuanConfirm">
+			<result name="success">/admin/term/order/daigouerrconfirm.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		
+		<action name="gaiGouOrderTuiKuan" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="daGouTuiOrderKuan">
+			<result name="success">/admin/term/order/daigoutkresult.jsp</result>
+			<result name="error">/admin/term/order/daigoutkresult.jsp</result>
+		</action>
+		
+		<!-- 合买出票失败订单处理 -->
+		<action name="heMaiErrOrderShow" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="heMaiCPErrorOrderShow">
+			<result name="success">/admin/term/order/hemaierrorder.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		
+		<action name="heMaiErrOrderConfirm" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="heMaiTuiKuanConfirm">
+			<result name="success">/admin/term/order/hemaierrconfirm.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		
+		<action name="heMaiOrderTuiKuan" class="com.success.lottery.web.admin.action.ErrorOrderAction" method="heMaiTuiOrderKuan">
+			<result name="success">/admin/term/order/hemaitkresult.jsp</result>
+			<result name="error">/admin/term/order/hemaitkresult.jsp</result>
+		</action>
+			
+		<!-- 投注订单end -->
+		<!-- 合买信息begin -->
+		<action name="showBetPlanInfo" class="com.success.lottery.web.admin.action.BetCoopInfoAction" method="betPlanInfoShow">
+			<result name="success">/admin/term/plan/betplaninfo.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		<action name="showBetCoopInfo" class="com.success.lottery.web.admin.action.BetCoopInfoAction" method="betCoopCanYUInfoShow">
+			<result name="success">/admin/term/plan/betCoopinfoshow.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		<action name="showCoopInfoDetail" class="com.success.lottery.web.admin.action.BetCoopDetailAction" method="betCoopDetailInfo">
+			<result name="success">/admin/term/plan/coopdetailinfo.jsp</result>
+			<result name="error">/admin/term/plan/coopdetailinfo.jsp</result>
+		</action>
+		<action name="showCoopInfoList" class="com.success.lottery.web.admin.action.BetCoopDetailAction" method="coopInfoList">
+			<result name="success">/admin/term/plan/coopinfolist.jsp</result>
+			<result name="error">/admin/term/plan/coopinfolist.jsp</result>
+		</action>
+		<!-- 合买信息end -->
+		
+		<!-- 销售信息修改 begin -->
+		<action name="showTermSaleInfo" class="com.success.lottery.web.admin.action.TermSaleShowAction" method="termSaleInfoShow">
+			<result name="success">/admin/term/sale/termsaleshowinfo.jsp</result>
+			<result name="error">/admin/term/error.jsp</result>
+		</action>
+		
+		<action name="showInputSaleInfo" class="com.success.lottery.web.admin.action.TermSaleInputAction" method="showInputSaleInfo">
+			<result name="1300001">/admin/term/sale/ballsaleinput.jsp</result>
+			<result name="1300002">/admin/term/sale/ballsaleinput.jsp</result>
+			<result name="1300003">/admin/term/sale/ballsaleinput.jsp</result>
+			<result name="1300004">/admin/term/sale/ballsaleinput.jsp</result>
+			<result name="error">/admin/term/win/wininputerror.jsp</result>
+		</action>
+		
+		<action name="ballSaleInput" class="com.success.lottery.web.admin.action.TermSaleInputAction" method="lotteryBallSaleInput">
+			<result name="success">/admin/term/sale/saleinputsucess.jsp</result>
+			<result name="error">/admin/term/sale/saleinputerror.jsp</result>
+		</action>
+		
+		<!-- 销售信息修改 end -->
+		
+		<!-- 中奖管理使用begin -->
+		<action name="showBetCashOrderInfo" class="com.success.lottery.web.admin.action.BetOrderCashInfoAction" method="betOrderCashInfoShow">
+			<result name="success">/admin/prize/betordercashshowinfo.jsp</result>
+			<result name="error">/admin/prize/error.jsp</result>
+		</action>
+
+		<action name="betOrderAllCash" class="com.success.lottery.web.admin.action.BetOrderCashInfoAction" method="betOrderAllCash">
+		</action>
+		<action name="betOrderCashWait" class="com.success.lottery.web.admin.action.BetOrderCashInfoAction" method="betOrderWait">
+			<result name="success">/admin/prize/cashresult.jsp</result>
+			<result name="error">/admin/prize/error.jsp</result>
+		</action>
+		<action name="cashProgress" class="com.success.lottery.web.admin.action.BetOrderCashInfoAction" method="cashProgress">
+		</action>
+
+		<action name="showBetDispatchOrderInfo" class="com.success.lottery.web.admin.action.BetOrderDispatchAction" method="betOrderDispatchShow">
+			<result name="success">/admin/prize/orderdispatch.jsp</result>
+			<result name="error">/admin/prize/error.jsp</result>
+		</action>
+		
+		<action name="dispatchOrderConfig" class="com.success.lottery.web.admin.action.BetOrderDispatchAction" method="dispatchOrderConfig">
+			<result name="success">/admin/prize/dispatchconfirm.jsp</result>
+			<result name="error">/admin/prize/error.jsp</result>
+		</action>
+		<action name="dispatchOrder" class="com.success.lottery.web.admin.action.BetOrderDispatchAction" method="orderDispatch">
+			<result name="success">/admin/prize/dispatchresult.jsp</result>
+			<result name="error">/admin/prize/dispatchresult.jsp</result>
+		</action>
+		
+		<action name="getNCashOrder" class="com.success.lottery.web.admin.action.BetOrderCashInfoAction" method="getNotCompleteCashOrder">
+		</action>
+		
+		<!-- 中奖管理使用end -->
+		
+		<!-- 财务管理begin -->
+		<action name="canDraPrizeShow" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="canDraPrizeShow">
+			<result name="success">/admin/account/drawprize.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="PrizeHistoryShow" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="PrizeHistoryShow">
+			<result name="success">/admin/account/drawprizehistory.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="drawPrizeConfirm" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="drawConfirm">
+			<result name="success">/admin/account/drawprizeconfirm.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="drawPrizeDeal" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="drawPrizeDeal">
+			<result name="success">/admin/account/drawresult.jsp</result>
+			<result name="error">/admin/account/drawresult.jsp</result>
+		</action>
+		<action name="drawPrizeDetail" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="showDrawDetail">
+			<result name="success">/admin/account/drawdetail.jsp</result>
+			<result name="error">/admin/account/drawdetail.jsp</result>
+		</action>
+		
+		<action name="adjustaccountshow" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="adjustAccountShow">
+			<result name="success">/admin/account/adjustaccount.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="adjustaccounthistory" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="adjustAccountHis">
+			<result name="success">/admin/account/adjustaccounthistory.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="adjustconfirm" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="adjustConfirm">
+			<result name="success">/admin/account/adjustconfirm.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="adjustDeal" class="com.success.lottery.web.admin.action.DrawMoneyAction" method="adjustAccountDeal">
+			<result name="success">/admin/account/adjustresult.jsp</result>
+			<result name="error">/admin/account/adjustresult.jsp</result>
+		</action>
+		<action name="accountQuery" class="com.success.lottery.web.admin.action.AccountAction" method="accountShow">
+			<result name="success">/admin/account/accountshow.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="accountTransQuery" class="com.success.lottery.web.admin.action.AccountAction" method="accountTransactionShow">
+			<result name="success">/admin/account/accounttrans.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="ipsQuery" class="com.success.lottery.web.admin.action.AccountAction" method="ipsInfoShow">
+			<result name="success">/admin/account/ipsinfo.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+		<action name="billQuery" class="com.success.lottery.web.admin.action.AccountAction" method="billInfoShow">
+			<result name="success">/admin/account/99billinfo.jsp</result>
+			<result name="error">/admin/account/error.jsp</result>
+		</action>
+
+		<!-- 财务管理end -->
+		
+		<!-- libing add -->
+
+		<!-- 全部彩期信息查询 libing add -->
+
+		<action name="queryAllTerm" class="com.success.lottery.web.admin.action.TermAction" method="queryAllTerm">
+			<result name="success">/admin/term/queryAllTerm.jsp</result>
+		</action>
+		<!-- 全部彩期信息查询 end -->
+		
+		<!-- 出票部分 libing add -->
+		<action name="ticketCreate" class="com.success.lottery.web.admin.action.TicketAction" method="ticketCreate">
+			<result name="success">/admin/ticket/ticketCreate.jsp</result>
+			<result name="failed">/admin/ticket/ticketCreate.jsp</result>		
+		</action>
+		<action name="ticketFileDownload" class="com.success.lottery.web.admin.action.TicketAction" method="ticketFileDownload">
+			<result name="success">/admin/ticket/ticketFileDownload.jsp</result>
+			<result name="failed">/admin/ticket/ticketFileDownload.jsp</result>
+		</action>
+		
+		<action name="download" class="com.success.lottery.web.admin.action.TicketAction" method="download">
+			<result name="success" type="stream">
+				<param name="contentType">application/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">4096</param>
+            </result>
+			<result name="failed">/admin/account/error.jsp</result>
+		</action>
+
+		<action name="ticketConfirm" class="com.success.lottery.web.admin.action.TicketAction" method="ticketConfirm">
+			<result name="success">/admin/ticket/ticketConfirm.jsp</result>
+			<result name="failed">/admin/ticket/ticketConfirm.jsp</result>
+		</action>
+		<action name="ticketWinQuery" class="com.success.lottery.web.admin.action.TicketAction" method="ticketWinQuery">
+			<result name="success">/admin/ticket/ticketWinQuery.jsp</result>
+			<result name="failed">/admin/ticket/ticketWinQuery.jsp</result>
+		</action>
+
+
+		<!-- 以下是新的出票，上面老的出票不用了 -->
+		<action name="ticketExInfoShow" class="com.success.lottery.web.admin.action.TicketExAction" method="getTicketExInfo">
+			<result name="success">/admin/ticket/ticketexDeal.jsp</result>
+			<result name="failed">/admin/ticket/ticketexDeal.jsp</result>
+		</action>
+		<action name="dealTicketEx" class="com.success.lottery.web.admin.action.TicketExAction" method="ticketExDeal">
+		</action>
+
+		<action name="queryAllBetTicket" class="com.success.lottery.web.admin.action.BetTicketAction" method="queryAllBetTicket">
+			<result name="success">/admin/ticket/queryAllBetTicket.jsp</result>
+			<result name="failed">/admin/ticket/queryAllBetTicket.jsp</result>
+		</action>
+
+		<!--  根据彩票编号查看彩票明细-->
+		<action name="betTicketDetail" class="com.success.lottery.web.admin.action.BetTicketAction" method="betTicketDetail">
+			<result name="success">/admin/ticket/betTicketDetail.jsp</result>
+		</action>
+
+		<action name="queryWinningBetTicket" class="com.success.lottery.web.admin.action.BetTicketAction" method="queryWinningBetTicket">
+			<result name="success">/admin/ticket/queryWinningBetTicket.jsp</result>
+			<result name="failed">/admin/ticket/queryWinningBetTicket.jsp</result>
+		</action>
+
+
+		<!-- 出票部分 end -->
+
+		
+		<!-- panzuchao add -->
+		<!-- 会员管理 end -->
+
+		<action name="queryMember" class="com.success.lottery.web.admin.action.LotteryUserAction" method="queryAllMember">
+			<result name="success">/admin/user/queryMember.jsp</result>
+			<result name="failed">/admin/user/queryMember.jsp</result>
+		</action>
+		<action name="showUserInfoDetail" class="com.success.lottery.web.admin.action.LotteryUserAction" method="showUserInfoDetail">
+			<result name="showUserInfoDetail">/admin/user/showUserInfoDetail.jsp</result>
+		</action>
+		
+
+		<!-- panzuchao add -->
+		<!-- 管理员的配置 end -->
+
+		<action name="queryAdminUser" class="com.success.lottery.web.admin.action.AdminUserAction" method="queryAdminUser">
+			<result name="queryAdminUser">/admin/user/queryAdminUser.jsp</result>
+			<result name="failed">/admin/user/queryAdminUser.jsp</result>
+		</action>
+		<action name="addAdminUserShow" class="com.success.lottery.web.admin.action.AdminUserAction" method="addAdminUserShow">
+			<result name="addAdminUserShow">/admin/user/addAdminUserShow.jsp</result>
+		</action>
+		<action name="addAdminUser" class="com.success.lottery.web.admin.action.AdminUserAction" method="addAdminUser">
+			<result name="addAdminUserSuccess">/admin/user/addAdminUserSuccess.jsp</result>
+			<result name="addAdminUserFailed">/admin/user/addAdminUserFailed.jsp</result>
+			<result name="input">/admin/user/addAdminUserShow.jsp</result>
+		</action>
+		<action name="updateAdminUserShow" class="com.success.lottery.web.admin.action.AdminUserAction" method="updateAdminUserShow">
+			<result name="updateAdminUserShow">/admin/user/updateAdminUserShow.jsp</result>
+		</action>
+		<action name="updateAdminUser" class="com.success.lottery.web.admin.action.AdminUserAction" method="updateAdminUser">
+			<result name="updateAdminUserSuccess">/admin/user/updateAdminUserSuccess.jsp</result>
+			<result name="updateAdminUserFailed">/admin/user/updateAdminUserFailed.jsp</result>
+			<result name="input">/admin/user/updateAdminUserShow.jsp</result>
+		</action>
+		
+		<action name="changePerPasswordShow" class="com.success.lottery.web.admin.action.AdminUserAction" method="changePerPasswordShow">
+			<result name="changePerPasswordShow">/admin/user/changePerPasswordShow.jsp</result>
+		</action>
+		<action name="changePerPassword" class="com.success.lottery.web.admin.action.AdminUserAction" method="changePerPassword">
+			<result name="changePerPasswordSuccess">/admin/user/changePerPasswordSuccess.jsp</result>
+			<result name="changePerPasswordFailed">/admin/user/changePerPasswordShow.jsp</result>
+			<result name="input">/admin/user/changePerPasswordShow.jsp</result>
+		</action>
+
+		<action name="queryAllOperatorlog" class="com.success.lottery.web.admin.action.OperatorlogAction" method="queryAllOperatorlog">
+			<result name="success">/admin/operatorlog/queryAllOperatorlog.jsp</result>
+		</action>
+
+	</package>
+
+	<package name="smsPhus" extends="struts-default" >
+		<action name="smsindex" class="com.success.lottery.web.admin.action.SmsPushTaskAction" method="smsindex">
+			<result name="success">/admin/push/selectSmspush.jsp</result>
+		</action>
+		<action name="sendKJGG" class="com.success.lottery.web.admin.action.SmsPushTaskAction" method="sendKJGG">
+			<result name="success">/admin/push/insertSmsPushBack.jsp</result>
+		</action>
+
+		<!--  短信群发任务查询-->
+		<action name="queryAllSmsPushTask" class="com.success.lottery.web.admin.action.SmsPushTaskAction" method="queryAllSmsPushTask">
+			<result name="success">/admin/push/queryAllSmsPushTask.jsp</result>
+			<result name="failed">/admin/push/queryAllSmsPushTask.jsp</result>
+		</action>
+		<!--  短信群发任务详细查询-->
+		<action name="showSmsPushTaskDetail" class="com.success.lottery.web.admin.action.SmsPushTaskAction" method="showSmsPushTaskDetail">
+			<result name="success">/admin/push/showSmsPushTaskDetail.jsp</result>
+		</action>
+		<!--  短信群发数据查询-->
+		<action name="queryAllSmsPushData" class="com.success.lottery.web.admin.action.SmsPushDataAction" method="queryAllSmsPushData">
+			<result name="success">/admin/push/queryAllSmsPushData.jsp</result>
+			<result name="failed">/admin/push/queryAllSmsPushData.jsp</result>
+		</action>
+		<!--  短信群发数据详细查询-->
+		<action name="showSmsPushDataDetail" class="com.success.lottery.web.admin.action.SmsPushDataAction" method="showSmsPushDataDetail">
+			<result name="success">/admin/push/showSmsPushDataDetail.jsp</result>
+		</action>
+		<!-- 短信任务包含的群发数据查询 -->
+		<action name="showSmsList" class="com.success.lottery.web.admin.action.SmsPushTaskAction" method="showSmsList">
+			<result name="success">/admin/push/showSmsList.jsp</result>
+		</action>
+	</package>
+
+ 	<!-- 测试开奖操作 -->
+	<package name="testCash" extends="struts-default" >
+		<action name="testcash" class="com.success.lottery.web.TestCash" method="testCash">
+			<result name="success">/admin/testcash.jsp</result>
+			<result name="error">/admin/testcash.jsp</result>
+		</action>
+	</package>
+
+	<package name="report" extends="struts-default" >
+		<action name="getPrizeReports" class="com.success.lottery.web.admin.action.ReportQueryAction" method="getPrizeReports">
+			<result name="success">/admin/report/prizeCountReport.jsp</result>
+			<result name="error">/admin/report/prizeCountReport.jsp</result>
+		</action>
+		<action name="prizeReportDetail" class="com.success.lottery.web.admin.action.ReportQueryAction" method="getPrizeReportDetail">
+			<result name="success">/admin/report/prizeReportDetail.jsp</result>
+			<result name="error">/admin/report/prizeReportDetail.jsp</result>
+		</action>
+		<action name="accountTransReport" class="com.success.lottery.web.admin.action.ReportQueryAction" method="getAccountTransReport">
+			<result name="success">/admin/report/accountTransReport.jsp</result>
+			<result name="error">/admin/report/accountTransReport.jsp</result>
+		</action>
+		<action name="transSortReport" class="com.success.lottery.web.admin.action.ReportQueryAction" method="getTransSortReport">
+			<result name="success">/admin/report/transSortReport.jsp</result>
+			<result name="error">/admin/report/transSortReport.jsp</result>
+		</action>
+		<action name="accountTransReportDetail" class="com.success.lottery.web.admin.action.ReportQueryAction" method="getAccountReportDetail">
+			<result name="success">/admin/report/accountReportDetail.jsp</result>
+			<result name="error">/admin/report/accountReportDetail.jsp</result>
+		</action>
+
+	</package>
+
+</struts>

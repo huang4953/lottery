@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="busBetOrder">
+
+	<typeAlias alias="BusBetOrderDomain" type="com.success.lottery.business.domain.BusBetOrderDomain" />
+		
+	<typeAlias alias="BusBetOrderParam" type="com.success.lottery.business.domain.BusBetOrderParam" />
+	
+	<typeAlias alias="BusBetOrderCountDomain" type="com.success.lottery.business.domain.BusBetOrderCountDomain" />
+	
+	<typeAlias alias="prizeUserDomain" type="com.success.lottery.business.domain.PrizeUserDomain" />
+
+	
+	<!-- 代购信息对照 -->
+	<resultMap id="BusBetOrderDomainResult" class="BusBetOrderDomain">
+		<result property="orderId" column="OrderId" />
+		<result property="planId" column="PlanId" />
+		<result property="planSource" column="PlanSource" />
+		<result property="chaseNumber" column="ChaseNumber" />
+		<result property="userId" column="UserId" />
+		<result property="areaCode" column="AreaCode" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="betTerm" column="BetTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betCodeMode" column="BetCodeMode" />
+		<result property="betCode" column="BetCode" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="betAmount" column="BetAmount" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="orderStatus" column="OrderStatus" />
+		<result property="ticketTime" column="TicketTime" />
+		<result property="ticketStat" column="TicketStat" />
+		<result property="winStatus" column="WinStatus" />
+		<result property="preTaxPrize" column="PreTaxPrize" />
+		<result property="reserve" column="Reserve" />
+		<result property="winCode" column="wincode" />
+		<result property="loginName" column="loginName" />
+		<result property="mobilePhone" column="mobilePhone" />
+		<result property="status" column="status" />
+		<result property="nickName" column="nickName" />
+		<result property="realName" column="realName" />
+		<result property="taxPrize" column="taxprize" />
+		<result property="aftTaxPrize" column="afttaxprize" />
+		<result property="deductPrize" column="deductprize" />
+		<result property="commissionPrize" column="commissionprize" />
+	</resultMap>
+	
+	<!-- 代购查询 -->
+	<sql id="selectContent">
+		SELECT 
+		OrderId,PlanId,PlanSource,ChaseNumber,bet.UserId as UserId,bet.AreaCode as AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,bet.Reserve as Reserve,TicketTime,wincode,
+		bet.taxprize as taxprize,bet.afttaxprize as afttaxprize,bet.deductprize as deductprize,
+		bet.commissionprize as commissionprize,loginName,mobilePhone,status,nickName,realName
+		FROM  betorder AS bet,useraccount as usera
+		WHERE bet.UserId = usera.userid
+	</sql>
+	<!-- 查询订单信息 附加了用户信息 begin -->
+	<!-- queryBetOrderInfoS 和 getBetOrderInfosCount使用不允许再添加-->
+	<sql id="betOrderinfoSCondition" >
+		<isNotEmpty property="lotteryId">
+			<isNotEqual property="lotteryId" prepend="AND" compareValue="0">
+				bet.LotteryId = #lotteryId#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="termNo">
+			<isNotEqual property="termNo" prepend="AND" compareValue="0">
+				bet.BetTerm = #termNo#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="accountId" prepend="AND">
+			(usera.userid = #accountId# or usera.mobilePhone = #accountId# or usera.loginName = #accountId# or usera.email=#accountId#)
+		</isNotEmpty>
+		
+		<isNotEmpty property="planSource">
+			<isNotEqual property="planSource" prepend="AND" compareValue="-1">
+				bet.PlanSource = #planSource#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="betStatus">
+			<isNotEqual property="betStatus" prepend="AND" compareValue="-1">
+				bet.OrderStatus = #betStatus#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="winStatus">
+			<isNotEqual property="winStatus" prepend="AND" compareValue="-1">
+				bet.winStatus = #winStatus#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="begin_time" prepend="AND" >
+			bet.OrderTime <![CDATA[ >= ]]> #begin_time#
+		</isNotEmpty>
+		
+		<isNotEmpty property="end_time" prepend="AND" >
+			bet.OrderTime <![CDATA[ < ]]> #end_time#
+		</isNotEmpty>
+		<isNotEmpty property="userName" prepend="AND" >
+				usera.realName = #userName#
+		</isNotEmpty>
+	</sql>
+	
+	<select id="queryBetOrderInfoS"
+		resultMap="BusBetOrderDomainResult" parameterClass="BusBetOrderParam">
+		<include refid="busBetOrder.selectContent"/>
+		<include refid="busBetOrder.betOrderinfoSCondition"/>
+		order by OrderTime desc
+		limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<!-- 获取订单信息的总条数，用于分页 -->
+	<select id="getBetOrderInfosCount" parameterClass="BusBetOrderParam" resultClass="java.lang.Integer">
+		SELECT COUNT(1) as totalNum
+		FROM betorder AS bet,useraccount as usera
+		WHERE bet.UserId = usera.userid
+		<include refid="busBetOrder.betOrderinfoSCondition"/>
+	</select>
+	<!-- 查询订单信息 附加了用户信息 end -->
+	
+	<!-- 兑奖相关begin -->
+	<sql id="queryBetOrderCanCashInfo_condition">
+		and bet.orderstatus in (0,1,2,3,4,5) and (bet.winstatus = 0 or bet.winstatus = 99)
+		<isNotEmpty prepend="and" property="lotteryIdTerms">   
+             concat(lotteryid,betterm) in   
+            <iterate  property="lotteryIdTerms" open="(" close=")" conjunction=",">   
+             #lotteryIdTerms[]#   
+            </iterate>   
+         </isNotEmpty>   
+        
+	</sql>
+	
+	<select id="queryBetOrderCanCashInfo" resultMap="BusBetOrderDomainResult" parameterClass="java.util.Map">
+		<include refid="busBetOrder.selectContent"/>
+		<include refid="busBetOrder.queryBetOrderCanCashInfo_condition"/>
+		 limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="getBetOrderCanCashInfoCount" resultClass="java.lang.Integer"   parameterClass="java.util.Map">
+		select count(*) as totalNum
+		from betorder AS bet,useraccount as usera
+		where bet.UserId = usera.userid
+		<include refid="busBetOrder.queryBetOrderCanCashInfo_condition"/>
+	</select>
+	<!-- 兑奖相关end -->
+	
+	<!-- 代购派奖相关操作begin -->
+	<sql id="queryBetOrderCanDispatchInfo_condition">
+		and bet.orderstatus = 8 and bet.winstatus in (2,3,299,399)
+		<isNotEmpty prepend="and" property="lotteryIdTerms">   
+             concat(lotteryid,betterm) in   
+            <iterate  property="lotteryIdTerms" open="(" close=")" conjunction=",">   
+             #lotteryIdTerms[]#   
+            </iterate>   
+         </isNotEmpty> 
+         <isNotEmpty prepend="and" property="userIdentify">
+         (usera.userId=#userIdentify# or usera.loginname=#userIdentify# or usera.mobilephone=#userIdentify# or usera.email=#userIdentify#)
+         </isNotEmpty>
+         AND EXISTS (SELECT 1 FROM betplan AS plan WHERE plan.plantype=0 AND plan.planid = bet.planid)
+	</sql>
+	
+	<select id="queryBetOrderCanDispatchInfo" resultMap="BusBetOrderDomainResult" parameterClass="java.util.Map">
+		<include refid="busBetOrder.selectContent"/>
+		<include refid="busBetOrder.queryBetOrderCanDispatchInfo_condition"/>
+		 limit #startPageNumber#, #endPageNumber#
+	</select>
+	
+	<select id="getBetOrderCanDispatchInfoCount" resultClass="BusBetOrderCountDomain"  parameterClass="java.util.Map">
+		select count(1) as totalNum,COALESCE(sum(PreTaxPrize),0) as totalPrize,
+		COALESCE(sum(afttaxprize),0) as totalAftTaxPrize,
+		COALESCE(sum(taxprize),0) as totalTaxPrize
+		from betorder AS bet,useraccount as usera 
+		where bet.UserId = usera.userid
+		<include refid="busBetOrder.queryBetOrderCanDispatchInfo_condition"/>
+	</select>
+	<!-- 代购派奖相关操作end -->
+	
+	<!-- 查询订单关联彩期 -->
+	<select id="getOrdersByPlanId" parameterClass="java.lang.String" resultClass="BusBetOrderDomain">
+		SELECT 
+		orderId,planId,planSource,chaseNumber,userId ,areaCode,bet.lotteryId as lotteryId,betTerm,playType,
+		betType,betCodeMode,betCode,betMultiple,betAmount,orderTime,orderStatus,ticketStat,
+		bet.winStatus as winStatus,preTaxPrize,bet.reserve as reserve,ticketTime,wincode,
+		bet.taxprize as taxprize,bet.afttaxprize as afttaxprize,bet.deductprize as deductprize,
+		bet.commissionprize as commissionprize,lotteryResult,deadLine
+		FROM  betorder AS bet,lotteryterm as term
+		WHERE bet.planid = #value# and bet.lotteryid = term.lotteryid and bet.betterm = term.termno
+	</select>
+	
+	<select id="getPrizeUser" parameterClass="java.lang.Integer" resultClass="prizeUserDomain">
+		SELECT lotteryid as lotteryId,mobilephone as mobilePhone,PreTaxPrize as prize
+		FROM betorder AS bet,useraccount as usera 
+		WHERE bet.UserId = usera.userid AND bet.winstatus in (2,3,299,399) 
+		ORDER BY ordertime desc 
+		LIMIT 0,#value#
+	</select>
+	<!-- 处理出票失败订单 -->
+	<update id="updateWinState" parameterClass="java.util.Map">
+   		update betorder set betorder.winStatus=#winstatus#,betorder.wincode=#wincode# where orderid=#orderid#
+   </update>
+   
+   <!-- 未出票订单处理查询开始 -->
+   <sql id="notChuPiao_condition">
+        and bet.orderstatus in (0,1,2,3)
+   		<isEqual property="lotteryId" prepend="AND" compareValue="0">
+				EXISTS(select 1 from lotteryterm where lotteryterm.lotteryid = bet.lotteryid 
+				and lotteryterm.termno = bet.betterm and lotteryterm.termstatus=2
+				 and lotteryterm.deadline3 <![CDATA[ <= ]]> now())
+		</isEqual>
+		<isNotEqual property="lotteryId" prepend="AND" compareValue="0">
+				bet.LotteryId = #lotteryId# 
+				<isNotEqual property="termNo" prepend="AND" compareValue="0">
+				bet.BetTerm = #termNo#
+				</isNotEqual>
+				<isEqual property="termNo" prepend="AND" compareValue="0">
+				EXISTS(select 1 from lotteryterm where lotteryterm.lotteryid = bet.lotteryid 
+				and lotteryterm.termno = bet.betterm and lotteryterm.deadline3 <![CDATA[ <= ]]> now())
+				</isEqual>
+		</isNotEqual>
+   </sql>
+   <select id="getNotChuPiaoOrder" parameterClass="java.util.Map" resultMap="BusBetOrderDomainResult">
+   		<include refid="busBetOrder.selectContent"/>
+		<include refid="busBetOrder.notChuPiao_condition"/>
+		order by OrderTime desc
+		limit #startPageNumber#, #endPageNumber#
+   </select>
+   <select id="getNotChuPiaoOrderCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(1) as totalNum
+		FROM betorder AS bet,useraccount as usera
+		WHERE bet.UserId = usera.userid
+		<include refid="busBetOrder.notChuPiao_condition"/>
+	</select>
+   
+   <!-- 未出票订单处理查询结束 -->
+   
+   <!-- 出票失败的订单查询开始 -->
+   	<sql id="chuPiaoError_condition">
+        and bet.orderstatus in (4,6) and bet.winstatus in (0,1,2,3)
+   		<isNotEmpty property="lotteryId">
+			<isNotEqual property="lotteryId" prepend="AND" compareValue="0">
+				bet.LotteryId = #lotteryId#
+			</isNotEqual>
+		</isNotEmpty>
+		
+		<isNotEmpty property="termNo">
+			<isNotEqual property="termNo" prepend="AND" compareValue="0">
+				bet.BetTerm = #termNo#
+			</isNotEqual>
+		</isNotEmpty>
+		<isEqual property="daiOrHe" prepend="and" compareValue="0">
+			exists (select 1 from betplan where betplan.planid = bet.planid and betplan.plantype = 0)
+		</isEqual>
+		<isEqual property="daiOrHe" prepend="and" compareValue="1">
+			exists (select 1 from betplan where betplan.planid = bet.planid and betplan.plantype = 1)
+		</isEqual>
+   </sql>
+   <select id="getChuPiaoErrorOrder" parameterClass="java.util.Map" resultMap="BusBetOrderDomainResult">
+   		<include refid="busBetOrder.selectContent"/>
+		<include refid="busBetOrder.chuPiaoError_condition"/>
+		order by OrderTime desc
+		limit #startPageNumber#, #endPageNumber#
+   </select>
+   <select id="getChuPiaoErrorOrderCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(1) as totalNum
+		FROM betorder AS bet,useraccount as usera
+		WHERE bet.UserId = usera.userid
+		<include refid="busBetOrder.chuPiaoError_condition"/>
+	</select>
+   <!-- 出票失败的订单查询结束 -->
+</sqlMap>

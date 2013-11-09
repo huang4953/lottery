@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="smsPushData">
+	<typeAlias alias="SmsPushDataDomain"
+		type="com.success.lottery.sms.push.model.SmsPushData" />
+
+	<resultMap id="SmsPushDataDomainResult" class="SmsPushDataDomain">
+		<result property="id" column="id" />
+		<result property="taskId" column="taskId" />
+		<result property="sendStatus" column="sendStatus" />
+		<result property="serviceId" column="serviceId" />
+		<result property="mobilePhone" column="mobilePhone" />
+		<result property="content" column="content" />
+		<result property="sendCount" column="sendCount" />
+		<result property="beginTime" column="beginTime" />
+		<result property="endTime" column="endTime" />
+		<result property="sendSummary" column="sendSummary" />
+		<result property="remark" column="remark" />
+		<result property="reserve" column="reserve" />
+		<result property="sentTime" column="sentTime" />
+	</resultMap>
+    <insert id="insertSmsPushData" parameterClass="SmsPushDataDomain">
+		insert into smspushdata(id,taskid, sendstatus, sendsummary, serviceid, mobilephone, content, sendcount, begintime, endtime,  remark, reserve,sentTime) 
+		values(
+			#id#, #taskId#,#sendStatus#, #sendSummary#, #serviceId#, #mobilePhone#, #content#, #sendCount#, #beginTime#, #endTime#,#remark#, #reserve#,null)
+	</insert>
+		
+    <update id="updateTimeoutData">
+		update smspushdata set sendstatus = 3, senttime = now() where sendstatus = 0 and now() > endtime;
+	</update>
+
+	<update id="updatePushData" parameterClass="java.util.Map">
+		update smspushdata set sendstatus=#sendStatus:NUMERIC#, sendcount=sendcount+1, senttime=now() where id=#id:NUMERIC#
+	</update>
+
+	<select id="getSendDataForUpdate" resultClass="SmsPushDataDomain" resultMap="SmsPushDataDomainResult"  parameterClass="java.util.Map">
+		select id, taskid, sendstatus, sendsummary, serviceid, mobilephone, content, sendcount, begintime, endtime, senttime,
+			remark, reserve
+		from smspushdata
+		where
+			<![CDATA[
+			taskid=#taskId# and sendstatus in(0, 2) and now() >= begintime and now()<=endtime limit #number#
+			]]>
+	</select>
+
+<!-- 查询短信群发数据列表 -->
+		<select id="getSmsPushDataList" resultClass="SmsPushDataDomain" resultMap="SmsPushDataDomainResult"  parameterClass="java.util.Map">          
+		   select id,taskId,sendStatus,serviceId,mobilePhone,content,sendCount,beginTime,endTime,sendSummary,remark,reserve,sentTime from smspushdata   
+		  	 <dynamic prepend=" WHERE ">  
+	       	  	<isNotNull property="taskId">
+	               <isGreaterThan prepend=" and " property="taskId" compareValue="0">
+	              	 	taskid = #taskId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="sendStatus">
+	               <isGreaterThan prepend=" and " property="sendStatus" compareValue="0">
+	              	 	sendstatus = #sendStatus#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="serviceId">
+	               <isGreaterThan prepend=" and " property="serviceId" compareValue="0">
+	              	 	serviceid = #serviceId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="mobilePhone">
+	               <isGreaterThan prepend=" and " property="mobilePhone" compareValue="0">
+	              	 	mobilephone = #mobilePhone#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="beginTime">
+                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+               	 	<![CDATA[
+        				begintime>=#beginTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				endtime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    	</dynamic> 
+	    		order by beginTime desc 
+	    	 limit #startPageNumber#, #endPageNumber#
+		</select>  
+		
+<!-- 查询短信群发数据列表总条数 -->		
+		<select id="getSmsPushDataListCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">      
+		   select count(id) from smspushdata   
+		  	 <dynamic prepend=" WHERE ">  
+	       	  	<isNotNull property="taskId">
+	               <isGreaterThan prepend=" and " property="taskId" compareValue="0">
+	              	 	taskid = #taskId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="sendStatus">
+	               <isGreaterThan prepend=" and " property="sendStatus" compareValue="0">
+	              	 	sendstatus = #sendStatus#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="serviceId">
+	               <isGreaterThan prepend=" and " property="serviceId" compareValue="0">
+	              	 	serviceid = #serviceId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="mobilePhone">
+	               <isGreaterThan prepend=" and " property="mobilePhone" compareValue="0">
+	              	 	mobilephone = #mobilePhone#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="beginTime">
+                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+               	 	<![CDATA[
+        				begintime>=#beginTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				endtime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    	</dynamic> 
+		</select>                           
+		<select id="selectMixId" resultClass="java.lang.Integer">
+			select max(id) from smspushdata
+		</select>
+		
+		<!-- 查询短信群发数据详细信息 -->
+		<select id="getSmsPushData" resultClass="SmsPushDataDomain" parameterClass="SmsPushDataDomain">          
+		   select id,taskId,sendStatus,serviceId,mobilePhone,content,sendCount,beginTime,endTime,sendSummary,remark,reserve,sentTime from smspushdata  where id=#id#
+		</select>    
+		<!-- 根据taskid,serviceid,mobilePhone -->
+		<select id="getSmsPushDatabytaskid" resultClass="SmsPushDataDomain" parameterClass="java.util.Map">          
+		   select * from smspushdata  where mobilePhone=#mobilePhone# and taskId=#taskId# and serviceId=#serviceId#
+		</select>    
+			<!-- 查询短信群发数据列表 -->
+		<select id="getSmsPushTaskData"  resultMap="SmsPushDataDomainResult"  parameterClass="java.util.Map">          
+		   select id,taskId,sendStatus,serviceId,mobilePhone,content,sendCount,beginTime,endTime,sendSummary,remark,reserve,sentTime from smspushdata   
+		  	  where taskId=#taskId#
+	    	 limit #startPageNumber#, #endPageNumber#
+		</select>  
+		
+		
+		<!-- 查询短信群发数据列表总条数 -->		
+		<select id="getSmsPushTaskDataCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">      
+		   select count(id) from smspushdata  where taskId=#taskId#
+		</select>  
+</sqlMap>

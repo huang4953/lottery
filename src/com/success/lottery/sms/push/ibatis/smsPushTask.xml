@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="smsPushTask">
+	<typeAlias alias="SmsPushTaskDomain"
+		type="com.success.lottery.sms.push.model.SmsPushTask" />
+
+	<resultMap id="SmsPushTaskDomainResult" class="SmsPushTaskDomain">
+		<result property="taskId" column="taskId" />
+		<result property="taskStatus" column="taskStatus" />
+		<result property="taskSummary" column="taskSummary" />
+		<result property="productId" column="productId" />
+		<result property="serviceId" column="serviceId" />
+		
+		<result property="content" column="content" />
+		<result property="sendSummary" column="sendSummary" />
+		<result property="beginTime" column="beginTime" />
+		<result property="endTime" column="endTime" />
+		<result property="lotteryId" column="lotteryId" />
+		
+		<result property="lotteryTerm" column="lotteryTerm" />
+		<result property="remark" column="remark" />
+		<result property="reserve" column="reserve" />
+		
+		<result property="taskTime" column="taskTime" />
+		<result property="executionTime" column="executionTime" />
+		<result property="executionStat" column="executionStat" />
+	</resultMap>
+	<!-- 添加一条任务 -->
+    <insert id="insertSmsPushTask" parameterClass="SmsPushTaskDomain">
+		insert into smspushtask(taskid,taskstatus, tasksummary, productId, serviceId, content, sendsummary, begintime, endtime, lotteryid, lotteryterm, remark, 
+			reserve,taskTime,executionTime,executionStat) 
+		values(
+			#taskId#, #taskStatus#,#taskSummary#, #productId#, #serviceId#, #content#, #sendSummary#, #beginTime#, #endTime#, #lotteryId#,  #lotteryTerm#, 
+			#remark#, #reserve#,now(),null,null)
+	</insert>
+
+    <update id="updateTimeoutTask">
+		update smspushtask set taskstatus = 4, executiontime = now() where taskstatus = 0 and now() > endtime;
+	</update>
+
+	<select id="getTaskForUpdate" resultMap="SmsPushTaskDomainResult">
+		select
+			taskid, taskstatus, tasksummary, productid, serviceid, content, sendsummary, begintime, endtime, lotteryid, lotteryterm, tasktime,
+			executiontime, executionstat, remark, reserve
+		from smspushtask
+		where
+			<![CDATA[
+			taskstatus = 0 and now() >= begintime and now() <= endtime
+			]]>
+		limit 1 for update
+	</select>
+
+	<select id="getTaskByIdForUpdate" resultMap="SmsPushTaskDomainResult" parameterClass="java.lang.String">
+		select
+			taskid, taskstatus, tasksummary, productid, serviceid, content, sendsummary, begintime, endtime, lotteryid, lotteryterm, tasktime,
+			executiontime, executionstat, remark, reserve
+		from smspushtask
+		where
+			taskid = #taskId#
+		for update
+	</select>
+
+	<update id="updateTaskExecutionStat" parameterClass="java.util.Map">
+		update smspushtask set taskstatus = #taskStatus:NUMERIC#
+		<dynamic prepend=",">
+			<isNotNull property="executionTime" prepend=",">
+				executiontime = now()
+			</isNotNull>
+			<isNotNull property="executionStat" prepend=",">
+				executionstat = #executionStat#
+			</isNotNull>
+		</dynamic>
+		where taskid = #taskId#
+	</update>
+
+
+	<!-- 日期，服务ID查询任务 -->
+	<select id="querySmsPushTask" parameterClass="java.util.Map" resultMap="SmsPushTaskDomainResult">
+     	SELECT * FROM smspushtask WHERE beginTime like #beginTime# and serviceId=#serviceId#
+     </select>
+	<!-- 彩期，彩种 服务ID查询任务 -->
+	<select id="querySmsPushTashByLottery" parameterClass="java.util.Map" resultMap="SmsPushTaskDomainResult">
+		SELECT * FROM smspushtask where serviceId=#serviceId# and lotteryId=#lotteryId# and lotteryTerm=#lotteryTerm#
+	</select>
+	<!-- 查询短信群发任务列表 -->
+	<select id="getSmsPushTaskList" resultClass="SmsPushTaskDomain" resultMap="SmsPushTaskDomainResult"  parameterClass="java.util.Map">          
+		   select taskId,taskStatus,taskSummary,productId,serviceId,content,sendSummary,beginTime,endTime,lotteryId,lotteryTerm,remark,reserve,taskTime,executionTime,executionStat from smspushtask    
+		  	 <dynamic prepend=" WHERE ">  
+	       	  	<isNotNull property="taskId">
+	               <isGreaterThan prepend=" and " property="taskId" compareValue="0">
+	              	 	taskid = #taskId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="taskStatus">
+	               <isGreaterThan prepend=" and " property="taskStatus" compareValue="0">
+	              	 	taskstatus = #taskStatus#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="serviceId">
+	               <isGreaterThan prepend=" and " property="serviceId" compareValue="0">
+	              	 	serviceid = #serviceId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="productId">
+	               <isGreaterThan prepend=" and " property="productId" compareValue="0">
+	              	 	productid = #productId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="lotteryId">
+	               <isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+	              	 	lotteryid = #lotteryId#
+	               </isGreaterThan>             
+	             </isNotNull>
+			<isNotNull property="lotteryTerm_bigin">
+                <isGreaterThan prepend=" and " property="lotteryTerm_bigin" compareValue="0">
+               	 	<![CDATA[
+        				lotteryTerm>=#lotteryTerm_bigin#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="lotteryTerm_end">
+                <isGreaterThan prepend=" and " property="lotteryTerm_end" compareValue="0">
+               	 	<![CDATA[
+        				lotteryTerm<=#lotteryTerm_end#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+             <isNotNull property="beginTime">
+                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+               	 	<![CDATA[
+        				begintime>=#beginTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				endtime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    	</dynamic> 
+	    	  order by beginTime desc 
+	    	 limit #startPageNumber#, #endPageNumber#
+		</select> 
+		
+		
+		<!-- 查询短信群发任务列表的总条数 -->
+		<select id="getSmsPushTaskListCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">         
+		   select count(taskId) from smspushtask   
+		  	 <dynamic prepend=" WHERE ">  
+	       	  	<isNotNull property="taskId">
+	               <isGreaterThan prepend=" and " property="taskId" compareValue="0">
+	              	 	taskid = #taskId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="taskStatus">
+	               <isGreaterThan prepend=" and " property="taskStatus" compareValue="0">
+	              	 	taskstatus = #taskStatus#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="serviceId">
+	               <isGreaterThan prepend=" and " property="serviceId" compareValue="0">
+	              	 	serviceid = #serviceId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	              <isNotNull property="productId">
+	               <isGreaterThan prepend=" and " property="productId" compareValue="0">
+	              	 	productid = #productId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="lotteryId">
+	               <isGreaterThan prepend=" and " property="lotteryId" compareValue="0">
+	              	 	lotteryid = #lotteryId#
+	               </isGreaterThan>             
+	             </isNotNull>
+	             <isNotNull property="lotteryTerm_bigin">
+                <isGreaterThan prepend=" and " property="lotteryTerm_bigin" compareValue="0">
+               	 	<![CDATA[
+        				lotteryTerm>=#lotteryTerm_bigin#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="lotteryTerm_end">
+                <isGreaterThan prepend=" and " property="lotteryTerm_end" compareValue="0">
+               	 	<![CDATA[
+        				lotteryTerm<=#lotteryTerm_end#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	             <isNotNull property="beginTime">
+                <isGreaterThan prepend=" and " property="beginTime" compareValue="0">
+               	 	<![CDATA[
+        				begintime>=#beginTime#
+      				]]>
+                </isGreaterThan>             
+              </isNotNull>
+              <isNotNull property="endTime">
+                <isGreaterThan prepend=" and " property="endTime" compareValue="0">
+               	 	<![CDATA[
+        				endtime<=#endTime#
+        			]]>
+                </isGreaterThan>             
+              </isNotNull>
+	    	</dynamic> 
+		</select>   
+		
+		<!-- 查询短信群发任务详细信息 -->
+		<select id="getSmsPushTask" resultClass="SmsPushTaskDomain" parameterClass="SmsPushTaskDomain">          
+		   select taskId,taskStatus,taskSummary,productId,serviceId,content,sendSummary,beginTime,endTime,lotteryId,lotteryTerm,remark,reserve,taskTime,executionTime,executionStat from smspushtask  where taskid=#taskId#
+		</select>      
+</sqlMap>

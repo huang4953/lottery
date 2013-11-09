@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="betOrder">
+	<typeAlias alias="BetOrderDomain"
+		type="com.success.lottery.order.domain.BetOrderDomain" />
+
+	<resultMap id="BetOrderDomainResult" class="BetOrderDomain">
+		<result property="orderId" column="OrderId" />
+		<result property="planId" column="PlanId" />
+		<result property="planSource" column="PlanSource" />
+		<result property="chaseNumber" column="ChaseNumber" />
+		<result property="userId" column="UserId" />
+		<result property="areaCode" column="AreaCode" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="betTerm" column="BetTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betCodeMode" column="BetCodeMode" />
+		<result property="betCode" column="BetCode" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="betAmount" column="BetAmount" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="orderStatus" column="OrderStatus" />
+		<result property="ticketTime" column="TicketTime" />
+		<result property="ticketStat" column="TicketStat" />
+		<result property="winStatus" column="WinStatus" />
+		<result property="preTaxPrize" column="PreTaxPrize" />
+		<result property="reserve" column="Reserve" />
+		<result property="winCode" column="wincode" />
+		<result property="taxPrize" column="taxprize" />
+		<result property="aftTaxPrize" column="afttaxprize" />
+		<result property="deductPrize" column="deductprize" />
+		<result property="commissionPrize" column="commissionprize" />
+	</resultMap>
+
+	<!-- 插入订单表 -->
+	<insert id="insertBetOrder" parameterClass="BetOrderDomain">
+		INSERT INTO betorder
+		(OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,taxprize,afttaxprize,deductprize,commissionprize) 
+		VALUES (#orderId#,#planId#,#planSource#,#chaseNumber#,#userId#,#areaCode#,#lotteryId#,
+		#betTerm#,#playType#,#betType# ,#betCodeMode# ,#betCode#,#betMultiple# ,#betAmount#,now()
+		,#orderStatus# ,#ticketStat#,#winStatus#,#preTaxPrize#,#reserve#,#taxPrize#,#aftTaxPrize#,
+		#deductPrize#,#commissionPrize#) 
+	</insert>
+	<!-- 合买插入订单表 -->
+	<insert id="insertBetCoopOrder" parameterClass="BetOrderDomain">
+		INSERT INTO betorder
+		(OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,taxprize,afttaxprize,deductprize,commissionprize) 
+		VALUES (#orderId#,#planId#,#planSource#,#chaseNumber#,#userId#,#areaCode#,#lotteryId#,
+		#betTerm#,#playType#,#betType# ,#betCodeMode# ,#betCode#,#betMultiple# ,#betAmount#,
+		now(),#orderStatus# ,#ticketStat#,#winStatus#,#preTaxPrize#,#reserve#
+		,#taxPrize#,#aftTaxPrize#,#deductPrize#,#commissionPrize#)
+		<selectKey resultClass="java.lang.String" keyProperty="orderId">
+			select OrderId from betorder where OrderId = #orderId#
+		</selectKey>
+	</insert>
+
+	<update id="updateBetOrderStatus" parameterClass="java.util.Map">
+		update betorder set OrderStatus = #orderStatus:NUMERIC# where
+		OrderId = #orderId#
+	</update>
+
+	<update id="updateBetOrderWinStatus"
+		parameterClass="java.util.Map">
+		update betorder set WinStatus = #winStatus:NUMERIC# where
+		OrderId = #orderId#
+	</update>
+
+	<update id="updateBetOrderAndWinStatus"
+		parameterClass="BetOrderDomain">
+		UPDATE betorder SET OrderStatus=#orderStatus#,WinStatus=#winStatus#,PreTaxPrize=#preTaxPrize#,
+		wincode=#winCode#,taxprize=#taxPrize#,afttaxprize=#aftTaxPrize#,deductprize=#deductPrize#,
+		commissionprize=#commissionPrize#
+		WHERE OrderId = #orderId#
+	</update>
+
+	<select id="queryBetOrderByOrderId"
+		parameterClass="java.lang.String" resultMap="BetOrderDomainResult">
+		select
+		OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,TicketTime,wincode,taxprize,afttaxprize,deductprize,commissionprize
+		from betorder 
+		where OrderId = #value#
+	</select>
+	<!-- 该sql不允许其他方法调用 -->
+	<select id="queryBetOrderByOrderIdForUpdate"
+		parameterClass="java.lang.String" resultMap="BetOrderDomainResult">
+		select OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,TicketTime,wincode,taxprize,afttaxprize,deductprize,commissionprize 
+		from betorder 
+		where OrderId = #value# for update
+	</select>
+
+	<select id="queryOrderByOrderIdForSamePlan"
+		resultMap="BetOrderDomainResult" parameterClass="java.util.Map">
+		select OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,TicketTime,wincode ,taxprize,afttaxprize,deductprize,commissionprize
+		from betorder 
+		where
+		OrderId
+		<![CDATA[ <> ]]>
+		#orderId# and WinStatus = #winStatus:NUMERIC# and PlanId
+		=#planId#
+		<isNotNull property="nextTerm">
+			<isNotEmpty property="nextTerm" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="nextTerm">
+					BetTerm = #nextTerm[]#
+				</iterate>
+			</isNotEmpty>
+		</isNotNull>
+
+		<isNotEmpty property="orderStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="orderStatus">
+				OrderStatus = #orderStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+	</select>
+
+	<select id="queryOrderNumByStatus" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(1) from betorder where LotteryId = #lotteryId# and
+		BetTerm = #termNo# 
+		<isNotEmpty property="orderStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="orderStatus">
+				OrderStatus = #orderStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="winStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="winStatus">
+				WinStatus = #winStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+	</select>
+
+	<select id="queryOrderByStatus" parameterClass="java.util.Map"
+		resultClass="java.lang.String">
+		select OrderId from betorder where LotteryId = #lotteryId# and
+		BetTerm = #termNo# 
+		<isNotEmpty property="orderStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or" property="orderStatus">
+				OrderStatus = #orderStatus[]#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="winStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or" property="winStatus">
+				WinStatus = #winStatus[]#
+			</iterate>
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryUndeliverTicketQueOrder"
+		resultMap="BetOrderDomainResult" parameterClass="java.util.Map">
+		select
+		OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,TicketTime,wincode ,taxprize,afttaxprize,deductprize,commissionprize
+		from betorder where 1=1
+		<isNotEmpty property="orderStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="orderStatus">
+				OrderStatus = #orderStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="termInfo" prepend="and">
+			($termInfo$)
+		</isNotEmpty>
+		<isNotNull property="limitNumber">
+			LIMIT #limitNumber#
+		</isNotNull>
+	</select>
+	
+	<!--  
+	<select id="query2CheckOrder"
+		resultMap="BetOrderDomainResult" parameterClass="java.util.Map">
+		select
+			o.OrderId OrderId, o.PlanId PlanId, o.PlanSource, o.ChaseNumber ChaseNumber, o.UserId UserId, o.AreaCode AreaCode, o.LotteryId LotteryId,
+			o.BetTerm BetTerm, o.PlayType PlayType, o.BetType BetType, o.BetCodeMode BetCodeMode, o.BetCode BetCode, o.BetMultiple BetMultiple,
+			o.BetAmount BetAmount, o.OrderTime OrderTime, o.OrderStatus OrderStatus, o.TicketStat TicketStat, o.WinStatus WinStatus,
+			o.PreTaxPrize PreTaxPrize, o.Reserve Reserve, o.TicketTime TicketTime, o.wincode wincode from betorder o, betticket t
+		where
+			o.orderid = t.orderid
+		<isNotEmpty property="orderStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="orderStatus">
+				o.OrderStatus = #orderStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="ticketStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or"
+				property="ticketStatus">
+				t.ticketStatus = #ticketStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotNull property="limitNumber">
+			LIMIT #limitNumber#
+		</isNotNull>
+	</select>
+	-->
+	
+	<select id="query2CheckOrder"
+		resultMap="BetOrderDomainResult" parameterClass="java.util.Map">
+		select
+			o.OrderId OrderId, o.PlanId PlanId, o.PlanSource, o.ChaseNumber ChaseNumber, o.UserId UserId, o.AreaCode AreaCode, o.LotteryId LotteryId,
+			o.BetTerm BetTerm, o.PlayType PlayType, o.BetType BetType, o.BetCodeMode BetCodeMode, o.BetCode BetCode, o.BetMultiple BetMultiple,
+			o.BetAmount BetAmount, o.OrderTime OrderTime, o.OrderStatus OrderStatus, o.TicketStat TicketStat, o.WinStatus WinStatus,
+			o.PreTaxPrize PreTaxPrize, o.Reserve Reserve, o.TicketTime TicketTime, o.wincode wincode
+			,o.taxprize taxprize,o.afttaxprize afttaxprize,o.deductprize deductprize,o.commissionprize commissionprize 
+		from betorder o
+		where 
+		<isNotEmpty property="orderStatus" prepend="">
+			<iterate open="(" close=")" conjunction="or"
+				property="orderStatus">
+				o.OrderStatus = #orderStatus[]:NUMERIC#
+			</iterate>
+		</isNotEmpty>
+		<isNotEmpty property="ticketStatus" prepend="and">
+			exists (select 1 from betticket t where t.orderid = o.orderid and 
+			<iterate open="(" close=")" conjunction="or"
+				property="ticketStatus">
+				t.ticketStatus = #ticketStatus[]:NUMERIC#
+			</iterate>
+			)
+		</isNotEmpty>
+		<isNotNull property="limitNumber">
+			LIMIT #limitNumber#
+		</isNotNull>
+	</select>
+	
+	<update id="updateBetOrderStatusByIdList" parameterClass="java.util.Map">
+		update betorder set OrderStatus = #orderStatus# where 1=1
+		<dynamic prepend=" and ">
+			<isNotEmpty prepend=" and " >
+				orderstatus in 
+				<iterate open="(" close=")" conjunction=", " property="whoes">
+					#whoes[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="orderIds" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="orderIds">
+					OrderId = #orderIds[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</update>	
+	
+	<update id="updateBetOrderTicketStat" parameterClass="java.util.Map">
+		update betorder set OrderStatus = #orderStatus#,TicketStat = #ticketStat#,TicketTime=now()
+		where OrderId = #orderId#
+	</update>
+	
+	<!-- 获取同一个方案编号下的所有订单 -->
+	<select id="querySamePlanIdOrders" parameterClass="java.lang.String" resultMap="BetOrderDomainResult">
+		select OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,TicketTime,wincode,
+		taxprize,afttaxprize,deductprize,commissionprize
+		from betorder where PlanId = #value#
+	</select>
+	
+	<select id="getUserChaseOrdersCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(1) from betorder where userid = #userId# and orderstatus in(11, 12, 13,14)
+		<dynamic prepend=" and ">
+			<isNotNull property="lotteryId" prepend=" and " >
+				<isGreaterThan property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					orderTime >= #startTime#
+   				]]>            
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+	    </dynamic>
+	</select>
+
+	<select id="getUserChaseOrders" parameterClass="java.util.Map" resultMap="BetOrderDomainResult">
+		select * from betorder where userid = #userId# and orderstatus in(11, 12, 13,14)
+		<dynamic prepend=" and ">
+			<isNotNull property="lotteryId" prepend=" and " >
+				<isGreaterThan property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					orderTime >= #startTime#
+   				]]>            
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+	    </dynamic>
+	    limit #start#, #number#
+	</select>
+	
+	
+	<select id="getUserOrdersCount" parameterClass="java.util.Map" resultClass="BetOrderDomain">
+		select count(1) as chaseNumber,COALESCE(sum(preTaxPrize),0) as preTaxPrize from betorder where userid = #userId#
+			<isNotNull property="lotteryId" prepend=" and " >
+				<isGreaterThan property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="planSource" prepend=" and " >
+				<isGreaterThan property="planSource" compareValue="-1">
+					planSource = #planSource:NUMERIC#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="orderStatus">
+					OrderStatus = #orderStatus[]:NUMERIC#
+				</iterate>
+		    </isNotNull>
+			<isNotNull property="winStatus" prepend=" and " >
+				<isGreaterThan property="winStatus" compareValue="-1">
+				   <isEqual property="winStatus" compareValue="0">
+				   	winStatus in (0,99)
+				   </isEqual>
+				   <isEqual property="winStatus" compareValue="1">
+				   	winStatus in (1,199)
+				   </isEqual>
+				   <isEqual property="winStatus" compareValue="2">
+				   	winStatus in (2,299)
+				   </isEqual>
+				   <isEqual property="winStatus" compareValue="3">
+				   	winStatus in (3,399)
+				   </isEqual>
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					orderTime >= #startTime#
+   				]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+			and EXISTS (select 1 from betplan where betplan.planid = betorder.planid and betplan.plantype=0)
+	</select>
+
+	<select id="getUserOrders" parameterClass="java.util.Map" resultMap="BetOrderDomainResult">
+		select * from betorder where userid = #userId#
+			<isNotNull property="lotteryId" prepend=" and " >
+				<isGreaterThan property="lotteryId" compareValue="0">
+					lotteryid = #lotteryId:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			<isNotNull property="term" prepend=" and " >
+				betterm = #term:VARCHAR#            
+			</isNotNull>
+			<isNotNull property="planSource" prepend=" and " >
+				<isGreaterThan property="planSource" compareValue="-1">
+					planSource = #planSource:NUMERIC#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend="and">
+				<iterate open="(" close=")" conjunction="or"
+					property="orderStatus">
+					OrderStatus = #orderStatus[]:NUMERIC#
+				</iterate>
+		    </isNotNull>
+			<isNotNull property="winStatus" prepend=" and " >
+				<isGreaterThan property="winStatus" compareValue="-1">
+					<isEqual property="winStatus" compareValue="0">
+				   	winStatus in (0,99)
+				   </isEqual>
+				   <isEqual property="winStatus" compareValue="1">
+				   	winStatus in (1,199)
+				   </isEqual>
+				   <isEqual property="winStatus" compareValue="2">
+				   	winStatus in (2,299)
+				   </isEqual>
+				   <isEqual property="winStatus" compareValue="3">
+				   	winStatus in (3,399)
+				   </isEqual>
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					orderTime >= #startTime#
+   				]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+			and EXISTS (select 1 from betplan where betplan.planid = betorder.planid and betplan.plantype=0)
+	    order by orderTime desc
+	    limit #start#, #number#
+	</select>
+	
+	<!-- 兑奖记录查询 -->
+	<sql id="getUserOrdersTwo_condition">
+		<isNotNull property="lotteryId" prepend="and">
+			lotteryid = #lotteryId:NUMERIC#           
+		</isNotNull>
+		<isNotNull property="term" prepend="and">
+			betterm = #term:VARCHAR# 
+		</isNotNull>
+	</sql>
+	<select id="getUserOrdersTwo" parameterClass="java.util.Map" resultClass="BetOrderDomain">
+		select at.transactiontime as orderTime,at.remark as reserve,at.amount as preTaxPrize,at.sourcesequence as orderId,
+		bet.lotteryid as LotteryId,bet.betterm as BetTerm
+		from accounttransaction as at,
+		(select lotteryid as lotteryid,betterm as betterm,orderid as orderid from betorder
+		where orderstatus=10 and userid=#userId#
+		<include refid="betOrder.getUserOrdersTwo_condition"/>
+		union all
+		select lotteryid as lotteryid,betterm as betterm,cpinfoid as orderid from coopinfo
+		where orderstatus=8 and userid=#userId#
+		<include refid="betOrder.getUserOrdersTwo_condition"/>
+		) as bet
+		where at.sourcesequence=bet.orderid and at.transactiontype=11002 
+		<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					at.transactiontime  >= #startTime#
+   				]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					at.transactiontime  <= #endTime#
+   				]]>            
+		</isNotNull>
+		order by orderTime desc
+	    limit #start#, #number#
+	</select>
+		
+	<!-- 查询用户兑奖总记录数 -->
+	<select id="getUserOrdersCountTwo" parameterClass="java.util.Map" resultClass="BetOrderDomain">
+		select count(*) as chaseNumber,COALESCE(sum(at.amount),0) as preTaxPrize
+		from accounttransaction as at,
+		(select lotteryid as lotteryid,betterm as betterm,orderid as orderid from betorder
+		where orderstatus=10 and userid=#userId#
+		<include refid="betOrder.getUserOrdersTwo_condition"/>
+		union all
+		select lotteryid as lotteryid,betterm as betterm,cpinfoid as orderid from coopinfo
+		where orderstatus=8 and userid=#userId#
+		<include refid="betOrder.getUserOrdersTwo_condition"/>
+		) as bet
+		where at.sourcesequence=bet.orderid and at.transactiontype=11002 
+		<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					at.transactiontime  >= #startTime#
+   				]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					at.transactiontime  <= #endTime#
+   				]]>            
+		</isNotNull>
+	</select>
+	<!-- 根据彩种彩期及中将状态查询订单列表 -->
+	<select id="getWinOrderList" parameterClass="java.util.Map" resultMap="BetOrderDomainResult">
+		select * from betorder where betTerm=#betTerm# and lotteryId=#lotteryId# and winStatus in (2,3,299,399)
+	</select>
+	<!-- 根据方案编号查询出票订单 -->
+	<select id="queryOrderByPlanId"	resultMap="BetOrderDomainResult" parameterClass="java.lang.String">
+		select OrderId,PlanId,PlanSource,ChaseNumber,UserId,AreaCode,LotteryId,BetTerm,PlayType,
+		BetType,BetCodeMode,BetCode,BetMultiple,BetAmount,OrderTime,OrderStatus,TicketStat,
+		WinStatus,PreTaxPrize,Reserve,TicketTime,wincode ,taxprize,afttaxprize,deductprize,commissionprize
+		from betorder where planId = #value#
+	</select>
+</sqlMap>

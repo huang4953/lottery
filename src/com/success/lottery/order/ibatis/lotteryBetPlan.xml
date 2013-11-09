@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="betPlan">
+	<typeAlias alias="betPlanDomain"
+		type="com.success.lottery.order.domain.BetPlanDomain" />
+
+
+	<resultMap id="betPlanDomainResult" class="betPlanDomain">
+		<result property="planId" column="PlanId" />
+		<result property="userId" column="UserId" />
+		<result property="areaCode" column="AreaCode" />
+		<result property="lotteryId" column="LotteryId" />
+		<result property="startTerm" column="StartTerm" />
+		<result property="playType" column="PlayType" />
+		<result property="betType" column="BetType" />
+		<result property="betCodeMode" column="BetCodeMode" />
+		<result property="betCode" column="BetCode" />
+		<result property="chaseCount" column="ChaseCount" />
+		<result property="chasedCount" column="ChasedCount" />
+		<result property="winStoped" column="WinStoped" />
+		<result property="planType" column="PlanType" />
+		<result property="betMultiple" column="BetMultiple" />
+		<result property="unitAmount" column="UnitAmount" />
+		<result property="planTime" column="PlanTime" />
+		<result property="stopTime" column="StopTime" />
+		<result property="planTitle" column="PlanTitle" />
+		<result property="planDescription" column="PlanDescription" />
+		<result property="planOpenType" column="PlanOpenType" />
+		<result property="totalUnit" column="TotalUnit" />
+		<result property="unitPrice" column="UnitPrice" />
+		<result property="unitBuySelf" column="UnitBuySelf" />
+		<result property="commisionPercent" column="CommisionPercent" />
+		<result property="selledUnit" column="SelledUnit" />
+		<result property="planStatus" column="PlanStatus" />
+		<result property="planSource" column="PlanSource" />
+		<result property="reserve" column="Reserve" />
+	</resultMap>
+
+	<!-- 插入方案表 -->
+	<insert id="insertBetPlan" parameterClass="betPlanDomain">
+		INSERT INTO betplan
+		(PlanId,UserId,AreaCode,LotteryId,StartTerm,PlayType,BetType,BetCodeMode,BetCode,ChaseCount
+		,ChasedCount,WinStoped,PlanType,BetMultiple,UnitAmount,PlanTime,StopTime,PlanTitle,PlanDescription,PlanOpenType
+		,TotalUnit,UnitPrice,UnitBuySelf,CommisionPercent,SelledUnit,PlanStatus,PlanSource,Reserve)
+		VALUES (#planId# ,#userId#,#areaCode# ,#lotteryId# ,#startTerm#
+		,#playType# ,#betType# ,#betCodeMode# ,#betCode# ,#chaseCount#
+		,#chasedCount#,#winStoped# ,#planType# ,#betMultiple#
+		,#unitAmount#,now(),#stopTime:Timestamp# ,#planTitle#
+		,#planDescription#,#planOpenType# ,#totalUnit#
+		,#unitPrice# ,#unitBuySelf# ,#commisionPercent# ,#selledUnit#
+		,#planStatus# ,#planSource# ,#reserve#)
+		<selectKey resultClass="java.lang.String"
+			keyProperty="planId">
+			select PlanId from betplan where PlanId = #planId#
+		</selectKey>
+	</insert>
+	<!-- 更新方案状态 -->
+	<update id="updateBetPlanStatus" parameterClass="java.util.Map">
+		update betplan set PlanStatus = #planStatus:NUMERIC# where
+		PlanId = #planId#
+	</update>
+	<!-- 获取方案信息 -->
+	<select id="queryBetPlanByPlanId" parameterClass="java.lang.String"
+		resultMap="betPlanDomainResult">
+		select
+		PlanId,UserId,AreaCode,LotteryId,StartTerm,PlayType,BetType,BetCodeMode,BetCode,ChaseCount
+		,ChasedCount,WinStoped,PlanType,BetMultiple,UnitAmount,PlanTime,StopTime,PlanTitle,PlanDescription,PlanOpenType
+		,TotalUnit,UnitPrice,UnitBuySelf,CommisionPercent,SelledUnit,PlanStatus,PlanSource,Reserve
+		from betplan where PlanId = #value#
+	</select>
+	<!-- 获取方案信息并锁住方案 -->
+	<select id="queryBetPlanForUpdate" parameterClass="java.lang.String"
+		resultMap="betPlanDomainResult">
+		SELECT PlanId,UserId,AreaCode,LotteryId,StartTerm,PlayType,BetType,BetCodeMode,BetCode,ChaseCount
+		,ChasedCount,WinStoped,PlanType,BetMultiple,UnitAmount,PlanTime,StopTime,PlanTitle,PlanDescription,PlanOpenType
+		,TotalUnit,UnitPrice,UnitBuySelf,CommisionPercent,SelledUnit,PlanStatus,PlanSource,Reserve
+		FROM  betplan where PlanId = #value# for update
+	</select>
+	<!-- 更新合买方案的认购进度和状态 -->
+	<update id="updateSelledAndStatus" parameterClass="java.util.Map">
+		UPDATE betplan SET planstatus = #planStatus:NUMERIC#,selledunit=#selledUnit#
+		WHERE planid = #planId#
+	</update>
+	
+	<!-- 查询指定彩种彩期，类型，状态的方案信息 -->
+	<select id="getPlanInfoByLotteryTerm" parameterClass="java.util.Map" resultMap="betPlanDomainResult">
+		SELECT PlanId,UserId,AreaCode,LotteryId,StartTerm,PlayType,BetType,BetCodeMode,BetCode,ChaseCount
+		,ChasedCount,WinStoped,PlanType,BetMultiple,UnitAmount,PlanTime,StopTime,PlanTitle,PlanDescription,PlanOpenType
+		,TotalUnit,UnitPrice,UnitBuySelf,CommisionPercent,SelledUnit,PlanStatus,PlanSource,Reserve
+		FROM betplan
+		WHERE 1=1 
+		<isNotNull prepend="and" property="lotteryIdTerms">   
+             concat(lotteryid,startterm) in   
+            <iterate  property="lotteryIdTerms" open="(" close=")" conjunction=",">   
+             #lotteryIdTerms[]#   
+            </iterate>   
+         </isNotNull>  
+         <isNotNull property="planType" prepend="and">
+			<iterate open="(" close=")" conjunction="or" property="planType">
+				planType = #planType[]:NUMERIC#
+			</iterate>
+		 </isNotNull>
+		 <isNotNull property="planStatus" prepend="and">
+			<iterate open="(" close=")" conjunction="or" property="planStatus">
+				PlanStatus = #planStatus[]:NUMERIC#
+			</iterate>
+		 </isNotNull>
+		 ORDER BY SelledUnit desc
+	</select>
+
+</sqlMap>

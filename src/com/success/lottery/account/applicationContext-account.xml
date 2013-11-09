@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC
+    "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans
+  default-autowire="no"
+  default-lazy-init="false"
+  default-dependency-check="none"
+>
+	<!-- DAO -->
+	<bean id="accountTransactionDAO" class="com.success.lottery.account.dao.impl.AccountTransactionDAOImpl">
+		<property name="sqlMapClientTemplate">
+		<ref bean="sqlMapClientAccountTemplate" />
+		</property>
+	</bean>
+	<bean id="userAccountDAO" class="com.success.lottery.account.dao.impl.UserAccountDAOImpl">
+		<property name="sqlMapClientTemplate">
+		<ref bean="sqlMapClientAccountTemplate" />
+		</property>
+	</bean>
+	<!--END DAO-->
+ 	
+  	<bean id="accountService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+  		<property name="transactionManager" ref="transactionManager" />
+		<property name="proxyInterfaces">
+              <value>com.success.lottery.account.service.AccountService</value>
+        </property>
+	    <property name="target">
+	      <bean  class="com.success.lottery.account.service.impl.AccountServiceImpl">
+	       		<property name="accountTransactionDAO">
+			      <ref bean="accountTransactionDAO"/>
+			    </property>
+			    <property name="userAccountDAO">
+			      <ref bean="userAccountDAO"/>
+			    </property>
+				<property name="mailSender">
+					<ref bean="mailSender"/>
+				</property>
+	       </bean>
+	    </property>
+	    <property name="transactionAttributes">
+			<props>
+				<!-- 
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="add*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-Exception</prop>
+ 				-->
+				<prop key="accountTransaction*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="registerBy*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="unregisterBy*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="login*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="updateUser*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+  	</bean>
+  	<!-- 提现基础操作服务 -->
+  	<bean id="baseDrawMoneyService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.account.service.BaseDrawMoneyService</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.account.service.impl.BaseDrawMoneyServiceImpl">
+                <property name="drawMoneyDao">
+                  	<bean class="com.success.lottery.account.dao.impl.DrayMoneyDaoImpl">
+						<property name="sqlMapClient">
+							<ref bean="sqlMapClientAccount"/>
+				    	</property>		
+			     	</bean>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="update*">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="insert*">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+  	
+  	<!-- 环迅支付 -->
+  	<bean id="ipsService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+  		<property name="transactionManager" ref="transactionManager" />
+		<property name="proxyInterfaces">
+              <value>com.success.lottery.account.service.IPSOrderService</value>
+        </property>
+	    <property name="target">
+	      <bean  class="com.success.lottery.account.service.impl.IPSOrderServiceImpl">
+	       		<property name="ipsOrderDao">
+                  	<bean class="com.success.lottery.account.dao.IPSOrderDAO">
+						<property name="sqlMapClient">
+							<ref bean="sqlMapClientAccount"/>
+				    	</property>		
+			     	</bean>
+			    </property>
+			    <property name="accountService">
+					<ref bean="accountService"/>
+                </property>
+	       </bean>
+	    </property>
+	    <property name="transactionAttributes">
+			<props>
+				<prop key="processIPSOrder">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="addIPSOrder">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+  	</bean>
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host">
+			<value>mail.chinatlt.com</value>
+		</property>
+
+		<property name="username">
+			<value>info@chinatlt.com</value>
+		</property>
+
+		<property name="password">
+			<value>shtl2010</value>
+		</property>
+
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">25000</prop>
+			</props>
+		</property>
+	</bean>
+    <!-- 快钱支付 -->
+    <bean id="billService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+  		<property name="transactionManager" ref="transactionManager" />
+		<property name="proxyInterfaces">
+              <value>com.success.lottery.account.service.BillOrderService</value>
+        </property>
+	    <property name="target">                                
+	      <bean  class="com.success.lottery.account.service.impl.BillOrderServiceImpl">
+	       		<property name="billOrderDAO">
+                  	<bean class="com.success.lottery.account.dao.BillOrderDAO">
+						<property name="sqlMapClient">
+							<ref bean="sqlMapClientAccount"/>
+				    	</property>		
+			     	</bean>
+			    </property>
+			     <property name="accountService">
+					<ref bean="accountService"/>
+                </property>
+	       </bean>
+	    </property>
+	    <property name="transactionAttributes">
+			<props>                          
+				<prop key="processBillOrder">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="addBillOrder">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+  	</bean>
+	<!-- 
+	<bean id="mailMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from">
+			<value>info@chinatlt.com</value>
+		</property>
+	</bean>
+ 	-->
+  	<!--END SERVICE-->
+</beans>

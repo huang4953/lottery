@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="reportTransSort">
+
+	<typeAlias alias="reportTransSortDomain" type="com.success.lottery.report.domain.ReportTransSortDomain"/>
+	
+	<!-- 查询投注排名 -->
+	<select id="getBetTransSortReport" parameterClass="java.util.Map" resultClass="reportTransSortDomain">
+		SELECT mobilephone AS mobilePhone,nickname AS realName,amount AS amount
+		FROM  useraccount AS tab1,(
+		SELECT userid,sum(betamount) as amount
+		FROM betorder
+		WHERE orderstatus in (0,1,2,3,4,5,6,8,10,13) AND ordertime <![CDATA[ >= ]]> #beginDate# AND ordertime <![CDATA[ <= ]]> #endDate#
+		GROUP BY userid ORDER BY amount DESC LIMIT 0,#maxSortNum#
+		) AS tab2
+		WHERE tab1.userid = tab2.userid
+		
+	</select>
+	<!-- 查询中奖排名 -->
+	<select id="getPrizeTransSortReport" parameterClass="java.util.Map" resultClass="reportTransSortDomain">
+		SELECT mobilephone AS mobilePhone,nickname AS realName,amount AS amount
+		FROM  useraccount AS tab1,(
+		SELECT userid,sum(pretaxprize) as amount
+		FROM betorder
+		WHERE winStatus in (2,3,299,399) AND ordertime <![CDATA[ >= ]]> #beginDate# AND ordertime <![CDATA[ <= ]]> #endDate#
+		GROUP BY userid ORDER BY amount DESC LIMIT 0,#maxSortNum#
+		) AS tab2
+		WHERE tab1.userid = tab2.userid
+	</select>
+	<!-- 查询环迅充值排名 -->
+	<select id="getChongZhiTransSortReport" parameterClass="java.util.Map" resultClass="reportTransSortDomain">
+		SELECT mobilephone AS mobilePhone,nickname AS realName,amount AS amount
+		FROM  useraccount AS tab1,(
+		SELECT userid,sum(amount) as amount
+		FROM accounttransaction
+		WHERE transactiontype = 11001 AND sourcetype = 1001 AND transactiontime <![CDATA[ >= ]]> #beginDate# AND transactiontime <![CDATA[ <= ]]> #endDate#
+		GROUP BY userid ORDER BY amount DESC LIMIT 0,#maxSortNum#
+		) AS tab2
+		WHERE tab1.userid = tab2.userid
+	</select>
+	<!-- 查询提现排名 -->
+	<select id="getDrawTransSortReport" parameterClass="java.util.Map" resultClass="reportTransSortDomain">
+		SELECT mobilephone AS mobilePhone,nickname AS realName,amount AS amount
+		FROM  useraccount AS tab1,(
+		SELECT userid,sum(amount) as amount
+		FROM accounttransaction
+		WHERE transactiontype in (20007) AND transactiontime <![CDATA[ >= ]]> #beginDate# AND transactiontime <![CDATA[ <= ]]> #endDate#
+		GROUP BY userid ORDER BY amount DESC LIMIT 0,#maxSortNum#
+		) AS tab2
+		WHERE tab1.userid = tab2.userid
+	</select>
+</sqlMap>

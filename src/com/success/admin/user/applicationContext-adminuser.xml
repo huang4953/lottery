@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans default-autowire="no" default-lazy-init="false" default-dependency-check="none">
+  	<!--DAO-->
+	<bean id="adminUserDao" class="com.success.admin.user.dao.AdminUserDAO">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientAdminUser"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+
+	<bean id="adminUserService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="proxyInterfaces">
+              <value>com.success.admin.user.service.AdminUserService</value>
+        </property>
+	    <property name="target">
+	       <bean  class="com.success.admin.user.service.impl.AdminUserServiceImpl">
+	       		<property name="adminUserDao">
+			      <ref bean="adminUserDao"/>
+			    </property>
+	       </bean>
+	    </property>
+	    <property name="transactionAttributes">
+			<props>
+				<prop key="addAdminUser">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="changePassword">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="updateAdminUser">PROPAGATION_REQUIRED,-LotteryException</prop>
+			</props>
+		</property>
+  	</bean>
+
+</beans>

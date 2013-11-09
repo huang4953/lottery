@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="reportAccount">
+
+	<typeAlias alias="reportAccountDomain" type="com.success.lottery.report.domain.ReportAccount"/>
+	<typeAlias alias="reportAccountCountDomain" type="com.success.lottery.report.domain.ReportAccountCountDomain"/>
+	
+	<!-- 统计账户表中的本金、奖金、冻结余额 -->
+	<select id="getAccountBalance" resultClass="reportAccountDomain">
+		SELECT SUM(fundsaccount) AS fundsAccount,SUM(prizeaccount) AS prizeAccount,SUM(frozenaccount) AS frozenAccount,now() AS reportTime
+		FROM  useraccount
+	</select>
+	
+	<!-- 生成账户变动统计数据 -->
+	<insert id="insert_report_account" parameterClass="reportAccountDomain">
+		INSERT INTO report_account (accountdate,ipsamount,kzamount,clientamount,dispatchamount,adjustadd,zhuihaocancel, 
+		betamount,drawrequest,drawagree,drawreject,adjustreduce,fundsaccount,prizeaccount,  
+		frozenaccount,trackaccount,createtime,begintime,endtime,remark,reserve1,reserve2,reserve3)
+		VALUES (#accountDate#,#ipsAmount#,#kzAmount#,#clientAmount#,#dispatchAmount#,#adjustAdd#,#zhuihaoCancel#
+		,#betAmount#,#drawRequest#,#drawAgree#,#drawReject#,#adjustReduce#,#fundsAccount#,#prizeAccount#
+		,#frozenAccount#,#trackAccount#,now(),#beginTime#,#endTime#,#remark#,#reserve1#,#reserve2#,#reserve3#)
+	</insert>
+	
+	<!-- 统计账户变动数据 -->
+	<select id="getAccountTransactionCount" parameterClass="java.util.Map" resultClass="reportAccountCountDomain">
+		SELECT transactiontype AS transactionType,sourcetype AS sourceType,SUM(amount) AS amount
+		FROM accounttransaction
+		WHERE transactiontime <![CDATA[ >= ]]> #beginTime# AND transactiontime <![CDATA[ <= ]]> #endTime#
+		GROUP BY transactiontype,sourcetype
+	</select>
+	<!-- 用于判断改天的数据是否已经生成 -->
+	<select id="getReportIsCreateCount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		SELECT count(1) as totalCount
+		FROM report_account
+		WHERE accountdate = #accountDate#
+	</select>
+	<!-- 分页查询账户变动信息 -->
+	<select id="getAccountReports" parameterClass="java.util.Map" resultClass="reportAccountDomain">
+		SELECT reportId,accountDate,ipsAmount,dispatchAmount,adjustAdd,zhuihaoCancel,betAmount,drawRequest,adjustReduce,
+		fundsAccount,prizeAccount,frozenAccount,trackAccount,beginTime,endTime
+		FROM report_account
+		WHERE 1 = 1
+		<isNotEmpty property="beginDate" prepend="AND">
+			accountDate <![CDATA[ >= ]]> #beginDate#
+		</isNotEmpty>
+		<isNotEmpty property="endDate" prepend="AND">
+			accountDate <![CDATA[ <= ]]> #endDate#
+		</isNotEmpty>
+		ORDER BY accountDate DESC
+		LIMIT #startPageNumber#, #endPageNumber#
+	</select>
+	<!-- 分页查询账户变动信息的数据条数 -->
+	<select id="getAccountReportsCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT COUNT(*) AS totalNum
+		FROM report_account
+		WHERE 1 = 1
+		<isNotEmpty property="beginDate" prepend="AND">
+			accountDate <![CDATA[ >= ]]> #beginDate#
+		</isNotEmpty>
+		<isNotEmpty property="endDate" prepend="AND">
+			accountDate <![CDATA[ <= ]]> #endDate#
+		</isNotEmpty>
+	</select>
+	<!-- 查询一条账户变动信息 -->
+	<select id="getAccountReportInfo" parameterClass="java.lang.String" resultClass="reportAccountDomain">
+		SELECT reportId,accountDate,ipsAmount,dispatchAmount,adjustAdd,zhuihaoCancel,betAmount,drawRequest,adjustReduce,
+		fundsAccount,prizeAccount,frozenAccount,trackAccount,beginTime,endTime
+		FROM report_account
+		WHERE reportid = #reportId#
+	</select>
+</sqlMap>

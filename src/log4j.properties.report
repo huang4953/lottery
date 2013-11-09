@@ -1,0 +1,32 @@
+log4j.rootLogger=DEBUG,ALL
+
+log4j.appender.STDOUT= org.apache.log4j.ConsoleAppender
+log4j.appender.STDOUT.layout = org.apache.log4j.PatternLayout
+#log4j.appender.STDOUT.layout.ConversionPattern = %d [%t] %-5p %x - %m %n
+#log4j.appender.STDOUT.layout.ConversionPattern = %d[%5p]%c[%F(%L)] - %m %n
+#log4j.appender.STDOUT.layout.ConversionPattern = %d[%5p]%.30c<%15M>(%3L) - %m %n
+log4j.appender.STDOUT.layout.ConversionPattern = %d[%5p]%.30c(%3L) - %m %n
+#log4j.appender.STDOUT.layout.ConversionPattern = %-5p %d [%t] %c: %m%n
+
+log4j.appender.ALL=org.apache.log4j.RollingFileAppender
+log4j.appender.ALL.File=/home/tlt/app/logs/report.log4j
+log4j.appender.ALL.Append=true
+log4j.appender.ALL.MaxFileSize=1000MB
+log4j.appender.ALL.MaxBackupIndex=5
+log4j.appender.ALL.layout=org.apache.log4j.PatternLayout
+log4j.appender.ALL.layout.ConversionPattern=%d[%5p]%c(%3L) - %m%n
+
+#统计报表日志
+log4j.logger.com.success.lottery.report.prizeCount=INFO,PRIZE
+log4j.appender.PRIZE=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.PRIZE.File=/home/tlt/app/logs/reportprize.log
+log4j.appender.PRIZE.Append=true
+log4j.appender.PRIZE.layout=org.apache.log4j.PatternLayout
+log4j.appender.PRIZE.layout.ConversionPattern=%m%n
+
+log4j.logger.com.success.lottery.report.accountCount=INFO,ACCOUNT
+log4j.appender.ACCOUNT=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.ACCOUNT.File=/home/tlt/app/logs/reportaccount.log
+log4j.appender.ACCOUNT.Append=true
+log4j.appender.ACCOUNT.layout=org.apache.log4j.PatternLayout
+log4j.appender.ACCOUNT.layout.ConversionPattern=%m%n

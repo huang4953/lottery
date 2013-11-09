@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans default-autowire="no" default-lazy-init="false" default-dependency-check="none">
+	<!-- SERVICE -->
+	<description>
+	该配置文件必须依赖于
+	com.success.lottery.term.applicationContext-term.xml
+	com.success.lottery.account.applicationContext-account.xml
+	com.success.lottery.order.applicationContext-order.xml
+	com.success.lottery.ticket.applicationContext-ticket.xml
+	
+	</description>
+	<!-- 投注服务 -->
+	<bean id="busLotteryBetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.BetServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.BetService">
+                <!-- 是否直接出票,true直接出票，false不直接出票 -->
+                <property name="putQuery">
+                  <value>false</value>
+                </property>
+                <!-- 彩期服务 -->
+                <property name="termService">
+                  <ref bean="lotteryTermService"/>
+                </property>
+                <!-- 订单服务 -->
+                <property name="orderService">
+                  <ref bean="lotteryBetOrderService"/>
+                </property>
+                <!-- 用户和账户服务 -->
+                <property name="userService">
+                  <ref bean="accountService"/>
+                </property>
+                <!-- 彩票服务 -->
+                <property name="ticketService">
+                  <ref bean="lotteryBetTicketService"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="betWeb">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="betSms">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="betWap">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="coopBetCreate">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="coopBetJoin">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="dealOnePlanBySys">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 兑奖服务 -->
+    <bean id="busLotteryCashPrizeService" class="com.success.lottery.business.service.impl.CashPrizeService">
+    	<property name="innerService">
+    		<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    			<property name="transactionManager">
+                	<ref bean="transactionManager"></ref>
+        		</property>
+        		<property name="proxyInterfaces">
+                	<value>com.success.lottery.business.service.interf.PrizeInnerInterf</value>
+        		</property>
+        		<property name="target">
+            		<bean class="com.success.lottery.business.service.impl.PrizeInnerService">
+                		<!-- 订单服务 -->
+                		<property name="betOrderService">
+                  			<ref bean="lotteryBetOrderService"/>
+                		</property>
+                		<!-- 彩期服务 -->
+                		<property name="termService">
+                  			<ref bean="lotteryTermService"/>
+                		</property>
+                		<!-- 用户和账户服务 -->
+                		<property name="userService">
+                  			<ref bean="accountService"/>
+                		</property>
+                		<property name="ticketService">
+                  			<ref bean="lotteryBetTicketService"/>
+                		</property>
+            		</bean>
+        		</property>
+        		<property name="transactionAttributes">
+            		<props>
+                		<prop key="cashPrize">PROPAGATION_REQUIRED,-LotteryException</prop>
+                		<prop key="updateCashPrizeCompleteStatus">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+                		<prop key="dealNotTicketZhuiHao">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+            		</props>
+        		</property>
+    		</bean>	
+    	</property>
+    </bean>
+    
+    <!-- 派奖服务 -->
+    <bean id="busLotteryDispatchPrizeService" class="com.success.lottery.business.service.impl.DispatchPrizeService">
+    	<property name="innerService">
+    		<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    			<property name="transactionManager">
+                	<ref bean="transactionManager"></ref>
+        		</property>
+        		<property name="proxyInterfaces">
+                	<value>com.success.lottery.business.service.interf.PrizeInnerInterf</value>
+        		</property>
+        		<property name="target">
+            		<bean class="com.success.lottery.business.service.impl.PrizeInnerService">
+                		<!-- 订单服务 -->
+                		<property name="betOrderService">
+                  			<ref bean="lotteryBetOrderService"/>
+                		</property>
+                		<!-- 彩期服务 -->
+                		<property name="termService">
+                  			<ref bean="lotteryTermService"/>
+                		</property>
+                		<!-- 用户和账户服务 -->
+                		<property name="userService">
+                  			<ref bean="accountService"/>
+                		</property>
+            		</bean>
+        		</property>
+        		<property name="transactionAttributes">
+            		<props>
+                		<prop key="dispatchPrize">PROPAGATION_REQUIRED,-LotteryException</prop>
+                		<prop key="updateDispatchPrizeCompleteStatus">PROPAGATION_REQUIRES_NEW</prop>
+            		</props>
+        		</property>
+    		</bean>	
+    	</property>
+    </bean>
+    
+    <!-- 奖金提现、本金调整服务 -->
+	<bean id="busDrawMoneyService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.DrawMoneyInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.DrawMoneyService">
+                <!-- 用户和账户服务 -->
+                <property name="accountService">
+                  <ref bean="accountService"/>
+                </property>
+                <!-- 提现基础服务 -->
+                <property name="baseDrawService">
+                  <ref bean="baseDrawMoneyService"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="requestDrawPrizeMoney">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="agreeDrawPrizeMoney">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="rejectDrawPrizeMoney">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="adjustAccount">PROPAGATION_REQUIRED,-LotteryException</prop>
+                <prop key="clientAdjustAccount">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 彩期管理服务 目前包括输入开奖信息、销售信息服务、限号信息的输入 -->
+    <bean id="busLotteryManagerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.LotteryManagerInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.LotteryManagerService">
+               <!-- 彩期服务 -->
+                <property name="termService">
+                  	<ref bean="lotteryTermService"/>
+                </property>
+                <property name="busBetOrderDao">
+                  	<ref bean="busBetOrderDaoImpl"/>
+                </property>
+                <!-- 订单服务 -->
+                <property name="betOrderService">
+                  	<ref bean="lotteryBetOrderService"/>
+                </property>
+                <!-- 兑奖服务 -->
+                <property name="cashPrizeSevice">
+                  	<ref bean="busLotteryCashPrizeService"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="input*">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 订单方案处理服务 目前包括 手工撤销订单  -->
+    <bean id="busPlanOrderManagerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.PlanOrderManagerInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.PlanOrderManagerService">
+               <!-- 用户和账户服务 -->
+                <property name="accountService">
+                  <ref bean="accountService"/>
+                </property>
+                <!-- 订单服务 -->
+                <property name="orderService">
+                  <ref bean="lotteryBetOrderService"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="cancelAddOrder">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="busLbapService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.LbapServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.LbapService">
+               <!-- 用户和账户服务 -->
+                <property name="lbapDao">
+                  <ref bean="busLbapDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="insertLbapMsg">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 异常订单处理服务 -->
+    <bean id="busLotteryTicketExService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.TicketExDealInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.TicketExDealService">
+                <!-- 订单服务 -->
+                <property name="orderService">
+                  <ref bean="lotteryBetOrderService"/>
+                </property>
+                <!-- 用户和账户服务 -->
+                <property name="ticketService">
+                  <ref bean="lotteryBetTicketService"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="ticketExDeal">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 系统处理合买订单服务 -->
+    <bean id="busCoopBySysService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.business.service.interf.DealCpPlanInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.business.service.impl.DealCpPlanService">
+                <!-- 订单服务 -->
+                <property name="betOrderService">
+                  <ref bean="lotteryBetOrderService"/>
+                </property>
+                <!-- 合买处理内部服务 -->
+                <property name="betService">
+                  <ref bean="busLotteryBetService"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="dealPlanBySys">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+  	<!--END SERVICE-->
+  	<!--DAO-->
+	<bean id="busBetOrderDaoImpl" class="com.success.lottery.business.dao.impl.BusBetOrderDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientBusiness"/>
+		</property>		
+	</bean>
+	<bean id="busLbapDaoImpl" class="com.success.lottery.business.dao.impl.LbapDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientBusiness"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

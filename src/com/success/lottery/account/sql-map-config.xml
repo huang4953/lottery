@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings   
+        useStatementNamespaces="true"  
+    />   
+	
+	<sqlMap resource="com/success/lottery/account/ibatis/AccountTransactionModel.xml" />
+	<sqlMap resource="com/success/lottery/account/ibatis/UserAccountModel.xml" />
+	<sqlMap resource="com/success/lottery/account/ibatis/IPSOrderModel.xml" />
+	<sqlMap resource="com/success/lottery/account/ibatis/BillOrderModel.xml" />
+	<!-- 
+	<sqlMap resource="com/success/lottery/account/ibatis/CheckIpsorderModel.xml" />
+ 	-->
+	<sqlMap resource="com/success/lottery/account/ibatis/drawMoney.xml" />
+</sqlMapConfig>

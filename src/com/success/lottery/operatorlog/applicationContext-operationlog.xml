@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans default-autowire="no" default-lazy-init="false" default-dependency-check="none">
+	<!-- SERVICE -->
+	<description>
+	
+	</description>
+	<!-- 投注服务 -->
+	<bean id="operatorLogService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.operatorlog.service.interf.OperatorLogService</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.operatorlog.service.impl.OperatorLogServiceImpl">
+               
+                <property name="operatorLogDaoImpl">
+                  <ref bean="operatorLogDaoImpl"/>
+                </property>
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+            <!-- 
+                <prop key="insertLogRecord">PROPAGATION_REQUIRED,-LotteryException</prop>
+                 -->
+            </props>
+        </property>
+    </bean>
+    
+  	<!--END SERVICE-->
+  	<!--DAO-->
+	
+	<bean id="operatorLogDaoImpl" class="com.success.lottery.operatorlog.dao.OperatorLogDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientOperatorLog"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

@@ -1,0 +1,46 @@
+#走势分析页面保存路径, fileName=dlt30.html, dlt50.html..
+ZSFX=/home/tlt/lottery/direction
+#开奖查询首页保存路径, filename=index.html
+KJCXSY=/home/tlt/lottery/drawlottery
+#大乐透详细页保存路径 fileName=termNo.html
+DLTXX=/home/tlt/lottery/drawlottery/dlthtml
+#七星彩详细页保存路径 fileName=termNo.html
+QXCXX=/home/tlt/lottery/drawlottery/qxchtml
+#排列三详细页保存路径 fileName=termNo.html
+PLSXX=/home/tlt/lottery/drawlottery/plshtml
+#排列五详细页保存路径 fileName=termNo.html
+PLWXX=/home/tlt/lottery/drawlottery/plwhtml
+#胜负彩详细页保存路径 fileName=termNo.html
+ZCXX=/home/tlt/lottery/drawlottery/zchtml
+#大乐透集合页 fileName=dltlist.html
+DLTLIST=/home/tlt/lottery/drawlottery/dlt
+#七星彩集合页 fileName=qxclist.html
+QXCLIST=/home/tlt/lottery/drawlottery/qxc
+#排列三集合页 fileName=plslist.html
+PLSLIST=/home/tlt/lottery/drawlottery/pls
+#排列五集合页 fileName=plwlist.html
+PLWLIST=/home/tlt/lottery/drawlottery/plw
+#胜负彩集合页 fileName=zclist.html
+ZCLIST=/home/tlt/lottery/drawlottery/zc
+#首页最新开奖结果
+ZCKJJG=/home/tlt/lottery
+#购彩大厅大乐透最新开奖结果
+DLTKJJG=/home/tlt/lottery/trade/dlt
+#购彩大厅七星彩最新开奖结果
+QXCKJJG=/home/tlt/lottery/trade/qxc
+#购彩大厅排列三最新开奖结果
+PLSKJJG=/home/tlt/lottery/trade/pls
+#购彩大厅排列五最新开奖结果
+PLWKJJG=/home/tlt/lottery/trade/plw
+#四场进球详细页保存路径
+JQ4XX=/home/tlt/lottery/drawlottery/jq4html
+#六场半全详细页保存路径
+ZC6XX=/home/tlt/lottery/drawlottery/zc6html
+#多乐彩详细页保存路径
+DLCXX=/home/tlt/lottery/drawlottery/dlchtml
+#四场进球集合页
+JQ4LIST=/home/tlt/lottery/drawlottery/jq4
+#六场半全集合页
+ZC6LIST=/home/tlt/lottery/drawlottery/zc6
+#多乐彩集合页
+DLCLIST=/home/tlt/lottery/drawlottery/dlc

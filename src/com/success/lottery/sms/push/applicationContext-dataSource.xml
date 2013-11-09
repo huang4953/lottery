@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!--配置一个数据源-->
+	<bean id="dataSource"
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName">
+	<value>com.mysql.jdbc.Driver</value>
+	<!--
+ 	<value>com.p6spy.engine.spy.P6SpyDriver</value>
+ 	-->
+	</property>
+	<property name="url">
+	<value>jdbc:mysql://172.16.0.201:3306/tlt</value>
+	</property>
+	<property name="username">
+	<value>tlt2010</value>
+	</property>
+	<property name="password">
+	<value>lottery</value>
+	</property>
+	</bean>
+	
+	<bean id="transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	          <property name="dataSource" ref="dataSource" />       
+	</bean>
+</beans>

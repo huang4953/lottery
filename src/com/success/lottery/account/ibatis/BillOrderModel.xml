@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap         
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"         
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="billOrder">
+	<typeAlias alias="billOrder"
+		type="com.success.lottery.account.model.BillOrderModel" />
+
+	<resultMap class="billOrder" id="billOrderModelResult">
+		<result property="orderId" column="orderid" />
+		<result property="userId" column="userid" />
+		<result property="userName" column="username" />
+		<result property="orderTime" column="ordertime" />
+		<result property="orderDate" column="orderdate" />
+		<result property="accountTransactionId"
+			column="accounttransactionid" />
+		<result property="orderStatus" column="orderstatus" />
+		<result property="orderMessage" column="ordermessage" />
+		<result property="orderAmount" column="orderamount" />
+		<result property="checkedStatus" column="checkedstatus" />
+		<result property="checkedTime" column="checkedtime" />
+		<result property="checkedMessage" column="checkedmessage" />
+		<result property="dealId" column="dealid" />
+		<result property="bankId" column="bankid" />
+		<result property="payResult" column="payresult" />
+		<result property="bankDealId" column="bankdealid" />
+		<result property="dealTime" column="dealtime" />
+		<result property="errCode" column="errcode" />
+		<result property="fee" column="fee" />
+		<result property="reserve" column="reserve" />
+		<result property="ext1" column="ext1" />
+		<result property="ext2" column="ext2" />
+		<result property="payAmount" column="payamount" />
+	</resultMap>
+	<!--插入快钱交易-->
+	<insert id="addBillOrder" parameterClass="billOrder">
+		insert into
+		billorder(orderid,userid,username,ordertime,orderdate,accounttransactionid,orderstatus,ordermessage,orderamount,checkedstatus,checkedtime,checkedmessage,dealid,bankid,payresult,bankdealid,dealtime,errcode,fee,reserve,ext1,ext2,payamount)
+		values(#orderId#,#userId#,#userName#,now(),#orderDate#,#accountTransactionId#,#orderStatus#,#orderMessage#,#orderAmount#,#checkedStatus#,#checkedTime#,#checkedMessage#,#dealId#,#bankId#,#payResult#,#bankDealId#,#dealTime#,#errCode#,#fee#,#reserve#,#ext1#,#ext2#,#payAmount#)
+	</insert>
+	<!-- 根据OrderId查询快钱交易记录 -->
+	<select id="getBillOrderByOrderid" parameterClass="java.lang.String" resultClass="billOrder">
+	     select orderid,userid,username,ordertime,orderdate,accounttransactionid,orderstatus,ordermessage,orderamount,checkedstatus,checkedtime,checkedmessage,dealid,bankid,payresult,bankdealid,dealtime,errcode,fee,reserve,ext1,ext2,payamount
+	      from billorder where orderid=#orderId#
+	</select>
+	<!--  根据ID修改快钱交易记录 -->
+	<update id="updateBillOrder" parameterClass="billOrder">
+	     update billorder set checkedtime= now(),checkedstatus=#checkedStatus#,orderstatus=#orderStatus#,dealid=#dealId#,bankid=#bankId#,bankdealid=#bankDealId#,payresult=#payResult#,dealtime=#dealTime#,errcode=#errCode#,fee=#fee#,ext1=#ext1#,ext2=#ext2#,payamount=#payAmount#,accounttransactionid=#accountTransactionId# where orderid=#orderId#
+	</update>
+	
+	<!-- 根据条件查询快钱不同状态的订单条数以及合计金额 -->
+	<select id="getBillOrderesTotalInfo" parameterClass="java.util.Map" resultClass="billOrder">
+		select b.orderstatus as orderStatus, count(*) as orderamount, COALESCE(sum(b.orderamount), 0) as userId from billorder as b, useraccount as u
+		where b.userid=u.userid
+		<isNotNull property="userIdentify" prepend="and">
+			(u.loginname=#userIdentify# or u.mobilephone=#userIdentify# or u.email=#userIdentify# or u.realname=#userIdentify#)
+		</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					b.orderTime >= #startTime#
+   				]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					b.orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend=" and " >
+				<isGreaterThan property="orderStatus" compareValue="-1">
+					b.orderstatus = #orderStatus:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+	    group by orderstatus
+	</select>
+	<!-- 根据条件查询环迅不同状态的订单条数以及合计金额 -->
+	<select id="getBillOrderes" parameterClass="java.util.Map" resultClass="billOrder">
+		select b.orderid as orderId,b.userid as userId,b.username as userName,b.ordertime as orderTime,b.orderdate as orderDate,b.accounttransactionid as accounttransactionId,
+		b.orderstatus as orderStatus,b.ordermessage as orderMessage,b.orderamount as orderAmount,b.checkedstatus as checkedStatus, b.checkedtime as checkedTime,b.checkedmessage as checkedMessage,
+		b.dealid as dealId,b.bankid as bankId,b.payresult as payResult,b.bankdealid as bankDealId,b.dealtime as dealTime,b.errcode as errCode,b.fee as fee,b.reserve as reserve,
+		b.ext1 as ext1,b.ext2 as ext2,b.payamount as payAmount
+		 from billorder as b, useraccount as u where b.userid=u.userid
+			<isNotNull property="userIdentify" prepend="and">
+				(u.loginname=#userIdentify# or u.mobilephone=#userIdentify# or u.email=#userIdentify# or u.realname=#userIdentify#)
+			</isNotNull>
+			<isNotNull property="startTime" prepend=" and ">
+				<![CDATA[
+					b.orderTime >= #startTime#
+   				]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend=" and ">
+				<![CDATA[
+					b.orderTime <= #endTime#
+   				]]>            
+			</isNotNull>
+			<isNotNull property="orderStatus" prepend=" and " >
+				<isGreaterThan property="orderStatus" compareValue="-1">
+					b.orderstatus = #orderStatus:NUMERIC#
+				</isGreaterThan>             
+			</isNotNull>
+			limit #start#,#count#
+	</select>
+</sqlMap>

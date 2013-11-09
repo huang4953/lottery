@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC
+    "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans
+  default-autowire="no"
+  default-lazy-init="false"
+  default-dependency-check="none"
+>
+	<!--DAO-->
+	<bean id="smsPushTaskDao" class="com.success.lottery.sms.push.dao.impl.SmsPushTaskDaoImpl">
+		<property name="sqlMapClientTemplate">
+		<ref bean="sqlMapClientPushTemplate" />
+		</property>
+	</bean>
+	<bean id="smsPushDataDao" class="com.success.lottery.sms.push.dao.impl.SmsPushDataDaoImpl">
+		<property name="sqlMapClientTemplate">
+		<ref bean="sqlMapClientPushTemplate" />
+		</property>
+	</bean>
+	<bean id="lotteryTermDaoImpl" class="com.success.lottery.term.dao.impl.LotteryTermDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientTerm"/>
+		</property>		
+	</bean>
+	<bean id="userAccountDAO" class="com.success.lottery.account.dao.impl.UserAccountDAOImpl">
+		<property name="sqlMapClientTemplate">
+		<ref bean="sqlMapClientAccountTemplate" />
+		</property>
+	</bean>
+	<bean id="lotteryBetOrderDaoImpl" class="com.success.lottery.order.dao.impl.BetOrderDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientOrder"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+ 	
+	<!--ERVICE-->
+	<bean id="smsPushTaskService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+  		<property name="transactionManager" ref="transactionManager" />
+		<property name="proxyInterfaces">
+              <value>com.success.lottery.sms.push.service.SmsPushTaskService</value>
+        </property>
+	    <property name="target">
+	      <bean  class="com.success.lottery.sms.push.service.impl.SmsPushTaskServiceImpl">
+	       		<property name="smsPushTaskDao">
+			      <ref bean="smsPushTaskDao"/>
+			    </property>
+			    <property name="lotteryTermDao">
+                  <ref bean="lotteryTermDaoImpl"/>
+                </property>  
+			    <property name="smsPushDataDao">
+			      <ref bean="smsPushDataDao"/>
+			    </property>
+			    <property name="userAccountDAO">
+			    	<ref bean="userAccountDAO"/>
+			    </property>
+			    <property name="betOrderDaoImpl">
+			    	<ref bean="lotteryBetOrderDaoImpl"/>
+			    </property>
+			    <property name="smsPushDataService">
+			    	<ref bean="smsPushDataService"/>
+			    </property>
+	       </bean>
+	    </property>
+	    
+	    <!--  事务配置-->
+	    <property name="transactionAttributes">
+			<props>
+				<prop key="executeTask">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="findTaskAndExecution">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="insertSmsPush*">PROPAGATION_REQUIRED,-Exception</prop>
+			</props>
+		</property>
+  	</bean>
+  	
+  	
+  	<bean id="smsPushDataService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+  		<property name="transactionManager" ref="transactionManager" />
+		<property name="proxyInterfaces">
+              <value>com.success.lottery.sms.push.service.SmsPushDataService</value>
+        </property>
+	    <property name="target">
+	      <bean  class="com.success.lottery.sms.push.service.impl.SmsPushDataServiceImpl">
+			    <property name="smsPushDataDao">
+			      <ref bean="smsPushDataDao"/>
+			    </property>
+	       </bean>
+	    </property>
+	    
+	    <!--  事务配置-->
+	    <property name="transactionAttributes">
+			<props>
+				<prop key="checkTimeoutData">PROPAGATION_REQUIRED,-LotteryException</prop>
+				<prop key="sendPushData">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+			</props>
+		</property>
+  	</bean>
+  	<!--END SERVICE-->
+</beans>

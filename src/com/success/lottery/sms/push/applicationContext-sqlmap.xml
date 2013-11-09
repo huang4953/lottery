@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!--根据dataSource和configLocation创建一个SqlMapClient-->
+	<bean id="sqlMapClientPush" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:com/success/lottery/sms/push/sql-map-config.xml</value>
+		</property>
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+
+	<!--根据sqlMapClien创建一个SqlMapClient模版类-->
+	<bean id="sqlMapClientPushTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientPush" />
+		</property>
+	</bean>
+</beans>

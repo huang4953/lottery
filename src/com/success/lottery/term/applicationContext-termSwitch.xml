@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans>
+
+	<!-- SERVICE -->
+	<!-- 大乐透和生肖乐 -->
+	<bean id="SuperTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.CommonTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1000001</value>
+                  <value>1000005</value>
+                  </list>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="isCheckTime">
+                  <!-- 0不执行时间检查，1执行时间检查 -->
+                  <value>1</value>
+                </property>
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 七星彩 -->
+    <bean id="SevenTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.CommonTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1000002</value>
+                  </list>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="isCheckTime">
+                  <!-- 0不执行时间检查，1执行时间检查 -->
+                  <value>1</value>
+                </property>
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!--  排列3和排列5 -->
+    
+    <bean id="ArrangeTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.CommonTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1000003</value>
+                  <value>1000004</value>
+                  </list>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="isCheckTime">
+                  <!-- 0不执行时间检查，1执行时间检查 -->
+                  <value>1</value>
+                </property>
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 十一运 -->
+    
+    <bean id="DlcTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.CommonTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1200001</value>
+                  </list>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="isCheckTime">
+                  <!-- 0不执行时间检查，1执行时间检查 -->
+                  <value>1</value>
+                </property>
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 快乐扑克 -->
+    
+    
+    <!--  胜负彩和任选9的当前期截至 -->
+    
+    <bean id="Ball14StopTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.BallTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1300001</value>
+                  <value>1300002</value>
+                  </list>
+                </property>
+                <property name="beginOrEnd">
+                  <!-- 0表示切换足彩的预售期为当前期，1表示切换足彩的当前期为历史期 -->
+                  <value>1</value>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!--  胜负彩和任选9的预售期开始 -->
+    
+    <bean id="Ball14BeginTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.BallTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1300001</value>
+                  <value>1300002</value>
+                  </list>
+                </property>
+                <property name="beginOrEnd">
+                  <!-- 0表示切换足彩的预售期为当前期，1表示切换足彩的当前期为历史期 -->
+                  <value>0</value>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 6场半全场的当前期截至 -->
+    
+    <bean id="Ball6StopTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.BallTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1300003</value>
+                  </list>
+                </property>
+                <property name="beginOrEnd">
+                  <!-- 0表示切换足彩的预售期为当前期，1表示切换足彩的当前期为历史期 -->
+                  <value>1</value>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 4场进球彩的当前期截至 -->
+    <bean id="Ball4StopTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.BallTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1300004</value>
+                  </list>
+                </property>
+                <property name="beginOrEnd">
+                  <!-- 0表示切换足彩的预售期为当前期，1表示切换足彩的当前期为历史期 -->
+                  <value>1</value>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 6场半全场的预售期开始 -->
+    
+    <bean id="Ball6BeginTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.BallTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1300003</value>
+                  </list>
+                </property>
+                <property name="beginOrEnd">
+                  <!-- 0表示切换足彩的预售期为当前期，1表示切换足彩的当前期为历史期 -->
+                  <value>0</value>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 4场进球彩的预售期开始 -->
+    <bean id="Ball4BeginTermSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.BallTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1300004</value>
+                  </list>
+                </property>
+                <property name="beginOrEnd">
+                  <!-- 0表示切换足彩的预售期为当前期，1表示切换足彩的当前期为历史期 -->
+                  <value>0</value>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- 多乐彩将当前期的销售状态由未到销售时间改为正在销售 -->
+    <bean id="DlcTermSaleSwitchService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.term.service.interf.LotteryTermSwitchServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.term.service.impl.CommonTermSwitchService">
+                <property name="lotteryIdList">
+                  <list>
+                  <value>1200001</value>
+                  </list>
+                </property>
+                <!-- 设置时间检查的前后间隔，要以秒为单位 -->
+                <property name="isCheckTime">
+                  <!-- 0不执行时间检查，1执行时间检查 -->
+                  <value>1</value>
+                </property>
+                <property name="timeSpaces">
+                  <value>360</value>
+                </property>
+                <property name="termSwitchDao">
+                  <ref bean="termSwitchDaoImpl"/>
+                </property> 
+                <property name="lotteryTermService">
+                  <ref bean="lotteryTermService"/>
+                </property>    
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="termSwitch">PROPAGATION_REQUIRED,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+	
+  	<!--END SERVICE-->
+  	
+  	<!--DAO-->
+	<bean id="termSwitchDaoImpl" class="com.success.lottery.term.dao.impl.LotteryTermSwitchDaoImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientTerm"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

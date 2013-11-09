@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd" >
+
+<beans default-autowire="no" default-lazy-init="false" default-dependency-check="none">
+	<!-- SERVICE -->
+	<!-- 生成报表数据服务 -->
+	<bean id="reportCreateService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.report.service.interf.ReportServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.report.service.impl.ReportServiceImpl">
+                <property name="reportPrizeDao">
+                  <ref bean="reportPrizeDao"/>
+                </property>
+                <property name="reportAccountDao">
+                  <ref bean="reportAccountDao"/>
+                </property>   
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="createPrizeReportSuper">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+                <prop key="createPrizeReportBall">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+                <prop key="createPrizeReportArrange3">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+                <prop key="createPrizeReportArrange5">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+                <prop key="createPrizeReportSeven">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+                <prop key="createAccountReport">PROPAGATION_REQUIRES_NEW,-LotteryException</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <!-- 查询报表数据服务 -->
+    <bean id="reportQueryService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager"></ref>
+        </property>
+        <property name="proxyInterfaces">
+              <value>com.success.lottery.report.service.interf.ReportQueryServiceInterf</value>
+        </property>
+        <property name="target">
+            <bean class="com.success.lottery.report.service.impl.ReportQueryServiceImpl">
+                <property name="reportQuDao">
+                  <ref bean="reportQueryDao"/>
+                </property>
+                <property name="reportTransDao">
+                  <ref bean="reportTransSortDao"/>
+                </property>   
+            </bean>
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+	
+  	<!--END SERVICE-->
+  	
+  	<!--DAO-->
+	<bean id="reportPrizeDao" class="com.success.lottery.report.dao.ReportPrizeDao">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientReport"/>
+		</property>		
+	</bean>
+	<bean id="reportAccountDao" class="com.success.lottery.report.dao.ReportAccountDao">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientReport"/>
+		</property>		
+	</bean>
+	<bean id="reportTransSortDao" class="com.success.lottery.report.dao.ReportTransSortDao">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientReport"/>
+		</property>		
+	</bean>
+	<bean id="reportQueryDao" class="com.success.lottery.report.dao.ReportQueryDao">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClientReport"/>
+		</property>		
+	</bean>
+	<!--END DAO-->
+</beans>

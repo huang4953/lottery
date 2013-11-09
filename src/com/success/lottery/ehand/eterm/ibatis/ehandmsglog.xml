@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="GBK" ?>  
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="ehandmsglog">
+	<typeAlias alias="ehandMsgModel" type="com.success.lottery.ehand.eterm.domain.EhandMsgModel"/>
+	
+    <resultMap id="ehandMsgModelResult" class="ehandMsgModel" >  
+        <result property="id"           column="id"/>       
+        <result property="msgType"      column="msgtype"/>           
+        <result property="msgId"        column="msgid"/>       
+        <result property="msgUserId"    column="msguserid"/>       
+        <result property="msgCommand"   column="msgcommand"/>      
+        <result property="msgKey"       column="msgkey"/> 
+        <result property="msgCode"      column="msgcode"/>     
+        <result property="msgContent"   column="msgcontent"/> 
+        <result property="msgTime"      column="msgtime"/>    
+        <result property="reserve"      column="reserve"/> 
+    </resultMap>
+    
+    <!-- 写日志 -->
+    <insert id="insertEhandMsg" parameterClass="ehandMsgModel">
+    	INSERT INTO ehandmessage (msgtype,msgid,msguserid,msgcommand,msgkey,msgcode,msgcontent,msgtime,reserve)
+    	VALUES (#msgType#,#msgId#,#msgUserId#,#msgCommand#,#msgKey#,#msgContent#,now(),#reserve#)
+    </insert>
+    
+</sqlMap>

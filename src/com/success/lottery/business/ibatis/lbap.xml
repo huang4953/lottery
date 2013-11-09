@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="GBK" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="lbap">
+
+	<typeAlias alias="lbapDomain" type="com.success.lottery.business.domain.LbapMsgDomain" />
+	
+	
+	<!--  begin -->
+	
+	<select id="queryLbapMsg" parameterClass="lbapDomain" resultClass="lbapDomain">
+		<![CDATA[
+		SELECT clientid,commandid,messageid,result,messagebody,msgtime,reserve
+		FROM lbapmessage
+		WHERE clientid = #clientid# and commandid = #commandid# and messageid = #messageid#
+		]]>
+	</select>
+	
+	<insert id="insertLbapMsg" parameterClass="lbapDomain">
+		<![CDATA[
+		INSERT INTO lbapmessage (clientid,commandid,messageid,result,messagebody,msgtime,reserve)
+		VALUES (#clientid#,#commandid#,#messageid#,#result#,#messagebody#,now(),#reserve#)
+		]]>
+	</insert>
+	
+</sqlMap>
